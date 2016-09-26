@@ -17,6 +17,37 @@ namespace Graph_lib {
 
 //-----------------------------------------------------------------------------
 
+class Font {
+public:
+    enum Font_type {
+        helvetica=FL_HELVETICA,
+        helvetica_bold=FL_HELVETICA_BOLD,
+        helvetica_italic=FL_HELVETICA_ITALIC,
+        helvetica_bold_italic=FL_HELVETICA_BOLD_ITALIC,
+        courier=FL_COURIER,
+        courier_bold=FL_COURIER_BOLD,
+        courier_italic=FL_COURIER_ITALIC,
+        courier_bold_italic=FL_COURIER_BOLD_ITALIC,
+        times=FL_TIMES,
+        times_bold=FL_TIMES_BOLD,
+        times_italic=FL_TIMES_ITALIC,
+        times_bold_italic=FL_TIMES_BOLD_ITALIC,
+        symbol=FL_SYMBOL,
+        screen=FL_SCREEN,
+        screen_bold=FL_SCREEN_BOLD,
+        zapf_dingbats=FL_ZAPF_DINGBATS
+    };
+
+    Font(Font_type ff) :f(ff) { }
+    Font(int ff) :f(ff) { }
+
+    int as_int() const { return f; }
+private:
+    int f;
+};
+
+//-----------------------------------------------------------------------------
+
 class Shape  {	// deals with color and style, and holds sequence of lines
 protected:
     Shape() { }
@@ -137,5 +168,129 @@ private:
 
 //-----------------------------------------------------------------------------
 
+struct Open_polyline : Shape {  // Открытая последовательность линий
+    using Shape::Shape;         // Использует конструктор Shape
+    void add(Point p) { Shape::add(p); }
+};
+
+
+//-----------------------------------------------------------------------------
+
+struct Closed_polyline
+        : Open_polyline { // Замкнутая последовательность линий
+    using Open_polyline::Open_polyline; // Использует конструкторы
+                                        // Open_polyline
+    void draw_lines() const;
+};
+
+//-----------------------------------------------------------------------------
+
+struct Polygon : Closed_polyline {
+    using Closed_polyline::Closed_polyline;
+
+    void add(Point p);
+    void draw_lines() const;
+};
+
+//-----------------------------------------------------------------------------
+
+struct Rectangle : Shape {
+    Rectangle(Point xy, int ww, int hh);
+    Rectangle(Point x, Point y);
+    void draw_lines() const;
+
+    int height() const { return h; }
+    int weight() const { return w; }
+private:
+    int h;  // Высота
+    int w;  // Длина
+};
+
+//-----------------------------------------------------------------------------
+
+struct Text : Shape {
+    // Точка в левом нижнем углу первой буквы
+    Text(Point x, const string& s)
+        :lab{s}
+    { add(x); }
+
+    void draw_lines() const;
+    void set_label(const string& s) { lab = s; }
+    string label() const { return lab; }
+
+    void set_font(Font f) { fnt = f; }
+    Font font() const { return fnt; }
+
+    void set_font_size(int s) { fnt_sz = s; }
+    int font_size() { fnt_sz; }
+private:
+    string lab; // Текст
+    Font fnt{fl_font()};
+    int fnt_sz{(fl_size()<14) ? 14 : fl_size()};
+};
+
+//-----------------------------------------------------------------------------
+
+struct Circle : Shape {
+    Circle(Point p, int rr); // Центр и радиус
+
+    void draw_lines() const;
+    Point center() const;
+    int radius() const { return r; }
+    void set_radius(int rr)
+    {   // Поддержка центра
+        set_point(0, Point{center().x - rr, center().y-rr});
+        r = rr;
+    }
+private:
+    int r;
+};
+
+//-----------------------------------------------------------------------------
+
+struct Ellipce : Shape {
+    // Центр, минимальное и максимальное расстояние до центра
+    Ellipce(Point p, int ww, int hh);
+
+    void draw_lines() const;
+
+    Point center() const;
+    Point focus1() const;
+    Point focus2() const;
+
+    void set_major(int ww)
+    {   // Поддержка центра
+        set_point(0, Point{center().x-ww, center().y-h});
+        w = ww;
+    }
+    int major() const { return w; }
+    void set_minor(int hh)
+    {   // Поддержка центра
+        set_point(0, Point{center().x-w, center().y-hh});
+        h = hh;
+    }
+    int minor() const { return h; }
+
+private:
+    int w;
+    int h;
+};
+
+//-----------------------------------------------------------------------------
+
+struct Marked_polyline : Open_polyline {
+    Marked_polyline(const string& m) : mark{m}
+    { if (mark == "") mark = "*"; }
+    Marked_polyline(const string &m,
+                    initializer_list<Point> lst);
+    void draw_lines() const;
+private:
+    string mark;
+};
+
+//-----------------------------------------------------------------------------
+
 }
+
+
 #endif
