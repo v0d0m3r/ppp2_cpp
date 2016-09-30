@@ -163,12 +163,12 @@ Rectangle::Rectangle(Point x, Point y)
 
 void Rectangle::draw_lines() const
 {
-    if (fill_color().visibility()) {	// fill
+    if (fill_color().visibility()) {	// Заполнение
         fl_color(fill_color().as_int());
         fl_rectf(point(0).x,point(0).y,w,h);
     }
 
-    if (color().visibility()) {	// edge on top of fill
+    if (color().visibility()) {	// Линии поверх заполнения
         fl_color(color().as_int());
         fl_rect(point(0).x,point(0).y,w,h);
     }
@@ -245,6 +245,15 @@ void draw_mark(Point xy, char c)
 
 //-----------------------------------------------------------------------------
 
+Marked_polyline::Marked_polyline(const string &m,
+                                 initializer_list<Point> lst)
+    : Open_polyline{lst}, mark{m}
+{
+    if (mark == "") mark = "*";
+}
+
+//-----------------------------------------------------------------------------
+
 void Marked_polyline::draw_lines() const
 {
     Open_polyline::draw_lines();
@@ -253,5 +262,52 @@ void Marked_polyline::draw_lines() const
 }
 
 //-----------------------------------------------------------------------------
+
+bool is_can_open(const string& s)
+{
+    ifstream ff(s);
+    return ff;
+}
+
+//-----------------------------------------------------------------------------
+
+Suffix::Encoding get_encoding(const string& s)
+        // try to deduce type from file name using a lookup table
+{
+    static int x = init_suffix_map();
+
+    string::const_iterator p = find(s.begin(),s.end(),'.');
+    if (p==s.end()) return Suffix::none;	// no suffix
+
+    string suf(p+1,s.end());
+    return suffix_map[suf];
+}
+
+//-----------------------------------------------------------------------------
+
+Image::Image(Point xy, string s, Suffix e)
+    : w{0}, h{0}, fn(xy, "")
+{
+    add(xy);
+    if (!is_can_open(s)) {
+        fn.set_label("Невозможно открыть \"" + s + '"');
+        p = new Bad_image(30, 20);  // "Ошибочное изображение"
+        return;
+    }
+
+    if (e == Suffix::none) e = get_encoding(s);
+    switch (e) {
+    case Suffix::jpg:
+        p = new Fl_JPEG_Image{s.c_str()};
+        break;
+    case Suffix::gif:
+        p = new Fl_GIF_Image{s.c_str()};
+        break;
+    default:
+        fn.set_label("Неподдерживаемый тип файла \"" + s + '"');
+        p = new Bad_image(30, 20);  // "Ошибочное изображение"
+        break;
+    }
+}
 
 } // Graph

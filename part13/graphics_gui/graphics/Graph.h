@@ -120,11 +120,20 @@ struct Lines : Shape {  // Связанные друг с другом лини�
 
 struct Color {
     enum Color_type {
-        red=FL_RED, blue=FL_BLUE, green=FL_GREEN,
-        yellow=FL_YELLOW, white=FL_WHITE, black=FL_BLACK,
-        magenta=FL_MAGENTA, cyan=FL_CYAN, dark_red=FL_DARK_RED,
-        dark_green=FL_DARK_GREEN, dark_yellow=FL_DARK_YELLOW, dark_blue=FL_DARK_BLUE,
-        dark_magenta=FL_DARK_MAGENTA, dark_cyan=FL_DARK_CYAN
+        red         =FL_RED,
+        blue        =FL_BLUE,
+        green       =FL_GREEN,
+        yellow      =FL_YELLOW,
+        white       =FL_WHITE,
+        black       =FL_BLACK,
+        magenta     =FL_MAGENTA,
+        cyan        =FL_CYAN,
+        dark_red    =FL_DARK_RED,
+        dark_green  =FL_DARK_GREEN,
+        dark_yellow =FL_DARK_YELLOW,
+        dark_blue   =FL_DARK_BLUE,
+        dark_magenta=FL_DARK_MAGENTA,
+        dark_cyan   =FL_DARK_CYAN
     };
 
     enum Transparency { invisible = 0, visible = 255 };
@@ -172,7 +181,6 @@ struct Open_polyline : Shape {  // Открытая последовательн
     using Shape::Shape;         // Использует конструктор Shape
     void add(Point p) { Shape::add(p); }
 };
-
 
 //-----------------------------------------------------------------------------
 
@@ -290,7 +298,60 @@ private:
 
 //-----------------------------------------------------------------------------
 
-}
+struct Marks : Marked_polyline {
+    Marks(const string& m) : Marked_polyline{m}
+    {
+        set_color(Color{Color::invisible});
+    }
+    Marked_polyline(const string &m,
+                    initializer_list<Point> lst)
+        : Marked_polyline{m, lst}
+    {
+        set_color(Color{Color::invisible});
+    }
+};
 
+//-----------------------------------------------------------------------------
+
+struct Mark : Marks {
+    Mark(Point xy, char c) : Marks{string{1, c}}
+    {
+        add(xy);
+    }
+};
+
+//-----------------------------------------------------------------------------
+
+struct Suffix {
+    enum Encoding { none, jpg, gif };
+};
+
+//-----------------------------------------------------------------------------
+
+struct Bad_image : Fl_Image {
+    Bad_image(int h, int w) :Fl_Image(h, w, 0) {}
+    void draw(int x, int y, int,
+              int, int, int) { draw_empty(x, y); }
+};
+
+//-----------------------------------------------------------------------------
+
+struct Image : Shape {
+    Image(Point xy, string file_name, Suffix e = Suffix::none);
+    ~Image() { delete p; }
+    void draw_lines() const;
+    void set_mask(Point xy, int ww, int hh)
+    { w = ww; h = hh; cx = xy.x; cy = xy.y; }
+private:
+    int w, h;   // Определяем "маскировочное окно" в изображении
+                // относительно позиции (cx, cy)
+    int cx, cy;
+    Fl_Image* p;
+    Text fn;
+};
+
+//-----------------------------------------------------------------------------
+
+}
 
 #endif
