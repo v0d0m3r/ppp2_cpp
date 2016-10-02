@@ -313,6 +313,22 @@ private:
 	int w;
 	int h;
 };
+
+struct Arc : Ellipse {
+    using Ellipse::Ellipse;
+
+    void set_begin_angle(int b) { ba = b; }
+    int begin_angle() const { return ba; }
+
+    void set_end_angle(int e) { ea = e; }
+    int end_angle() const { return ea; }
+
+    void draw_lines() const;
+private:
+    int ba = 0;
+    int ea = 360;
+};
+
 /*
 struct Mark : Text {
 	static const int dw = 4;

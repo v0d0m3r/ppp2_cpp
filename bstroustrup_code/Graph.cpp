@@ -256,6 +256,15 @@ void Ellipse::draw_lines() const
 	}
 }
 
+void Arc::draw_lines() const
+{
+    if (color().visibility()) {
+        fl_color(color().as_int());
+        fl_arc(point(0).x, point(0).y, major()+major(),
+               minor()+minor(),ba,ea);
+    }
+}
+
 void draw_mark(Point xy, char c)
 {
 	static const int dx = 4;
