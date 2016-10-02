@@ -49,7 +49,7 @@ void task()
             if (j != 0) img.move(0, rect_height);
             win.wait_for_button();
         }
-        // Перемещаем на новый столцец в верх
+        // Перемещаем на новый столбец в верх
         img.move(rect_width, -(rows-1)*rect_height);
     }
 }
