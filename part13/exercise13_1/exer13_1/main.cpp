@@ -22,11 +22,6 @@ void use_arc()
     win.attach(a2);
     win.attach(a3);
     win.wait_for_button();
-
-    Simple_window win1{x, 800, 600, "mark"};
-
-
-    win1.wait_for_button();
 }
 
 //-----------------------------------------------------------------------------

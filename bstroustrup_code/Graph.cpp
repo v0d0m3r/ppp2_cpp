@@ -152,18 +152,57 @@ Function::Function(Fct f, double r1, double r2, Point xy, int count, double xsca
 
 void Rectangle::draw_lines() const
 {
-	if (fill_color().visibility()) {	// fill
+    if (fill_color().visibility()) {	// fill
 		fl_color(fill_color().as_int());
 		fl_rectf(point(0).x,point(0).y,w,h);
 		fl_color(color().as_int());	// reset color
-	}
+    }
 
 	if (color().visibility()) {	// edge on top of fill
 		fl_color(color().as_int());
-		fl_rect(point(0).x,point(0).y,w,h);
+        fl_rect(point(0).x,point(0).y,w,h);
 	}
 }
 
+Box::Box(Point xy, int rww, int rhh)
+    : Rectangle{xy, rww, rhh}
+{
+    // 8 points for 4 lines
+    add(Point{xy.x, xy.y+eh});     //
+    add(Point{xy.x, xy.y+rhh-eh});
+    add(Point{xy.x+ew, xy.y+rhh});
+    add(Point{xy.x+rww-ew, xy.y+rhh});
+
+    add(Point{xy.x+rww, xy.y+rhh-eh});
+    add(Point{xy.x+rww, xy.y+eh});
+    add(Point{xy.x+rww-ew, xy.y});
+    add(Point{xy.x+ew, xy.y});
+
+    Point p2{xy.x, xy.y+rhh-eh};
+    add(Point{p2.x, p2.y-eh});
+    Point p4{xy.x+rww-ew, xy.y+rhh};
+    add(Point{p4.x-ew, p4.y-eh-eh});
+    Point p7{xy.x+rww-ew, xy.y};
+    add(Point{p7.x-ew, p7.y});
+
+
+}
+
+void Box::draw_lines() const
+{
+    if (color().visibility()) {	// edge on top of fill
+        for (int i=2; i<number_of_points()-3; i+=2)
+            fl_line(point(i-1).x,point(i-1).y,point(i).x,point(i).y);
+        fl_color(color().as_int());
+        fl_arc(point(0).x,point(0).y,ew+ew,eh+eh, 90,180);
+        fl_arc(point(number_of_points()-3).x,
+               point(number_of_points()-3).y,ew+ew,eh+eh, 180, 270);
+        fl_arc(point(number_of_points()-2).x,
+               point(number_of_points()-2).y,ew+ew,eh+eh, 270, 360);
+        fl_arc(point(number_of_points()-1).x,
+               point(number_of_points()-1).y,ew+ew,eh+eh, 0, 90);
+    }
+}
 
 Axis::Axis(Orientation d, Point xy, int length, int n, string lab)
 	:label(Point(0,0),lab)
@@ -252,7 +291,7 @@ void Ellipse::draw_lines() const
 
 	if (color().visibility()) {
 		fl_color(color().as_int());
-		fl_arc(point(0).x,point(0).y,w+w,h+h,0,360);
+        fl_arc(point(0).x,point(0).y,w+w,h+h,0,360);
 	}
 }
 

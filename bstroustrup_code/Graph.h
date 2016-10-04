@@ -210,6 +210,23 @@ private:
 //	Color fcolor;	// fill color; 0 means "no fill"
 };
 
+struct Box : Rectangle {
+    Box(Point xy, int rww, int rhh);
+    //Box(Point x, Point y);
+    //Box(Point xy, int rww, int rhh, int eww, int ehh);
+    //Box(Point x, Point y, int eww, int ehh);
+
+    void draw_lines() const;
+
+    int major() const { return ew; }
+    int minor() const { return eh; }
+
+private:
+    // For ellipses
+    int ew = 10; // major
+    int eh = 15; // minor
+};
+
 bool intersect(Point p1, Point p2, Point p3, Point p4);
 
 
