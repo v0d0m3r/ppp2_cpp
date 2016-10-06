@@ -210,11 +210,25 @@ private:
 //	Color fcolor;	// fill color; 0 means "no fill"
 };
 
+//-----------------------------------------------------------------------------
+// Exercise 13_2
 struct Box : Rectangle {
-    Box(Point xy, int rww, int rhh);
-    //Box(Point x, Point y);
-    //Box(Point xy, int rww, int rhh, int eww, int ehh);
-    //Box(Point x, Point y, int eww, int ehh);
+    Box(Point xy, int rww, int rhh)
+        : Rectangle{xy, rww, rhh}
+    {
+        if (rww/ew<2 || rhh/eh<2)
+            error("Bad Box: не корректно заданы парамметры");
+        init();
+    }
+    Box(Point xy, int rww, int rhh, int eww, int ehh)
+        : Rectangle(xy, rww, rhh), ew{eww}, eh{ehh}
+    {
+        if (rww/ew<2 || rhh/eh<2)
+            error("Bad Box: не корректно заданы парамметры");
+        if (ew<=0 || ew>100 || eh<=0 || eh>100)
+            error("Bad Box: not correct semiaxis");
+        init();
+    }    
 
     void draw_lines() const;
 
@@ -222,10 +236,14 @@ struct Box : Rectangle {
     int minor() const { return eh; }
 
 private:
+    void init();
     // For ellipses
     int ew = 10; // major
     int eh = 15; // minor
+
 };
+
+//-----------------------------------------------------------------------------
 
 bool intersect(Point p1, Point p2, Point p3, Point p4);
 
@@ -256,6 +274,24 @@ struct Lines : Shape {	// indepentdent lines
 	void draw_lines() const;
 	void add(Point p1, Point p2) { Shape::add(p1); Shape::add(p2); }
 };
+
+//-----------------------------------------------------------------------------
+// Exercise 13_3
+struct Arrow : Lines {
+    Arrow(Point b, Point e);
+    Arrow(Point b, Point e, int ll, int tt);
+
+    void draw_lines() const;
+
+    int longitudinal() const { return l; }
+    int transverse()   const { return t; }
+private:
+    void init();
+    int l = 13;   // Продольная длина усика
+    int t = 5;    // Поперечная
+};
+
+//-----------------------------------------------------------------------------
 
 struct Text : Shape {
 	// the point is the bottom left of the first letter

@@ -3,7 +3,7 @@ QT -= gui
 
 CONFIG += c++11
 
-TARGET = exer13_2
+TARGET = exer13_3
 CONFIG += console
 CONFIG -= app_bundle
 

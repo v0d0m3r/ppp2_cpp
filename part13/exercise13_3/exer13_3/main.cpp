@@ -9,23 +9,23 @@
 
 //-----------------------------------------------------------------------------
 
-void use_box()
+void use_arrow()
 {
-    Box rect{Point{100, 100}, 150, 200};
-    Box rect2{Point{400, 200}, 200, 300, 51, 51};
 
     const Point x{0, 0};
-    Simple_window win{x, 800, 600, "Box"};
+    Simple_window win{x, 800, 600, "Arrow"};
 
-    win.attach(rect);
-    win.attach(rect2);
+    Arrow arr(Point{400,400}, Point{200,200});
+    Arrow arr1(Point{400,400}, Point{100,100}, 25, 30);
 
+    win.attach(arr);
+    win.attach(arr1);
     win.wait_for_button();
 }
 
 int main()
 try {
-    use_box();
+    use_arrow();
     keep_window_open("~~");
     return 0;
 }

@@ -21,7 +21,6 @@ void Shape::draw() const
 	fl_line_style(0);
 }
 
-
 // does two lines (p1,p2) and (p3,p4) intersect?
 // if se return the distance of the intersect point as distances from p1
 inline pair<double,double> line_intersect(Point p1, Point p2, Point p3, Point p4, bool& parallel)
@@ -164,44 +163,119 @@ void Rectangle::draw_lines() const
 	}
 }
 
-Box::Box(Point xy, int rww, int rhh)
-    : Rectangle{xy, rww, rhh}
+//-----------------------------------------------------------------------------
+// Exercise 13_2
+// Фигура состоит из 4 отрезков и 4 эллипсов
+void Box::init()
 {
-    // 8 points for 4 lines
-    add(Point{xy.x, xy.y+eh});     //
-    add(Point{xy.x, xy.y+rhh-eh});
+    const int& rww = width();
+    const int& rhh = height();
+    const Point& xy = point(0); // Верхняя левая точка
+                                // первого эллипса
+    // Вершины, определеяющие отрезки
+    Point top2{xy.x, xy.y+rhh-eh};
+    Point top4{xy.x+rww-ew, xy.y+rhh};
+    Point top7{xy.x+rww-ew, xy.y};
+    // Остальные верхние левые точки эллипсов
+    add(Point{top2.x, top2.y-eh});
+    add(Point{top4.x-ew, top4.y-eh-eh});
+    add(Point{top7.x-ew, top7.y});
+    // Добавляем вершины, определяющие отрезки
+    add(Point{xy.x, xy.y+eh});
+    add(top2);
     add(Point{xy.x+ew, xy.y+rhh});
-    add(Point{xy.x+rww-ew, xy.y+rhh});
-
+    add(top4);
     add(Point{xy.x+rww, xy.y+rhh-eh});
     add(Point{xy.x+rww, xy.y+eh});
-    add(Point{xy.x+rww-ew, xy.y});
+    add(top7);
     add(Point{xy.x+ew, xy.y});
-
-    Point p2{xy.x, xy.y+rhh-eh};
-    add(Point{p2.x, p2.y-eh});
-    Point p4{xy.x+rww-ew, xy.y+rhh};
-    add(Point{p4.x-ew, p4.y-eh-eh});
-    Point p7{xy.x+rww-ew, xy.y};
-    add(Point{p7.x-ew, p7.y});
-
-
 }
 
+//-----------------------------------------------------------------------------
+// Exercise 13_2
 void Box::draw_lines() const
 {
+    constexpr int left_up_count = 4; // Количество верхних
+                                     // левых точек еллипсов
+    constexpr int angle = 90;        // Угол увеличения
     if (color().visibility()) {	// edge on top of fill
-        for (int i=2; i<number_of_points()-3; i+=2)
-            fl_line(point(i-1).x,point(i-1).y,point(i).x,point(i).y);
         fl_color(color().as_int());
-        fl_arc(point(0).x,point(0).y,ew+ew,eh+eh, 90,180);
-        fl_arc(point(number_of_points()-3).x,
-               point(number_of_points()-3).y,ew+ew,eh+eh, 180, 270);
-        fl_arc(point(number_of_points()-2).x,
-               point(number_of_points()-2).y,ew+ew,eh+eh, 270, 360);
-        fl_arc(point(number_of_points()-1).x,
-               point(number_of_points()-1).y,ew+ew,eh+eh, 0, 90);
+        for (int i=0; i < left_up_count; ++i) { // paint ellipses
+            if (i==left_up_count-1)
+                fl_arc(point(i).x,point(i).y,ew+ew,eh+eh,
+                       0, angle);
+            else
+                fl_arc(point(i).x,point(i).y,ew+ew,eh+eh,
+                       (i+1)*angle, (i+2)*angle);
+        }
+        // paint four lines
+        for (int i=left_up_count+1; i<number_of_points(); i+=2)
+            fl_line(point(i-1).x,point(i-1).y,point(i).x,point(i).y);
     }
+}
+
+//-----------------------------------------------------------------------------
+// Exercise 13_3
+Arrow::Arrow(Point b, Point e)
+{
+    set_fill_color(color());
+    add(b, e);
+    if (l<=0 || t<=0) error("Bad arrow: non-positive side");
+    init();
+}
+
+//-----------------------------------------------------------------------------
+// Exercise 13_3
+Arrow::Arrow(Point b, Point e, int ll, int tt)
+    : l{ll}, t{tt}
+{
+    set_fill_color(color());
+    add(b, e);
+    if (l<=0 || t<=0) error("Bad arrow: non-positive side");
+    init();
+}
+
+//-----------------------------------------------------------------------------
+
+void Arrow::init()
+{
+    const Point& b = point(0);
+    const Point& e = point(1);
+    // Нахождение координат вектора be
+    double vect_x = e.x - b.x;
+    double vect_y = e.y - b.y;
+    double lenght = sqrt(pow(vect_x, 2) + pow(vect_y, 2));  // Длина вектора
+    double unit_x = vect_x / lenght;    // x, единичного вектора
+    double unit_y = vect_y / lenght;    // y, единичного вектора
+    // Находим точку O, через которую пойдет
+    // одна из сторон "усика"
+    double opoint_x = e.x - l * unit_x;
+    double opoint_y = e.y - l * unit_y;
+    // Находим вектор нормали,
+    // умноженный на поперечную длину "усика"
+    double normal_x = t * unit_y;
+    double normal_y = t *(-unit_x);
+    // Искомые точки "усиков"
+    Point a{int(opoint_x + normal_x), int(opoint_y + normal_y)};
+    Point c{int(opoint_x - normal_x), int(opoint_y - normal_y)};
+    add(a, c); // Формируем отрезки стрелы
+    add(c, e);
+    add(e, a);
+}
+
+void Arrow::draw_lines() const
+{
+    // Заполняем цветом усик
+    if (fill_color().visibility()) {
+        fl_color(fill_color().as_int());
+        fl_begin_complex_polygon();
+        for(int i=2; i<number_of_points(); ++i){
+            fl_vertex(point(i).x, point(i).y);
+        }
+        fl_end_complex_polygon();
+        fl_color(color().as_int());	// reset color
+    }
+    Lines::draw_lines();
 }
 
 Axis::Axis(Orientation d, Point xy, int length, int n, string lab)
