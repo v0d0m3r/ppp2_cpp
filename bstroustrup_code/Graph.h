@@ -244,6 +244,16 @@ private:
 };
 
 //-----------------------------------------------------------------------------
+// Exercise 13_6
+struct Texted_box : Box {
+    Texted_box(Point xy, int rww, int rhh, const string& s)
+        : Box {xy, rww, rhh}, lab{s} {}
+    void draw_lines() const;
+private:
+    string lab;
+};
+
+//-----------------------------------------------------------------------------
 
 bool intersect(Point p1, Point p2, Point p3, Point p4);
 
@@ -439,6 +449,227 @@ private:
 	Fl_Image* p;
 	Text fn;
 };
+
+//-----------------------------------------------------------------------------
+// nw() находит верхнюю левую точку
+inline Point nw(const Rectangle& r)
+{
+    return r.point(0);
+}
+
+//-----------------------------------------------------------------------------
+
+inline Point nw(const Ellipse& el)
+{
+    return nw(Rectangle{el.point(0), 2*el.major(), 2*el.minor()});
+}
+
+//-----------------------------------------------------------------------------
+
+inline Point nw(const Circle& cir)
+{
+    return nw(Rectangle{cir.point(0), 2*cir.radius(),
+                        2*cir.radius()});
+}
+
+//-----------------------------------------------------------------------------
+
+inline Point n(const Rectangle& r)
+{
+    return Point{nw(r).x, nw(r).y+r.height()/2};
+}
+
+//-----------------------------------------------------------------------------
+
+inline Point n(const Ellipse& el)
+{
+    return n(Rectangle{el.point(0), 2*el.major(), 2*el.minor()});
+}
+
+//-----------------------------------------------------------------------------
+
+inline Point n(const Circle& cir)
+{
+    return n(Rectangle{cir.point(0), 2*cir.radius(),
+                       2*cir.radius()});
+}
+
+//-----------------------------------------------------------------------------
+
+inline Point s(const Rectangle& r)
+{
+    return Point{n(r).x+r.width(), n(r).y};
+}
+
+//-----------------------------------------------------------------------------
+
+inline Point s(const Ellipse& el)
+{
+    return s(Rectangle{el.point(0), 2*el.major(), 2*el.minor()});
+}
+
+//-----------------------------------------------------------------------------
+
+inline Point s(const Circle& cir)
+{
+    return s(Rectangle{cir.point(0), 2*cir.radius(),
+                       2*cir.radius()});
+}
+
+//-----------------------------------------------------------------------------
+
+inline Point e(const Rectangle& r)
+{
+    return Point{nw(r).x+r.width()/2, nw(r).y+r.height()};
+}
+
+//-----------------------------------------------------------------------------
+
+inline Point e(const Ellipse& el)
+{
+    return e(Rectangle{el.point(0), 2*el.major(), 2*el.minor()});
+}
+
+//-----------------------------------------------------------------------------
+
+inline Point e(const Circle& cir)
+{
+    return e(Rectangle{cir.point(0), 2*cir.radius(),
+                       2*cir.radius()});
+}
+
+//-----------------------------------------------------------------------------
+
+inline Point e(const Texted_box& tb)
+{
+    return e(Rectangle{tb.point(0), tb.width(), tb.height()});
+}
+
+//-----------------------------------------------------------------------------
+
+inline Point w(const Rectangle& r)
+{
+    return Point{e(r).x, nw(r).y};
+}
+
+//-----------------------------------------------------------------------------
+
+inline Point w(const Ellipse& el)
+{
+    return w(Rectangle{el.point(0), 2*el.major(), 2*el.minor()});
+}
+
+//-----------------------------------------------------------------------------
+
+inline Point w(const Circle& cir)
+{
+    return w(Rectangle{cir.point(0), 2*cir.radius(),
+                       2*cir.radius()});
+}
+
+//-----------------------------------------------------------------------------
+
+inline Point w(const Texted_box& tb)
+{
+    return w(Rectangle{tb.point(0), tb.width(), tb.height()});
+}
+
+//-----------------------------------------------------------------------------
+
+inline Point center(const Rectangle& r)
+{
+    return Point{w(r).x, s(r).y};
+}
+
+//-----------------------------------------------------------------------------
+
+inline Point center(const Ellipse& ell)
+{
+    return ell.center();
+}
+
+//-----------------------------------------------------------------------------
+
+inline Point center(const Circle& cir)
+{
+    return cir.center();
+}
+
+//-----------------------------------------------------------------------------
+
+inline Point center(const Texted_box& tb)
+{
+    return center(Rectangle{tb.point(0), tb.width(), tb.height()});
+}
+
+//-----------------------------------------------------------------------------
+
+inline Point ne(const Rectangle& r)
+{
+    return Point{n(r).x, e(r).y};
+}
+
+//-----------------------------------------------------------------------------
+
+inline Point ne(const Ellipse& el)
+{
+    return ne(Rectangle{el.point(0), 2*el.major(), 2*el.minor()});
+}
+
+//-----------------------------------------------------------------------------
+
+inline Point ne(const Circle& cir)
+{
+    return ne(Rectangle{cir.point(0), 2*cir.radius(),
+                        2*cir.radius()});
+}
+
+//-----------------------------------------------------------------------------
+
+inline Point se(const Rectangle& r)
+{
+    return Point{s(r).x, e(r).y};
+}
+
+//-----------------------------------------------------------------------------
+
+inline Point se(const Ellipse& el)
+{
+    return se(Rectangle{el.point(0), 2*el.major(), 2*el.minor()});
+}
+
+//-----------------------------------------------------------------------------
+
+inline Point se(const Circle& cir)
+{
+    return se(Rectangle{cir.point(0), 2*cir.radius(),
+                        2*cir.radius()});
+}
+
+//-----------------------------------------------------------------------------
+
+inline Point sw(const Rectangle& r)
+{
+    return Point{s(r).x, w(r).y};
+}
+
+//-----------------------------------------------------------------------------
+
+inline Point sw(const Ellipse& el)
+{
+    return sw(Rectangle{el.point(0), 2*el.major(),
+                        2*el.minor()});
+}
+
+//-----------------------------------------------------------------------------
+
+inline Point sw(const Circle& cir)
+{
+    return sw(Rectangle{cir.point(0), 2*cir.radius(),
+                        2*cir.radius()});
+}
+
+//-----------------------------------------------------------------------------
 
 }
 #endif

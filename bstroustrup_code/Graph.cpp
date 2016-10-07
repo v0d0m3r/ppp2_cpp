@@ -392,6 +392,15 @@ void Marked_polyline::draw_lines() const
 	for (int i=0; i<number_of_points(); ++i)
 		draw_mark(point(i),mark[i%mark.size()]);
 }
+
+//-----------------------------------------------------------------------------
+// Exercise 13_6
+void Texted_box::draw_lines() const
+{
+    Box::draw_lines();
+    fl_draw(lab.c_str(),point(0).x+10,point(0).y+20);
+}
+//-----------------------------------------------------------------------------
 /*
 void Marks::draw_lines() const
 {

@@ -9,203 +9,6 @@
 
 //-----------------------------------------------------------------------------
 
-Point nw(const Rectangle& r)
-{
-    return r.point(0);
-}
-
-//-----------------------------------------------------------------------------
-
-Point nw(const Ellipse& el)
-{
-    return nw(Rectangle{el.point(0), 2*el.major(), 2*el.minor()});
-}
-
-//-----------------------------------------------------------------------------
-
-Point nw(const Circle& cir)
-{
-    return nw(Rectangle{cir.point(0), 2*cir.radius(),
-                        2*cir.radius()});
-}
-
-//-----------------------------------------------------------------------------
-
-Point n(const Rectangle& r)
-{
-    return Point{nw(r).x, nw(r).y+r.height()/2};
-}
-
-//-----------------------------------------------------------------------------
-
-Point n(const Ellipse& el)
-{
-    return n(Rectangle{el.point(0), 2*el.major(), 2*el.minor()});
-}
-
-//-----------------------------------------------------------------------------
-
-Point n(const Circle& cir)
-{
-    return n(Rectangle{cir.point(0), 2*cir.radius(),
-                       2*cir.radius()});
-}
-
-//-----------------------------------------------------------------------------
-
-Point s(const Rectangle& r)
-{
-    return Point{n(r).x+r.width(), n(r).y};
-}
-
-//-----------------------------------------------------------------------------
-
-Point s(const Ellipse& el)
-{
-    return s(Rectangle{el.point(0), 2*el.major(), 2*el.minor()});
-}
-
-//-----------------------------------------------------------------------------
-
-Point s(const Circle& cir)
-{
-    return s(Rectangle{cir.point(0), 2*cir.radius(),
-                       2*cir.radius()});
-}
-
-//-----------------------------------------------------------------------------
-
-Point e(const Rectangle& r)
-{
-    return Point{nw(r).x+r.width()/2, nw(r).y+r.height()};
-}
-
-//-----------------------------------------------------------------------------
-
-Point e(const Ellipse& el)
-{
-    return e(Rectangle{el.point(0), 2*el.major(), 2*el.minor()});
-}
-
-//-----------------------------------------------------------------------------
-
-Point e(const Circle& cir)
-{
-    return e(Rectangle{cir.point(0), 2*cir.radius(),
-                       2*cir.radius()});
-}
-
-//-----------------------------------------------------------------------------
-
-Point w(const Rectangle& r)
-{
-    return Point{e(r).x, nw(r).y};
-}
-
-//-----------------------------------------------------------------------------
-
-Point w(const Ellipse& el)
-{
-    return w(Rectangle{el.point(0), 2*el.major(), 2*el.minor()});
-}
-
-//-----------------------------------------------------------------------------
-
-Point w(const Circle& cir)
-{
-    return w(Rectangle{cir.point(0), 2*cir.radius(),
-                       2*cir.radius()});
-}
-
-//-----------------------------------------------------------------------------
-
-Point center(const Rectangle& r)
-{
-    return Point{w(r).x, s(r).y};
-}
-
-//-----------------------------------------------------------------------------
-
-Point center(const Ellipse& ell)
-{
-    return ell.center();
-}
-
-//-----------------------------------------------------------------------------
-
-Point center(const Circle& cir)
-{
-    return cir.center();
-}
-
-//-----------------------------------------------------------------------------
-
-Point ne(const Rectangle& r)
-{
-    return Point{n(r).x, e(r).y};
-}
-
-//-----------------------------------------------------------------------------
-
-Point ne(const Ellipse& el)
-{
-    return ne(Rectangle{el.point(0), 2*el.major(), 2*el.minor()});
-}
-
-//-----------------------------------------------------------------------------
-
-Point ne(const Circle& cir)
-{
-    return ne(Rectangle{cir.point(0), 2*cir.radius(),
-                        2*cir.radius()});
-}
-
-//-----------------------------------------------------------------------------
-
-Point se(const Rectangle& r)
-{
-    return Point{s(r).x, e(r).y};
-}
-
-//-----------------------------------------------------------------------------
-
-Point se(const Ellipse& el)
-{
-    return se(Rectangle{el.point(0), 2*el.major(), 2*el.minor()});
-}
-
-//-----------------------------------------------------------------------------
-
-Point se(const Circle& cir)
-{
-    return se(Rectangle{cir.point(0), 2*cir.radius(),
-                        2*cir.radius()});
-}
-
-//-----------------------------------------------------------------------------
-
-Point sw(const Rectangle& r)
-{
-    return Point{s(r).x, w(r).y};
-}
-
-//-----------------------------------------------------------------------------
-
-Point sw(const Ellipse& el)
-{
-    return sw(Rectangle{el.point(0), 2*el.major(),
-                        2*el.minor()});
-}
-
-//-----------------------------------------------------------------------------
-
-Point sw(const Circle& cir)
-{
-    return sw(Rectangle{cir.point(0), 2*cir.radius(),
-                        2*cir.radius()});
-}
-
-//-----------------------------------------------------------------------------
 
 void test(const Rectangle& r, string& res)
 {
@@ -257,6 +60,8 @@ void test(const Ellipse& r, string& res)
     res = ss.str();
 }
 
+//-----------------------------------------------------------------------------
+
 void test(const Circle& r, string& res)
 {
     ostringstream ss;
@@ -283,9 +88,8 @@ void test(const Circle& r, string& res)
 
 //-----------------------------------------------------------------------------
 
-void exer4()
+void exercise()
 {
-
     const Point x{0, 0};
     Simple_window win{x, 1200, 800, "exer4"};
     string res;
@@ -324,7 +128,7 @@ void exer4()
 
 int main()
 try {
-    exer4();
+    exercise();
     keep_window_open("~~");
     return 0;
 }
