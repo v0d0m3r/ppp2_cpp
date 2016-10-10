@@ -22,7 +22,7 @@ struct Color {
 		dark_green=FL_DARK_GREEN, dark_yellow=FL_DARK_YELLOW, dark_blue=FL_DARK_BLUE,
 		dark_magenta=FL_DARK_MAGENTA, dark_cyan=FL_DARK_CYAN
 	};
-	enum Transparency { invisible = 0, visible=255 };
+    enum Transparency { invisible = 0, visible=255 };
 
 	Color(Color_type cc) :c(Fl_Color(cc)), v(visible) { }
 	Color(Color_type cc, Transparency vv) :c(Fl_Color(cc)), v(vv) { }

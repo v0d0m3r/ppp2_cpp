@@ -1,4 +1,4 @@
-// Exercise 13_4_5
+// Exercise 13_6
 //-----------------------------------------------------------------------------
 
 #include "../../../bstroustrup_code/std_lib_facilities.h"
@@ -12,7 +12,7 @@
 void exercise()
 {
     const Point x{0, 0};
-    Simple_window win{x, 1200, 800, "exer4"};
+    Simple_window win{x, 1200, 800, "exercise 13_6"};
 
     constexpr int height = 30;
 
