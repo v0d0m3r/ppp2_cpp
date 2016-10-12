@@ -278,6 +278,72 @@ void Arrow::draw_lines() const
     Lines::draw_lines();
 }
 
+//-----------------------------------------------------------------------------
+
+
+
+//-----------------------------------------------------------------------------
+// Exercise 13_8
+Regular_hexagon::Regular_hexagon(Point xy, int rr)
+    : r{rr}
+{
+    if (r<=0) error("Regular_hexagon: non-positive radius");
+    add(xy);
+    vector<Point> points;
+    find_dot_reg_poly(points, xy, 6, r);
+    for (int i=0; i < points.size(); ++i)
+        add(points[i]);
+}
+
+//-----------------------------------------------------------------------------
+// Exercise 13_8
+void Regular_hexagon::draw_lines() const
+{
+    if (fill_color().visibility()) {
+        fl_color(fill_color().as_int());
+        fl_begin_complex_polygon();
+        for(int i=1; i<number_of_points(); ++i){
+            fl_vertex(point(i).x, point(i).y);
+        }
+        fl_end_complex_polygon();
+        fl_color(color().as_int());	// reset color
+    }
+    if (color().visibility()) {
+        for (int i=2; i<number_of_points(); ++i)
+            fl_line(point(i-1).x,point(i-1).y,point(i).x,point(i).y);
+
+        fl_line(point(number_of_points()-1).x,
+                point(number_of_points()-1).y,point(1).x,point(1).y);
+    }
+}
+
+//-----------------------------------------------------------------------------
+// Exercise 13_8
+void find_dot_reg_poly(vector<Point>& points, Point center,
+                       int count_angle, int radius, double rot = 0.00)
+{
+    const double delta_angle = 360.00 / count_angle;
+    double angle = rot; // Угол пересечения вершины
+                        // и описываемой окружности
+    for (int i=0; i < count_angle; ++i) {
+        points.push_back(find_dot(center, angle, radius));
+        angle += delta_angle; // Увеличиваем угол на величину
+                              // угла правильного многоугольника
+    }
+}
+
+//-----------------------------------------------------------------------------
+// Exercise 13_8
+Point find_dot(Point center, int angle, int radius)
+{
+    return Point{
+        center.x + radius * cos(angle * M_PI/180.0),
+        center.y + radius * sin(angle * M_PI/180.0)
+    };
+}
+
+//-----------------------------------------------------------------------------
+
 Axis::Axis(Orientation d, Point xy, int length, int n, string lab)
 	:label(Point(0,0),lab)
 {

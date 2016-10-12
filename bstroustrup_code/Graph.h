@@ -355,6 +355,23 @@ private:
 	int r;
 };
 
+//-----------------------------------------------------------------------------
+// Exercise 13_8
+struct Regular_hexagon : Shape {
+    Regular_hexagon(Point xy, int rr);
+
+    void draw_lines() const;
+
+    Point center() const { return { point(0).x, point(0).y}; }
+
+    int radius() const { return r; }
+private:
+    int r;
+};
+Point find_dot(Point center, int angle, int radius);
+void find_dot_reg_poly(vector<Point>& points, Point center,
+                       int count_angle, int radius, double rot);
+//-----------------------------------------------------------------------------
 
 struct Ellipse : Shape {
 	Ellipse(Point p, int ww, int hh)	// center, min, and max distance from center
