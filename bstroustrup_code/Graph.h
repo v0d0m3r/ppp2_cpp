@@ -371,6 +371,37 @@ private:
 Point find_dot(Point center, int angle, int radius);
 void find_dot_reg_poly(vector<Point>& points, Point center,
                        int count_angle, int radius, double rot);
+
+//-----------------------------------------------------------------------------
+// Exercise 13_10
+struct Regular_polygon : Shape {
+    Regular_polygon(Point xy, int ss, int rr);
+
+    void draw_lines() const;
+
+    Point center() const { return { point(0).x, point(0).y}; }
+
+    int radius()   const { return r; }
+    int sides()    const { return s; }
+private:
+    int r;
+    int s;
+};
+
+//-----------------------------------------------------------------------------
+// Exercise 13_14
+struct Right_triangle : Shape {
+    Right_triangle(Point xy, int cc1, int cc2); // xy - вершина прямого угла
+
+    void draw_lines() const;
+
+    int cathetus1() const { return c1; }
+    int cathetus2() const { return c2; }
+private:
+    int c1; // Катет 1
+    int c2;
+};
+
 //-----------------------------------------------------------------------------
 
 struct Ellipse : Shape {
