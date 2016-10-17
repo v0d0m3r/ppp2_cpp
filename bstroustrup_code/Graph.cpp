@@ -375,6 +375,41 @@ void Regular_polygon::draw_lines() const
 }
 
 //-----------------------------------------------------------------------------
+// Exercise 13_14
+Right_triangle::Right_triangle(Point xy, int cc1, int cc2)
+    : c1{cc1}, c2{cc2}
+{
+    if (c1==0 || c2==0)
+        error("Катет не может иметь нулевую длину");
+    add(xy);
+    add(Point{xy.x + c1, xy.y});
+    add({xy.x, xy.y + c2});
+}
+
+//-----------------------------------------------------------------------------
+
+void Right_triangle::draw_lines() const
+{
+    if (fill_color().visibility()) {
+        fl_color(fill_color().as_int());
+        fl_begin_complex_polygon();
+        for(int i=0; i<number_of_points(); ++i){
+            fl_vertex(point(i).x, point(i).y);
+        }
+        fl_end_complex_polygon();
+        fl_color(color().as_int());	// reset color
+    }
+
+    if (color().visibility()) {
+        for (int i=1; i<number_of_points(); ++i)
+            fl_line(point(i-1).x,point(i-1).y,point(i).x,point(i).y);
+
+        fl_line(point(number_of_points()-1).x,
+                point(number_of_points()-1).y,point(0).x,point(0).y);
+    }
+}
+
+//-----------------------------------------------------------------------------
 
 Axis::Axis(Orientation d, Point xy, int length, int n, string lab)
 	:label(Point(0,0),lab)
