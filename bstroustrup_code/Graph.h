@@ -278,6 +278,13 @@ struct Polygon : Closed_polyline {	// closed sequence of non-intersecting lines
     void draw_lines() const;
 };
 
+struct Poly : Closed_polyline {	// closed sequence of non-intersecting lines
+    Poly(initializer_list<Point> lst);
+    void draw_lines() const ;
+private:
+    void add(Point p);
+};
+
 struct Lines : Shape {	// indepentdent lines
     Lines() {}
     Lines(initializer_list<Point> lst) : Shape{lst} { if (lst.size() % 2) error("odd number of points for Lines"); }
@@ -368,7 +375,9 @@ struct Regular_hexagon : Shape {
 private:
     int r;
 };
+
 Point find_dot(Point center, int angle, int radius);
+
 void find_dot_reg_poly(vector<Point>& points, Point center,
                        int count_angle, int radius, double rot);
 
@@ -386,6 +395,24 @@ struct Regular_polygon : Shape {
 private:
     int r;
     int s;
+};
+
+//-----------------------------------------------------------------------------
+// Exercise 13_19
+struct Star : Shape {
+    Star(Point xy, int nn, int irds, int ords);
+
+    void draw_lines() const;
+
+    Point center() const { return { point(0).x, point(0).y}; }
+
+    int outer_radius()   const { return out_rds; }
+    int inner_radius()   const { return in_rds; }
+    int number_apex()    const { return n; }
+private:
+    int out_rds;
+    int in_rds;
+    int n;
 };
 
 //-----------------------------------------------------------------------------

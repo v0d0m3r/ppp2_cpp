@@ -23,7 +23,8 @@ void Shape::draw() const
 
 // does two lines (p1,p2) and (p3,p4) intersect?
 // if se return the distance of the intersect point as distances from p1
-inline pair<double,double> line_intersect(Point p1, Point p2, Point p3, Point p4, bool& parallel)
+inline pair<double,double> line_intersect(Point p1, Point p2, Point p3, Point p4,
+                                          bool& parallel)
 {
     double x1 = p1.x;
     double x2 = p2.x;
@@ -48,7 +49,8 @@ inline pair<double,double> line_intersect(Point p1, Point p2, Point p3, Point p4
 //intersection between two line segments
 //Returns true if the two segments intersect,
 //in which case intersection is set to the point of intersection
-bool line_segment_intersect(Point p1, Point p2, Point p3, Point p4, Point& intersection){
+bool line_segment_intersect(Point p1, Point p2, Point p3, Point p4,
+                            Point& intersection){
    bool parallel;
    pair<double,double> u = line_intersect(p1,p2,p3,p4,parallel);
    if (parallel || u.first < 0 || u.first > 1 || u.second < 0 || u.second > 1) return false;
@@ -85,6 +87,40 @@ void Polygon::draw_lines() const
 		if (number_of_points() < 3) error("less than 3 points in a Polygon");
 		Closed_polyline::draw_lines();
 }
+
+//-----------------------------------------------------------------------------
+// Exercise 13_18
+Poly::Poly(initializer_list<Point> lst)
+{
+    for (const Point& p : lst ) {
+        int np = number_of_points();
+
+        if (1<np) {	// check that thenew line isn't parallel to the previous one
+            if (p==point(np-1)) error("polygon point equal to previous point");
+            bool parallel;
+            line_intersect(point(np-1),p,point(np-2),point(np-1),parallel);
+            if (parallel)
+                error("two polygon points lie in a straight line");
+        }
+
+        for (int i = 1; i<np-1; ++i) {	// check that new segment doesn't interset and old point
+            Point ignore(0,0);
+            if (line_segment_intersect(point(np-1),p,point(i-1),point(i),ignore))
+                error("intersect in polygon");
+        }
+        Closed_polyline::add(p);
+    }
+}
+
+//-----------------------------------------------------------------------------
+// Exercise 13_18
+void Poly::draw_lines() const
+{
+    if (number_of_points() < 3) error("less than 3 points in a Polygon");
+    Closed_polyline::draw_lines();
+}
+
+//-----------------------------------------------------------------------------
 
 void Open_polyline::draw_lines() const
 {
@@ -135,7 +171,8 @@ void Text::draw_lines() const
 	fl_font(ofnt,osz);
 }
 
-Function::Function(Fct f, double r1, double r2, Point xy, int count, double xscale, double yscale)
+Function::Function(Fct f, double r1, double r2, Point xy, int count,
+                   double xscale, double yscale)
 // graph f(x) for x in [r1:r2) using count line segments with (0,0) displayed at xy
 // x coordinates are scaled by xscale and y coordinates scaled by yscale
 {
@@ -355,6 +392,59 @@ Regular_polygon::Regular_polygon(Point xy, int ss, int rr)
 //-----------------------------------------------------------------------------
 // Exercise 13_10
 void Regular_polygon::draw_lines() const
+{
+    if (fill_color().visibility()) {
+        fl_color(fill_color().as_int());
+        fl_begin_complex_polygon();
+        for(int i=1; i<number_of_points(); ++i){
+            fl_vertex(point(i).x, point(i).y);
+        }
+        fl_end_complex_polygon();
+        fl_color(color().as_int());	// reset color
+    }
+    if (color().visibility()) {
+        for (int i=2; i<number_of_points(); ++i)
+            fl_line(point(i-1).x,point(i-1).y,point(i).x,point(i).y);
+
+        fl_line(point(number_of_points()-1).x,
+                point(number_of_points()-1).y,point(1).x,point(1).y);
+    }
+}
+
+//-----------------------------------------------------------------------------
+
+void find_dot_star(vector<Point>& points, Point cntr, int R, int r, int n)
+{
+    int a=0;
+    for (int i=1; i < n*2+2; ++i) {
+        if (!(i%2)) // Четно?
+            points.push_back(Point{cntr.x+r/2*cos(a*M_PI/180),
+                                   cntr.y-r/2*sin(a*M_PI/180)});
+        else
+            points.push_back(Point{cntr.x+R*cos(a*M_PI/180),
+                                   cntr.y-R*sin(a*M_PI/180)});
+        a=a+180/n;
+    }
+}
+
+//-----------------------------------------------------------------------------
+// Exercise 13_19
+Star::Star(Point xy, int nn, int irds, int ords)
+    :n{nn}, in_rds{irds}, out_rds{ords}
+{
+    if (in_rds<=0 || out_rds<=0)
+        error("Regular_polygon: non-positive radius");
+    if (n<=2) error("Regular_polygon: non-correct polygon");
+    add(xy);
+    vector<Point> points;
+    find_dot_star(points, xy, out_rds, in_rds, n);
+    for (int i=0; i < points.size(); ++i)
+        add(points[i]);
+}
+
+//-----------------------------------------------------------------------------
+// Exercise 13_10
+void Star::draw_lines() const
 {
     if (fill_color().visibility()) {
         fl_color(fill_color().as_int());
