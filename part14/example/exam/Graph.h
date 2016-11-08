@@ -1,13 +1,15 @@
-#ifndef GRAPH_H
-#define GRAPH_H
+#ifndef GRAPH_GUARD
+#define GRAPH_GUARD 1
 
 #include "../../../bstroustrup_code/Point.h"
-#include<vector>
+#include <vector>
 #include "../../../bstroustrup_code/fltk.h"
 #include "../../../bstroustrup_code/std_lib_facilities.h"
 
 namespace Graph_lib {
 
+#undef major
+#undef minor
 //-----------------------------------------------------------------------------
 
 struct Color {
@@ -105,14 +107,15 @@ public:
     Point point(int i) const;           // Доступ только для чтения
     int number_of_points() const;
 
-    Shape(const Shape&) = delete;       // Предотращение копрования
+    Shape(const Shape&) = delete;       // Предотращение копирования
     Shape& operator=(const Shape&)
                         = delete;
 
     virtual ~Shape() {}
 protected:
     Shape() {}
-    Shape(initializer_list<Point> lst); // Добавление точек
+    Shape(initializer_list<Point> lst)
+    {for (Point p : lst) add(p);}       // Добавление точек
     virtual void draw_lines() const;    // Вывод линий
     void add(Point p);                  // Добавление p к точкам
     void set_point(int i, Point p);     // points[i]=p;
@@ -127,4 +130,4 @@ private:
 
 }
 
-#endif // GRAPH_H
+#endif
