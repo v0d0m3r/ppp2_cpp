@@ -95,17 +95,17 @@ public:
     void draw() const;                  // Вывод цветных линий
     virtual void move(int dx, int dy);  // Перемещение фигуры
                                         // +=dx и +=dy
-    void set_color(Color col);
-    Color color() const;
+    void set_color(Color col)       { lcolor = col;         }
+    Color color() const             { return lcolor;        }
 
-    void set_style(Line_style sty);
-    Line_style style() const;
+    void set_style(Line_style sty)  { ls = sty;             }
+    Line_style style() const        { return ls;            }
 
-    void set_fill_color(Color col);
-    Color fill_color() const;
-
-    Point point(int i) const;           // Доступ только для чтения
-    int number_of_points() const;
+    void set_fill_color(Color col)  { fcolor = col;         }
+    Color fill_color() const        { return fcolor;        }
+    // Доступ только для чтения
+    Point point(int i) const        { return points[i];     }
+    int number_of_points() const    { return points.size(); }
 
     Shape(const Shape&) = delete;       // Предотращение копирования
     Shape& operator=(const Shape&)
@@ -115,10 +115,11 @@ public:
 protected:
     Shape() {}
     Shape(initializer_list<Point> lst)
-    {for (Point p : lst) add(p);}       // Добавление точек
+    { for (Point p : lst) add(p); }     // Добавление точек
     virtual void draw_lines() const;    // Вывод линий
-    void add(Point p);                  // Добавление p к точкам
-    void set_point(int i, Point p);     // points[i]=p;
+    // Добавление p к точкам
+    void add(Point p)               { points.push_back(p);  }
+    void set_point(int i, Point p)  { points[i] = p;        }
 private:
     vector<Point> points;               // Не используется всеми
                                         // фигурами
@@ -127,6 +128,8 @@ private:
     Line_style ls{0};
     Color fcolor{Color::invisible};     // Цвет заполнения
 };
+
+//-----------------------------------------------------------------------------
 
 }
 
