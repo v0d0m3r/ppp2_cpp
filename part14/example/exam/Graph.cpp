@@ -19,6 +19,15 @@ void Shape::draw() const
 
 //-----------------------------------------------------------------------------
 
+void Shape::draw_lines() const
+{
+    if (color().visibility() && 1<points.size())	// draw sole pixel?
+        for (unsigned int i=1; i<points.size(); ++i)
+            fl_line(points[i-1].x,points[i-1].y,points[i].x,points[i].y);
+}
+
+//-----------------------------------------------------------------------------
+
 
 
 //-----------------------------------------------------------------------------
