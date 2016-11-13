@@ -7,6 +7,16 @@ namespace Graph_lib {
 
 //-----------------------------------------------------------------------------
 
+void Shape::move(int dx, int dy)
+{
+    for (int i=0; i < points.size(); ++i) {
+        points[i].x += dx;
+        points[i].y += dy;
+    }
+}
+
+//-----------------------------------------------------------------------------
+
 void Shape::draw() const
 {
     Fl_Color oldfc = fl_color();
