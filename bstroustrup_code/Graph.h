@@ -363,6 +363,13 @@ private:
 };
 
 //-----------------------------------------------------------------------------
+
+struct Smiley : Circle {
+    using Circle::Circle;
+    void draw_lines() const override;
+};
+
+//-----------------------------------------------------------------------------
 // Exercise 13_8
 struct Regular_hexagon : Shape {
     Regular_hexagon(Point xy, int rr);
@@ -751,5 +758,3 @@ inline Point sw(const Circle& cir)
 
 }
 #endif
-
-

@@ -577,6 +577,40 @@ void Circle::draw_lines() const
 	}
 }
 
+void Smiley::draw_lines() const
+{
+    Circle::draw_lines();
+    Point pp{0,0};
+    pp.x = point(0).x + radius()/2.0 - radius() / 6.0;
+    pp.y = point(0).y + radius()/2.0;
+    int pp_r = radius() / 6.0;
+    if (fill_color().visibility()) {	// fill
+        fl_color(fill_color().as_int());
+        fl_pie(pp.x, pp.y, pp_r+pp_r-1,pp_r+pp_r-1,0,360);
+        fl_color(color().as_int());	// reset color
+    }
+
+    if (color().visibility()) {
+        fl_color(color().as_int());
+        fl_arc(pp.x, pp.y, pp_r+pp_r,pp_r+pp_r,0,360);
+    }
+
+    Point pp2{0,0};
+    pp2.x = point(0).x + 1.5*radius() - radius() / 6.0;
+    pp2.y = point(0).y + radius()/2.0;
+    int pp2_r = radius() / 6.0;
+
+    if (fill_color().visibility()) {	// fill
+        fl_color(fill_color().as_int());
+        fl_pie(pp2.x,pp2.y,pp2_r+pp2_r-1,pp2_r+pp2_r-1,0,180);
+        fl_color(color().as_int());	// reset color
+    }
+
+    if (color().visibility()) {
+        fl_color(color().as_int());
+        fl_arc(pp2.x,pp2.y,pp2_r+pp2_r,pp2_r+pp2_r,0,180);
+    }
+}
 
 void Ellipse::draw_lines() const
 {
