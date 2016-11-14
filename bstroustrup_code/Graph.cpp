@@ -577,40 +577,66 @@ void Circle::draw_lines() const
 	}
 }
 
+//-----------------------------------------------------------------------------
+// Возвращает пару точек "левого и правого глаза"
+inline pair<Point, Point> get_eye(Point p, int cr, int er)
+{
+    return pair<Point, Point>({p.x + cr/2.0 - er, p.y + cr/2.0},
+                              {p.x + 1.5*cr - er, p.y + cr/2.0});
+}
+
+//-----------------------------------------------------------------------------
+// Возвращает верхную левую точку "улыбки"
+inline Point get_smile(Point p, int cr, int sr)
+{
+    return {p.x + cr - sr,
+            p.y + 1.5*cr - sr};
+}
+
+//-----------------------------------------------------------------------------
+
+Smiley::Smiley(Point p, int rr)
+    : Circle{p, rr}, er{1.0*rr/delim1}, sr{1.0*rr/delim2}
+{
+    auto eye = get_eye(point(0), radius(), er);
+    add(eye.first);
+    add(eye.second);
+    add(get_smile(point(0), radius(), sr));
+}
+
+//-----------------------------------------------------------------------------
+
+void Smiley::set_radius(int rr)
+{
+    Circle::set_radius(rr);
+    er = 1.0*rr/delim1;
+    sr = 1.0*rr/delim2;
+    // Пересчитываем координаты с новым радиусом
+    auto eye = get_eye(point(0), radius(), er);
+    set_point(1, eye.first);
+    set_point(2, eye.second);
+    set_point(3, get_smile(point(0), radius(), sr));
+}
+
+//-----------------------------------------------------------------------------
+
 void Smiley::draw_lines() const
 {
     Circle::draw_lines();
-    Point pp{0,0};
-    pp.x = point(0).x + radius()/2.0 - radius() / 6.0;
-    pp.y = point(0).y + radius()/2.0;
-    int pp_r = radius() / 6.0;
-    if (fill_color().visibility()) {	// fill
-        fl_color(fill_color().as_int());
-        fl_pie(pp.x, pp.y, pp_r+pp_r-1,pp_r+pp_r-1,0,360);
-        fl_color(color().as_int());	// reset color
-    }
 
-    if (color().visibility()) {
-        fl_color(color().as_int());
-        fl_arc(pp.x, pp.y, pp_r+pp_r,pp_r+pp_r,0,360);
-    }
-
-    Point pp2{0,0};
-    pp2.x = point(0).x + 1.5*radius() - radius() / 6.0;
-    pp2.y = point(0).y + radius()/2.0;
-    int pp2_r = radius() / 6.0;
-
-    if (fill_color().visibility()) {	// fill
-        fl_color(fill_color().as_int());
-        fl_pie(pp2.x,pp2.y,pp2_r+pp2_r-1,pp2_r+pp2_r-1,0,180);
-        fl_color(color().as_int());	// reset color
-    }
-
-    if (color().visibility()) {
-        fl_color(color().as_int());
-        fl_arc(pp2.x,pp2.y,pp2_r+pp2_r,pp2_r+pp2_r,0,180);
-    }
+    if (color().visibility())
+        for (int i=1; i < number_of_points(); ++i ) {
+            fl_color(color().as_int());
+            if (i == number_of_points()-1) // Рисуем улыбку
+                fl_arc(point(i).x, point(i).y,
+                       sr+sr, sr+sr,180,360);
+            else                            // Рисуем глаза
+                fl_arc(point(i).x, point(i).y,
+                       er+er, er+er,0,360);
+        }
 }
+
+//-----------------------------------------------------------------------------
 
 void Ellipse::draw_lines() const
 {

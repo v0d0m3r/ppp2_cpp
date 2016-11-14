@@ -356,7 +356,7 @@ struct Circle : Shape {
 
     Point center() const { return { point(0).x + r, point(0).y + r }; }
 
-    void set_radius(int rr) { r=rr; }
+    virtual void set_radius(int rr) { r=rr; }
     int radius() const { return r; }
 private:
     int r;
@@ -365,8 +365,15 @@ private:
 //-----------------------------------------------------------------------------
 
 struct Smiley : Circle {
-    using Circle::Circle;
+    const int delim1 = 6; // Знаменатель радиуса для "глаз"
+    const int delim2 = 4; // Для "улыбки"
+
+    Smiley(Point p, int rr);
+    void set_radius(int rr) override;
     void draw_lines() const override;
+private:
+    int er; // Радиус глаз
+    int sr; // Радиус улыбки
 };
 
 //-----------------------------------------------------------------------------
