@@ -201,6 +201,24 @@ void Rectangle::draw_lines() const
 }
 
 //-----------------------------------------------------------------------------
+
+void Striped_rectangle::draw_lines() const
+{
+    if (fill_color().visibility()) {	// fill
+        fl_color(fill_color().as_int());
+
+        for (int i=4; i < height(); i+=4)
+            fl_line(point(0).x,point(0).y+i,point(0).x+width()-1,point(0).y+i);
+
+        fl_color(color().as_int());	// reset color
+    }
+    if (color().visibility()) {	// edge on top of fill
+        fl_color(color().as_int());
+        fl_rect(point(0).x,point(0).y,width(),height());
+    }
+}
+
+//-----------------------------------------------------------------------------
 // Exercise 13_2
 // Фигура состоит из 4 отрезков и 4 эллипсов
 void Box::init()
@@ -586,8 +604,8 @@ inline pair<Point, Point> get_eye(Point p, int cr, int er)
 }
 
 //-----------------------------------------------------------------------------
-// Возвращает верхную левую точку "улыбки"
-inline Point get_smile(Point p, int cr, int sr)
+// Возвращает верхную левую точку "рта"
+inline Point get_mouth(Point p, int cr, int sr)
 {
     return {p.x + cr - sr,
             p.y + 1.5*cr - sr};
@@ -596,12 +614,12 @@ inline Point get_smile(Point p, int cr, int sr)
 //-----------------------------------------------------------------------------
 
 Smiley::Smiley(Point p, int rr)
-    : Circle{p, rr}, er{1.0*rr/delim1}, sr{1.0*rr/delim2}
+    : Circle{p, rr}, er{1.0*rr/delim1}, mr{1.0*rr/delim2}
 {
     auto eye = get_eye(point(0), radius(), er);
     add(eye.first);
     add(eye.second);
-    add(get_smile(point(0), radius(), sr));
+    add(get_mouth(point(0), radius(), mr));
 }
 
 //-----------------------------------------------------------------------------
@@ -610,12 +628,12 @@ void Smiley::set_radius(int rr)
 {
     Circle::set_radius(rr);
     er = 1.0*rr/delim1;
-    sr = 1.0*rr/delim2;
+    mr = 1.0*rr/delim2;
     // Пересчитываем координаты с новым радиусом
     auto eye = get_eye(point(0), radius(), er);
     set_point(1, eye.first);
     set_point(2, eye.second);
-    set_point(3, get_smile(point(0), radius(), sr));
+    set_point(3, get_mouth(point(0), radius(), mr));
 }
 
 //-----------------------------------------------------------------------------
@@ -629,11 +647,87 @@ void Smiley::draw_lines() const
             fl_color(color().as_int());
             if (i == number_of_points()-1) // Рисуем улыбку
                 fl_arc(point(i).x, point(i).y,
-                       sr+sr, sr+sr,180,360);
+                       mr+mr, mr+mr, 180, 360);
             else                            // Рисуем глаза
                 fl_arc(point(i).x, point(i).y,
-                       er+er, er+er,0,360);
+                       er+er, er+er, 0, 360);
         }
+}
+
+//-----------------------------------------------------------------------------
+
+void Smiley_hat::draw_lines() const
+{
+    Smiley::draw_lines();
+    const int& mr = mouth_radius();
+
+    if (fill_color().visibility()) {	// fill
+        fl_color(fill_color().as_int());
+
+        fl_rectf(point(0).x,point(0).y-mr,
+                 2*radius(), mr);
+        fl_pie(point(0).x - 2*mr + radius(), point(0).y-3*mr,
+               mr+mr+mr+mr, mr+mr+mr+mr, 0, 180);
+
+        fl_color(color().as_int());	// reset color
+    }
+
+    if (color().visibility()) {	// edge on top of fill
+        fl_color(color().as_int());
+
+        fl_rect(point(0).x,point(0).y-mr,
+                2*radius(), mr);
+        fl_arc(point(0).x - 2*mr + radius(), point(0).y-3*mr,
+                mr+mr+mr+mr, mr+mr+mr+mr, 0, 180);
+    }
+}
+
+//-----------------------------------------------------------------------------
+
+void Frowny::draw_lines() const
+{
+    Circle::draw_lines();
+    const int& mr = mouth_radius();
+    const int& er = eye_radius();
+
+    if (color().visibility())
+        for (int i=1; i < number_of_points(); ++i ) {
+            fl_color(color().as_int());
+            if (i == number_of_points()-1) // Рисуем frowny рот
+                fl_arc(point(i).x, point(i).y,
+                       mr+mr, mr+mr, 0, 180);
+            else                            // Рисуем глаза
+                fl_arc(point(i).x, point(i).y,
+                       er+er, er+er, 0, 360);
+        }
+}
+
+//-----------------------------------------------------------------------------
+
+void Frowny_hat::draw_lines() const
+{
+    Frowny::draw_lines();
+    const int& mr = mouth_radius();
+
+    if (fill_color().visibility()) {	// fill
+        fl_color(fill_color().as_int());
+
+        fl_rectf(point(0).x,point(0).y-mr,
+                 2*radius(), mr);
+        fl_pie(point(0).x - 2*mr + radius(), point(0).y-3*mr,
+               mr+mr+mr+mr, mr+mr+mr+mr, 0, 180);
+
+        fl_color(color().as_int());	// reset color
+    }
+
+    if (color().visibility()) {	// edge on top of fill
+        fl_color(color().as_int());
+
+        fl_rect(point(0).x,point(0).y-mr,
+                2*radius(), mr);
+        fl_arc(point(0).x - 2*mr + radius(), point(0).y-3*mr,
+                mr+mr+mr+mr, mr+mr+mr+mr, 0, 180);
+    }
 }
 
 //-----------------------------------------------------------------------------

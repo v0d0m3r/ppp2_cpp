@@ -211,6 +211,13 @@ private:
 };
 
 //-----------------------------------------------------------------------------
+
+struct Striped_rectangle : Rectangle {
+    using Rectangle::Rectangle;
+    void draw_lines() const override;
+};
+
+//-----------------------------------------------------------------------------
 // Exercise 13_2
 struct Box : Rectangle {
     Box(Point xy, int rww, int rhh)
@@ -362,18 +369,49 @@ private:
     int r;
 };
 
+struct Immobile_circle : Circle {
+    using Circle::Circle;
+protected:
+    void move(int dx, int dy) override { }
+};
+
 //-----------------------------------------------------------------------------
 
 struct Smiley : Circle {
     const int delim1 = 6; // Знаменатель радиуса для "глаз"
-    const int delim2 = 4; // Для "улыбки"
+    const int delim2 = 4; // Для "рта"
 
     Smiley(Point p, int rr);
     void set_radius(int rr) override;
+
     void draw_lines() const override;
+
+    int eye_radius() const { return er; }
+    int mouth_radius() const { return mr; }
 private:
     int er; // Радиус глаз
-    int sr; // Радиус улыбки
+    int mr; // Радиус рта
+};
+
+//-----------------------------------------------------------------------------
+
+struct Smiley_hat : Smiley {
+    using Smiley::Smiley;
+    void draw_lines() const override;
+};
+
+//-----------------------------------------------------------------------------
+
+struct Frowny : Smiley {
+    using Smiley::Smiley;
+    void draw_lines() const override;
+};
+
+//-----------------------------------------------------------------------------
+
+struct Frowny_hat : Frowny {
+    using Frowny::Frowny;
+    void draw_lines() const override;
 };
 
 //-----------------------------------------------------------------------------

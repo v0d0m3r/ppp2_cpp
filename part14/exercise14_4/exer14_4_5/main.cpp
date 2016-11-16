@@ -1,4 +1,4 @@
-// exercise14_1
+// exercise14_4_5
 //-----------------------------------------------------------------------------
 
 #include "../../../bstroustrup_code/std_lib_facilities.h"
@@ -9,16 +9,31 @@
 
 //-----------------------------------------------------------------------------
 
-void exercise14_1()
+void exercise14_4()
 {
-    Simple_window win{Point {0, 0}, 1200, 800, "exercise 14_1"};
-    Smiley_hat s{Point{300, 300}, 60};
+    Simple_window win{Point {0, 0}, 1200, 800, "exercise 14_4"};
 
-    Frowny_hat fh{Point{600, 300}, 100};
-    fh.set_fill_color(Color::blue);
+    Immobile_circle ic{Point{100, 100}, 50};
+    //ic.move(150, 150);
+    Circle& cir{ic};
 
-    win.attach(s);
-    win.attach(fh);
+    win.attach(ic);
+    win.wait_for_button();
+
+    cir.move(300, 300);
+
+    win.wait_for_button();
+}
+
+//-----------------------------------------------------------------------------
+
+void exercise14_5()
+{
+    Simple_window win{Point {0, 0}, 1200, 800, "exercise 14_5"};
+
+    Striped_rectangle sr{Point{400, 400}, 300, 300};
+    sr.set_fill_color(Color::blue);
+    win.attach(sr);
     win.wait_for_button();
 }
 
@@ -26,7 +41,8 @@ void exercise14_1()
 
 int main()
 try {
-    exercise14_1();
+    //exercise14_4();
+    exercise14_5();
     keep_window_open("~~");
     return 0;
 }
