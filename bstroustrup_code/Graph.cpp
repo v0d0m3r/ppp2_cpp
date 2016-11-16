@@ -596,6 +596,45 @@ void Circle::draw_lines() const
 }
 
 //-----------------------------------------------------------------------------
+// Возвращает абсциссы точек пересечения штриха-прямой и круга
+pair<int,int> getx_ln_intrsct_crcl(Point cntr, int rds, int y)
+{
+    constexpr double is_pow = 2.0;
+    double c = pow(double(cntr.x),is_pow) + pow(double(y-cntr.y), is_pow)
+             - pow(double(rds),   is_pow);
+    double b = -2.0*cntr.x;
+    double d = pow(b, is_pow) - 4*c;
+
+    if(d > 0)
+        return pair<int,int>((-b - sqrt(d)) / 2.0,
+                             (-b + sqrt(d)) / 2.0);
+    error("Whakhanalia");
+}
+
+//-----------------------------------------------------------------------------
+
+void Striped_circle::draw_lines() const
+{
+    const int& r = radius();
+    constexpr int delta = 10;
+    if (fill_color().visibility()) {	// fill
+        fl_color(fill_color().as_int());
+
+        for (int i=delta; i < r+r; i+=delta) {
+            auto xs = getx_ln_intrsct_crcl(center(), r, point(0).y+i);
+            fl_line(xs.first,point(0).y+i,xs.second,point(0).y+i);
+        }
+
+        fl_color(color().as_int());	// reset color
+    }
+    if (color().visibility()) {
+        fl_color(color().as_int());
+        fl_arc(point(0).x,point(0).y,r+r,r+r,0,360);
+    }
+
+}
+
+//-----------------------------------------------------------------------------
 // Возвращает пару точек "левого и правого глаза"
 inline pair<Point, Point> get_eye(Point p, int cr, int er)
 {

@@ -369,6 +369,11 @@ private:
     int r;
 };
 
+struct Striped_circle : Circle {
+    using Circle::Circle;
+    void draw_lines() const override;
+};
+
 struct Immobile_circle : Circle {
     using Circle::Circle;
 protected:
