@@ -146,6 +146,61 @@ void Closed_polyline::draw_lines() const
 	if (color().visibility())	// draw closing line:
 		fl_line(point(number_of_points()-1).x,point(number_of_points()-1).y,point(0).x,point(0).y);
 }
+
+//-----------------------------------------------------------------------------
+
+void Striped_closed_polyline::draw_lines() const
+{
+    Closed_polyline::draw_lines();
+
+    //------------------------------
+    // Находим вершину с y минимальное, от которого будем начинать
+    vector<int> ycoords;
+    vector<int> xcoords;
+    for (unsigned int i=0; i<number_of_points(); ++i) {
+        xcoords.push_back(point(i).x);
+        ycoords.push_back(point(i).y);
+    }
+
+    sort(ycoords.begin(), ycoords.end());
+    sort(xcoords.begin(), xcoords.end());
+
+    constexpr int dy = 4;
+    int xmin = xcoords.front() - 1;
+    int xmax = xcoords.back() + 1;
+    int ymin = ycoords.front() + dy;
+    int ymax = ycoords.back();
+
+    xcoords.clear();
+    ycoords.clear();
+    //--------------------------------
+    const int& np = number_of_points();
+
+    /*if (1<np) {	// check that thenew line isn't parallel to the previous one
+        if (p==point(np-1)) error("polygon point equal to previous point");
+        bool parallel;
+        line_intersect(point(np-1),p,point(np-2),point(np-1),parallel);
+        if (parallel)
+            error("two polygon points lie in a straight line");
+    }*/
+    Point ignore{0, 0};
+    pair<Point, Point> line = pair<Point, Point>(Point{0, 0}, Point{0, 0});
+
+    for (int i = ymin; i < ymax; i+=dy) {
+        line = pair<Point, Point>(Point{xmin, i}, Point{xmax, i});
+        for (int j = 1; j < np; ++j) {	// check that new segment doesn't interset and old point
+            ignore = Point{0, 0};
+            if (line_segment_intersect(line.first,line.second,point(j-1),point(j),ignore))
+                error("intersect in polygon");
+        }
+
+    }
+
+}
+
+//-----------------------------------------------------------------------------
+
+
 void Shape::move(int dx, int dy)
 {
 	for (unsigned int i = 0; i<points.size(); ++i) {

@@ -278,6 +278,10 @@ struct Closed_polyline : Open_polyline {	// closed sequence of lines
 //	void add(Point p) { Shape::add(p); }
 };
 
+struct Striped_closed_polyline : Closed_polyline {
+    using Closed_polyline::Closed_polyline;
+    void draw_lines() const override;
+};
 
 struct Polygon : Closed_polyline {	// closed sequence of non-intersecting lines
     using Closed_polyline::Closed_polyline;
