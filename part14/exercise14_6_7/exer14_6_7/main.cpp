@@ -19,12 +19,29 @@ void exercise14_6()
     win.wait_for_button();
 }
 
+void exercise14_7()
+{
+    Simple_window win{Point {0, 0}, 1200, 800, "exercise 14_6"};
+    Striped_closed_polyline scp;
+    scp.add(Point{100, 100});
+    scp.add(Point{100, 200});
+    scp.add(Point{200, 200});
+    scp.add(Point{200, 100});
+    scp.add(Point{250, 100});
+    scp.add(Point{250, 200});
+
+
+    win.attach(scp);
+    win.wait_for_button();
+}
+
 //-----------------------------------------------------------------------------
 
 int main()
 try {
 
-    exercise14_6();
+    //exercise14_6();
+    exercise14_7();
     keep_window_open("~~");
     return 0;
 }

@@ -152,49 +152,46 @@ void Closed_polyline::draw_lines() const
 void Striped_closed_polyline::draw_lines() const
 {
     Closed_polyline::draw_lines();
-
+    const int& np = number_of_points();
+    constexpr int dy = 4;
     //------------------------------
     // Находим вершину с y минимальное, от которого будем начинать
     vector<int> ycoords;
     vector<int> xcoords;
-    for (unsigned int i=0; i<number_of_points(); ++i) {
+    for (int i=0; i < np; ++i) {
         xcoords.push_back(point(i).x);
         ycoords.push_back(point(i).y);
-    }
+    }    
 
     sort(ycoords.begin(), ycoords.end());
     sort(xcoords.begin(), xcoords.end());
 
-    constexpr int dy = 4;
-    int xmin = xcoords.front() - 1;
-    int xmax = xcoords.back() + 1;
+    int xmin = xcoords.front();
+    int xmax = xcoords.back();
     int ymin = ycoords.front() + dy;
     int ymax = ycoords.back();
 
     xcoords.clear();
     ycoords.clear();
-    //--------------------------------
-    const int& np = number_of_points();
 
-    /*if (1<np) {	// check that thenew line isn't parallel to the previous one
-        if (p==point(np-1)) error("polygon point equal to previous point");
-        bool parallel;
-        line_intersect(point(np-1),p,point(np-2),point(np-1),parallel);
-        if (parallel)
-            error("two polygon points lie in a straight line");
-    }*/
-    Point ignore{0, 0};
+    Point intrsct{0, 0};
     pair<Point, Point> line = pair<Point, Point>(Point{0, 0}, Point{0, 0});
-
-    for (int i = ymin; i < ymax; i+=dy) {
-        line = pair<Point, Point>(Point{xmin, i}, Point{xmax, i});
-        for (int j = 1; j < np; ++j) {	// check that new segment doesn't interset and old point
-            ignore = Point{0, 0};
-            if (line_segment_intersect(line.first,line.second,point(j-1),point(j),ignore))
-                error("intersect in polygon");
+    if (color().visibility())
+        for (int i = ymin; i < ymax; i+=dy) {
+            line = pair<Point, Point>(Point{xmin, i}, Point{xmax, i});
+            for (int j = 1; j < np; ++j) {	// check that new segment doesn't interset and old point
+                intrsct = Point{0, 0};
+                if (line_segment_intersect(line.first,line.second,point(j-1),
+                                           point(j), intrsct))
+                    xcoords.push_back(intrsct.x);
+            }
+            if (line_segment_intersect(line.first,line.second,point(0),
+                                       point(np-1), intrsct))
+                xcoords.push_back(intrsct.x);
+            for (int k=1; k < xcoords.size(); k+=2)
+                fl_line(xcoords[k-1], i, xcoords[k], i);
+            xcoords.clear();
         }
-
-    }
 
 }
 
