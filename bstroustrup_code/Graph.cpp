@@ -45,7 +45,6 @@ inline pair<double,double> line_intersect(Point p1, Point p2, Point p3, Point p4
 								((x2-x1)*(y1-y3) - (y2-y1)*(x1-x3))/denom);
 }
 
-
 //intersection between two line segments
 //Returns true if the two segments intersect,
 //in which case intersection is set to the point of intersection
@@ -148,55 +147,71 @@ void Closed_polyline::draw_lines() const
 }
 
 //-----------------------------------------------------------------------------
-
-void Striped_closed_polyline::draw_lines() const
+// Получаем координаты верхней левой и
+// правой нижней точки наименьшего прямоугольника,
+// окамляющего наш закрытый контур
+pair<Point, Point> Striped_closed_polyline::get_out_rectangle() const
 {
-    Closed_polyline::draw_lines();
     const int& np = number_of_points();
-    constexpr int dy = 4;
-    //------------------------------
-    // Находим вершину с y минимальное, от которого будем начинать
-    vector<int> ycoords;
-    vector<int> xcoords;
+    vector<int> ys;
+    vector<int> xs;
     for (int i=0; i < np; ++i) {
-        xcoords.push_back(point(i).x);
-        ycoords.push_back(point(i).y);
-    }    
+        xs.push_back(point(i).x);
+        ys.push_back(point(i).y);
+    }
 
-    sort(ycoords.begin(), ycoords.end());
-    sort(xcoords.begin(), xcoords.end());
+    sort(ys.begin(), ys.end());
+    sort(xs.begin(), xs.end());
 
-    int xmin = xcoords.front();
-    int xmax = xcoords.back();
-    int ymin = ycoords.front() + dy;
-    int ymax = ycoords.back();
-
-    xcoords.clear();
-    ycoords.clear();
-
-    Point intrsct{0, 0};
-    pair<Point, Point> line = pair<Point, Point>(Point{0, 0}, Point{0, 0});
-    if (fill_color().visibility())
-        for (int i = ymin; i < ymax; i+=dy) {
-            line = pair<Point, Point>(Point{xmin, i}, Point{xmax, i});
-            for (int j = 1; j < np; ++j) {	// check that new segment doesn't interset and old point
-                intrsct = Point{0, 0};
-                if (line_segment_intersect(line.first, line.second,
-                                           point(j-1), point(j), intrsct))
-                    xcoords.push_back(intrsct.x);
-            }
-            if (line_segment_intersect(line.first, line.second,
-                                       point(0),   point(np-1), intrsct))
-                xcoords.push_back(intrsct.x);
-            sort(xcoords.begin(), xcoords.end());
-            for (int k=1; k < xcoords.size(); k+=2)
-                fl_line(xcoords[k-1], i, xcoords[k], i);
-            xcoords.clear();
-        }
+    return pair<Point, Point>(Point{xs.front(), ys.front()},
+                              Point{xs.back(),  ys.back()});
 }
 
 //-----------------------------------------------------------------------------
 
+void Striped_closed_polyline::draw_lines() const
+{    
+    const int& np = number_of_points();
+    constexpr int dy = 4;
+
+    int xmin = orect.first.x;
+    int ymin = orect.first.y + dy;
+    int xmax = orect.second.x;
+    int ymax = orect.second.y;
+
+    vector<int> xs;
+    Point intrsct{0, 0};
+    pair<Point, Point> line = pair<Point, Point>(Point{0, 0}, Point{0, 0});
+    if (fill_color().visibility()) {
+        fl_color(fill_color().as_int());
+        for (int i = ymin; i < ymax; i+=dy) { // Строим отрезки штриховки
+            line = pair<Point, Point>(Point{xmin, i}, Point{xmax, i});
+            for (int j = 1; j < np; ++j) {  // Поиск x-точек пересечения
+                                            // между прямой и отрезками полигона
+                intrsct = Point{0, 0};
+                if (line_segment_intersect(line.first, line.second,
+                                           point(j-1), point(j), intrsct))
+                    xs.push_back(intrsct.x);
+            }
+            // Пересекает ли прямая замыкающий отрезок?
+            if (line_segment_intersect(line.first, line.second,
+                                       point(0),   point(np-1), intrsct))
+                xs.push_back(intrsct.x);
+            sort(xs.begin(), xs.end());
+            for (int k=1; k < xs.size(); k+=2)
+                fl_line(xs[k-1], i, xs[k], i);  // Соединяем отрезки штриховки
+            xs.clear();
+        }
+        fl_color(color().as_int());
+    }
+    Shape::draw_lines();
+    if (color().visibility())	// draw closing line:
+        fl_line(point(number_of_points()-1).x, point(number_of_points()-1).y,
+                point(0).x,                    point(0).y);
+
+}
+
+//-----------------------------------------------------------------------------
 
 void Shape::move(int dx, int dy)
 {

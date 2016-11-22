@@ -36,6 +36,7 @@ void exercise14_7()
     scp.add(Point{300, 150});
     scp.add(Point{250, 200});
     scp.add(Point{250, 100});
+    scp.set_fill_color(Color::blue);
 
 
     win.attach(scp);

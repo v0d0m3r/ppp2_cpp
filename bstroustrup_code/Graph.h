@@ -278,9 +278,17 @@ struct Closed_polyline : Open_polyline {	// closed sequence of lines
 //	void add(Point p) { Shape::add(p); }
 };
 
-struct Striped_closed_polyline : Closed_polyline {
-    using Closed_polyline::Closed_polyline;
+struct Striped_closed_polyline : Shape {
+    using Shape::Shape;
+    void add(Point p) {
+        Shape::add(p);
+        orect = get_out_rectangle();
+    }
     void draw_lines() const override;
+protected:
+    pair<Point, Point> get_out_rectangle() const;
+private:
+    pair<Point, Point> orect{Point{0,0}, Point{0,0}};
 };
 
 struct Polygon : Closed_polyline {	// closed sequence of non-intersecting lines
