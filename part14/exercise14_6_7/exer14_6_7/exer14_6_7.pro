@@ -7,10 +7,10 @@ TARGET = exer14_6_7
 CONFIG += console
 CONFIG -= app_bundle
 
-LIBS	+= -lXfixes -lpthread -ldl -lfltk_images -lfltk_jpeg -lfltk -lX11 -lXext
+#LIBS	+= -lXfixes -lpthread -ldl -lfltk_images -lfltk_jpeg -lfltk -lX11 -lXext
 
-#LIBS	+= -lXfixes -lpthread -ldl -lfltk -lfltk_images -lXinerama
-#LIBS    += -lpng -ljpeg -lX11 -lXext -lz -lm -lXcursor -lXrender -lfontconfig -lXft
+LIBS	+= -lXfixes -lpthread -ldl -lfltk -lfltk_images -lXinerama
+LIBS    += -lpng -ljpeg -lX11 -lXext -lz -lm -lXcursor -lXrender -lfontconfig -lXft
 INCLUDEPATH += /usr/local/include/
 
 TEMPLATE = app

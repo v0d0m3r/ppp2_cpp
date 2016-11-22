@@ -176,23 +176,23 @@ void Striped_closed_polyline::draw_lines() const
 
     Point intrsct{0, 0};
     pair<Point, Point> line = pair<Point, Point>(Point{0, 0}, Point{0, 0});
-    if (color().visibility())
+    if (fill_color().visibility())
         for (int i = ymin; i < ymax; i+=dy) {
             line = pair<Point, Point>(Point{xmin, i}, Point{xmax, i});
             for (int j = 1; j < np; ++j) {	// check that new segment doesn't interset and old point
                 intrsct = Point{0, 0};
-                if (line_segment_intersect(line.first,line.second,point(j-1),
-                                           point(j), intrsct))
+                if (line_segment_intersect(line.first, line.second,
+                                           point(j-1), point(j), intrsct))
                     xcoords.push_back(intrsct.x);
             }
-            if (line_segment_intersect(line.first,line.second,point(0),
-                                       point(np-1), intrsct))
+            if (line_segment_intersect(line.first, line.second,
+                                       point(0),   point(np-1), intrsct))
                 xcoords.push_back(intrsct.x);
+            sort(xcoords.begin(), xcoords.end());
             for (int k=1; k < xcoords.size(); k+=2)
                 fl_line(xcoords[k-1], i, xcoords[k], i);
             xcoords.clear();
         }
-
 }
 
 //-----------------------------------------------------------------------------

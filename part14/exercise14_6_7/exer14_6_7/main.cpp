@@ -23,12 +23,19 @@ void exercise14_7()
 {
     Simple_window win{Point {0, 0}, 1200, 800, "exercise 14_6"};
     Striped_closed_polyline scp;
-    scp.add(Point{100, 100});
-    scp.add(Point{100, 200});
-    scp.add(Point{200, 200});
     scp.add(Point{200, 100});
-    scp.add(Point{250, 100});
+    scp.add(Point{200, 200});
+    scp.add(Point{150, 150});
+    scp.add(Point{150, 300});
+    scp.add(Point{200, 250});
+    scp.add(Point{200, 350});
+    scp.add(Point{250, 350});
+    scp.add(Point{250, 250});
+
+    scp.add(Point{300, 300});
+    scp.add(Point{300, 150});
     scp.add(Point{250, 200});
+    scp.add(Point{250, 100});
 
 
     win.attach(scp);
