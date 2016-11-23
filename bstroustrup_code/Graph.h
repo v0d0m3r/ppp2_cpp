@@ -285,9 +285,13 @@ struct Striped_closed_polyline : Shape {
         orect = get_out_rectangle();
     }
     void draw_lines() const override;
+    void move(int dx, int dy) override;
 protected:
     pair<Point, Point> get_out_rectangle() const;
+    void getx_instersect(const pair<Point, Point> &line,
+                         vector<int>& xs) const;
 private:
+    // Наименьший прямоугольник, окамляющий closed_polyline
     pair<Point, Point> orect{Point{0,0}, Point{0,0}};
 };
 

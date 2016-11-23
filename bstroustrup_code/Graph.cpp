@@ -168,36 +168,57 @@ pair<Point, Point> Striped_closed_polyline::get_out_rectangle() const
 }
 
 //-----------------------------------------------------------------------------
+// Поиск x-точек пересечения между
+// line и всеми отрезками полигона
+void Striped_closed_polyline::getx_instersect(const pair<Point, Point>& line,
+                                              vector<int>& xs) const
+{
+    const int& np = number_of_points();
+    Point intrsct{0, 0};
+    for (int j = 1; j < np; ++j) {
+        intrsct = Point{0, 0};
+        if (line_segment_intersect(line.first, line.second,
+                                   point(j-1), point(j), intrsct))
+            xs.push_back(intrsct.x);
+    }
+    // Пересекает ли прямая замыкающий отрезок?
+    if (line_segment_intersect(line.first, line.second,
+                               point(0),   point(np-1), intrsct))
+        xs.push_back(intrsct.x);
+    sort(xs.begin(), xs.end());
+}
+
+//-----------------------------------------------------------------------------
+
+void Striped_closed_polyline::move(int dx, int dy)
+{
+    Shape::move(dx, dy);
+    orect.first.x += dx;
+    orect.first.y += dy;
+    orect.second.x += dx;
+    orect.second.y += dy;
+}
+
+//-----------------------------------------------------------------------------
 
 void Striped_closed_polyline::draw_lines() const
-{    
-    const int& np = number_of_points();
-    constexpr int dy = 4;
+{        
+    const int dy = style().width() + 4;
 
     int xmin = orect.first.x;
     int ymin = orect.first.y + dy;
     int xmax = orect.second.x;
     int ymax = orect.second.y;
 
-    vector<int> xs;
-    Point intrsct{0, 0};
+    vector<int> xs;    
     pair<Point, Point> line = pair<Point, Point>(Point{0, 0}, Point{0, 0});
-    if (fill_color().visibility()) {
+    if (fill_color().visibility()) {    // Заполнение внутренней области
         fl_color(fill_color().as_int());
-        for (int i = ymin; i < ymax; i+=dy) { // Строим отрезки штриховки
+        for (int i = ymin; i < ymax; i+=dy) {   // Ищем координаты штрихов
+            // Задаем отрезок, параллельный ОХ
             line = pair<Point, Point>(Point{xmin, i}, Point{xmax, i});
-            for (int j = 1; j < np; ++j) {  // Поиск x-точек пересечения
-                                            // между прямой и отрезками полигона
-                intrsct = Point{0, 0};
-                if (line_segment_intersect(line.first, line.second,
-                                           point(j-1), point(j), intrsct))
-                    xs.push_back(intrsct.x);
-            }
-            // Пересекает ли прямая замыкающий отрезок?
-            if (line_segment_intersect(line.first, line.second,
-                                       point(0),   point(np-1), intrsct))
-                xs.push_back(intrsct.x);
-            sort(xs.begin(), xs.end());
+            getx_instersect(line, xs);  // Получаем x-точек пересечения между
+                                        // line и всех отрезков полигона
             for (int k=1; k < xs.size(); k+=2)
                 fl_line(xs[k-1], i, xs[k], i);  // Соединяем отрезки штриховки
             xs.clear();
@@ -208,7 +229,6 @@ void Striped_closed_polyline::draw_lines() const
     if (color().visibility())	// draw closing line:
         fl_line(point(number_of_points()-1).x, point(number_of_points()-1).y,
                 point(0).x,                    point(0).y);
-
 }
 
 //-----------------------------------------------------------------------------
