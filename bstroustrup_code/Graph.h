@@ -164,6 +164,19 @@ private:
 //	Shape& operator=(const Shape&);
 };
 
+struct Group {
+    Group(){}
+    void add(Shape& s)  { shapes.push_back(s); }
+    Shape& shape(int i) { return shapes[i];}
+
+private:
+    Vector_ref<Shape> shapes;
+};
+
+struct Chess_board : Shape {
+
+};
+
 struct Function : Shape {
     // the function parameters are not stored
     Function(Fct f, double r1, double r2, Point orig, int count = 100, double xscale = 25, double yscale = 25);
@@ -468,6 +481,14 @@ struct Regular_polygon : Shape {
 private:
     int r;
     int s;
+};
+
+//-----------------------------------------------------------------------------
+// Exercise 14_8
+struct Regular_octagon : Regular_polygon {
+    Regular_octagon(Point xy, int rr)
+        : Regular_polygon(xy, 8, rr)
+    {}
 };
 
 //-----------------------------------------------------------------------------
