@@ -164,19 +164,6 @@ private:
 //	Shape& operator=(const Shape&);
 };
 
-struct Group {
-    Group(){}
-    void add(Shape& s)  { shapes.push_back(s); }
-    Shape& shape(int i) { return shapes[i];}
-
-private:
-    Vector_ref<Shape> shapes;
-};
-
-struct Chess_board : Shape {
-
-};
-
 struct Function : Shape {
     // the function parameters are not stored
     Function(Fct f, double r1, double r2, Point orig, int count = 100, double xscale = 25, double yscale = 25);
@@ -221,6 +208,36 @@ private:
     int h;			// height
     int w;			// width
 //	Color fcolor;	// fill color; 0 means "no fill"
+};
+
+//-----------------------------------------------------------------------------
+
+struct Group {
+    Group(){}
+    void add(Shape& s)  { shapes.push_back(s); }
+    Shape& shape(int i) { return shapes[i];}
+
+private:
+    Vector_ref<Shape> shapes;
+};
+
+//-----------------------------------------------------------------------------
+
+struct Chess_board : Rectangle {
+    static constexpr int min_size = 40;
+
+    Chess_board(Point xy, int rr, bool ww);
+    Chess_board(Point x, Point y);
+
+    Shape& black_checker(int i) { return bc.shape(i);}
+    Shape& white_checker(int i) { return whc.shape(i);}
+
+    bool white_up() const { return wu; }
+
+private:
+    Group whc;  // Белые шашки
+    Group bc;   // Черные
+    bool wu;    // Белые сверху?
 };
 
 //-----------------------------------------------------------------------------

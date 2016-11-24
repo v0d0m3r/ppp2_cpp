@@ -289,6 +289,19 @@ void Rectangle::draw_lines() const
 
 //-----------------------------------------------------------------------------
 
+Chess_board::Chess_board(Point xy, int rr, bool ww)
+    : Rectangle(xy, rr, rr)
+{
+
+    if (rr < min_size) throw 'error';
+
+    // Строим доску
+
+    // Строим шашки
+}
+
+
+
 void Striped_rectangle::draw_lines() const
 {
     if (fill_color().visibility()) {	// fill
