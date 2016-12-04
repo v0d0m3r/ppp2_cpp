@@ -212,10 +212,33 @@ private:
 
 //-----------------------------------------------------------------------------
 
+struct Binary_tree : Shape {
+    Binary_tree(Point p, int ll, int ww)
+        : l{ ll}, w{ww}
+    { add(p); }
+
+    int levels() const { return l; }
+    int width() const  { return w; }
+    //void set_levels(int ll) { l = ll;}
+    void draw_lines() const override;
+
+private:
+    void init();
+    int l;  // Количество уровней
+    int w;  // Ширина прямоугольника, окамляющего дерево    
+};
+
+//-----------------------------------------------------------------------------
+
 struct Group {
     Group(){}
     void add(Shape& s)  { shapes.push_back(s); }
-    Shape& shape(int i) { return shapes[i];}
+    void add(Shape* s)  { shapes.push_back(s); }
+
+    int size() const { return shapes.size(); }
+
+    Shape& operator[](int i) { return shapes[i]; }
+    const Shape& operator[](int i) const { return shapes[i]; }
 
 private:
     Vector_ref<Shape> shapes;
@@ -223,21 +246,32 @@ private:
 
 //-----------------------------------------------------------------------------
 
-struct Chess_board : Rectangle {
-    static constexpr int min_size = 40;
+class Chess_board : public Rectangle {
+public:
+    static constexpr int min_size = 100;
+    static constexpr int item_on_line = 8;
 
-    Chess_board(Point xy, int rr, bool ww);
-    Chess_board(Point x, Point y);
+    Chess_board(Point xy, int rr);   
 
-    Shape& black_checker(int i) { return bc.shape(i);}
-    Shape& white_checker(int i) { return whc.shape(i);}
+    const Shape& checker(int i) const { return checkers[i];}
+    int number_of_checkers()    const { return checkers.size(); }
 
-    bool white_up() const { return wu; }
+    void draw_lines() const override;
 
+    Color color_up_checkers()   const { return col_up; }
+    void set_color_up_checkers(Color col);
+
+    Color color_down_checkers() const { return col_down; }
+    void set_color_down_checkers(Color col);
+
+    void move(int dx, int dy) override;
+    void move_checker(int i, int dx, int dy)
+    { checkers[i].move(dx, dy); }
 private:
-    Group whc;  // Белые шашки
-    Group bc;   // Черные
-    bool wu;    // Белые сверху?
+    void init();
+    Group checkers;  // шашки
+    Color col_up{Color::blue};
+    Color col_down{Color::white};
 };
 
 //-----------------------------------------------------------------------------

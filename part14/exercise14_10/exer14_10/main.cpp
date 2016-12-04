@@ -1,4 +1,4 @@
-// exercise14_9
+// exercise14_10
 //-----------------------------------------------------------------------------
 
 #include "../../../bstroustrup_code/std_lib_facilities.h"
@@ -9,28 +9,37 @@
 
 //-----------------------------------------------------------------------------
 
-void exercise14_9()
+struct Pseudo_window : Graph_lib::Window {
+    Pseudo_window(Point xy, int w, int h, const string& title);
+    void show() {  Fl::run(); }
+private:
+    Closed_polyline cp;
+};
+
+//-----------------------------------------------------------------------------
+
+Pseudo_window::Pseudo_window(Point xy, int w, int h, const string& title)
+    : Window(xy,w,h,title)
 {
-    Simple_window win{Point {0, 0}, 1200, 800, "exercise 14_9"};
-    Chess_board cb{Point{100,100}, 693};
+    cp.add(Point{w/2, w/2});
+    cp.add(Point{w/2, h/2});
+    cp.add(Point{h/2, h/2});
+    attach(cp);
+}
 
-    win.attach(cb);   
-    win.wait_for_button();
+//-----------------------------------------------------------------------------
 
-    cb.move_checker(10, 80, 80);
-
-    win.wait_for_button();
-
-    cb.set_color_up_checkers(Color::dark_red);
-
-    win.wait_for_button();
+void exercise14_10()
+{
+    Pseudo_window win{Point {0, 0}, 800, 600, "exercise 14_10"};
+    win.show();
 }
 
 //-----------------------------------------------------------------------------
 
 int main()
 try {
-    exercise14_9();
+    exercise14_10();
     keep_window_open("~~");
     return 0;
 }

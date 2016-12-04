@@ -21,6 +21,41 @@ void Shape::draw() const
 	fl_line_style(0);
 }
 
+void Binary_tree::init()
+{
+
+}
+
+void Binary_tree::draw_lines() const
+{
+    const double node_width = w / pow(2.0, l-1);
+    const double delta = node_width / 10;
+    const double r = node_width/2 - delta;
+    const int yh =  2*r + delta;            // Шаг по ОУ
+    const double h = l*yh - delta;          // Высота прямоугольника,
+                                            // окамляющего дерево
+    if (color().visibility()) {	// edge on top of fill
+        fl_color(color().as_int());
+        fl_rect(point(0).x,point(0).y,w,h);
+    }
+
+    fl_color(color().as_int());
+    vector<Point, Point> ponis;
+    double coeff = 0.00;    // Расстояние от левой границы, до узла
+    for (int i=0; i < l; ++i)
+        for (int j=0; j < pow(2.00, i); ++j) {
+            coeff = w * (1+j*2) / pow(2.00, (i+1));
+
+            ponis.push_back(Point{point(0).x - r + coeff,
+                                  point(0).y + i*yh});
+            fl_arc(ponis[ponis.size()-1].x,
+                   ponis[ponis.size()-1].y, r+r, r+r, 0, 360);
+
+        }
+
+
+}
+
 // does two lines (p1,p2) and (p3,p4) intersect?
 // if se return the distance of the intersect point as distances from p1
 inline pair<double,double> line_intersect(Point p1, Point p2, Point p3, Point p4,
@@ -289,18 +324,126 @@ void Rectangle::draw_lines() const
 
 //-----------------------------------------------------------------------------
 
-Chess_board::Chess_board(Point xy, int rr, bool ww)
-    : Rectangle(xy, rr, rr)
+void get_item_board(Point p, vector<Point>& vi, int h)
 {
+    constexpr int item_on_line = 8;
+    const int item_size = h / item_on_line;
+    const int item_line_size = item_on_line * item_size;
+    const int delta = (h - item_line_size)/ 2;
 
-    if (rr < min_size) throw 'error';
-
-    // Строим доску
-
-    // Строим шашки
+    for (int y=0; y < item_line_size; y += item_size)
+        for (int x=0; x < item_line_size; x += item_size)
+            vi.push_back(Point{p.x + x + delta,
+                               p.y + y + delta});
 }
 
+//-----------------------------------------------------------------------------
 
+Chess_board::Chess_board(Point xy, int rr)
+    : Rectangle(xy, rr, rr)
+{    
+    if (rr < min_size) error("not correct size");
+    init();
+}
+
+//-----------------------------------------------------------------------------
+
+void Chess_board::init()
+{
+    const int item_size = height() / item_on_line;     // Ширина ячейки
+    const int item_line_size = item_on_line*item_size; // Ширина строки ячеек
+    const int delta = (height() - item_line_size) / 2; // Погрешность
+    const int checkers_rds = item_size/2-item_size/10; // Радиус пешки
+    const int icntr = item_size/2;                     // Центр ячейки и пешки
+    constexpr pair<int,int> empty(3, 4);               // Строки без пешек
+
+    set_fill_color(Color::visible);
+
+    int parity = 0;
+    int row = 0;
+    for (int y=0; y < item_line_size; y += item_size) {
+        for (int x=0; x < item_line_size; x += item_size) {
+            // Добавляем ячейки
+            add(Point{point(0).x + x + delta, point(0).y + y + delta});
+            if (parity%2 != 0 &&
+               (row < empty.first || row > empty.second))   // Добавляем пешки
+                checkers.add(new Circle{
+                                 Point{point(number_of_points()-1).x + icntr,
+                                       point(number_of_points()-1).y + icntr},
+                                       checkers_rds});
+            ++parity;
+        }
+        ++parity;
+        ++row;
+    }
+    set_color_up_checkers(col_up);
+    set_color_down_checkers(col_down);
+}
+
+//-----------------------------------------------------------------------------
+
+void Chess_board::move(int dx, int dy)
+{
+    Shape::move(dx, dy);
+    for (int i=0; i < checkers.size(); ++i)
+        checkers[i].move(dx, dy);
+}
+
+//-----------------------------------------------------------------------------
+
+void Chess_board::set_color_up_checkers(Color col)
+{
+    col_up = col;
+    for (int i=0; i < checkers.size()/2; ++i) {
+        checkers[i].set_color(col_up);
+        checkers[i].set_fill_color(col_up);
+    }
+}
+
+//-----------------------------------------------------------------------------
+
+void Chess_board::set_color_down_checkers(Color col)
+{
+    col_down = col;
+    for (int i=checkers.size()/2; i < checkers.size(); ++i) {
+        checkers[i].set_color(col_down);
+        checkers[i].set_fill_color(col_down);
+    }
+}
+
+//-----------------------------------------------------------------------------
+
+void Chess_board::draw_lines() const
+{    
+    Rectangle::draw_lines();    // Заполняем фон  
+    const int item_size = height() / item_on_line;
+
+    if (fill_color().visibility()) {	// fill
+        int parity = 0;
+        for(int i=1; i < number_of_points(); ++i) {
+            if (parity % (item_on_line + 1) == 0)
+                ++parity;
+
+            (parity % 2 == 0) ? fl_color(Color::black)  // Какого цвета ячейка?
+                              : fl_color(Color::white);
+
+            fl_rectf(point(i).x, point(i).y, item_size, item_size);
+            ++parity;
+        }
+        fl_color(color().as_int());     // reset color
+    }
+
+    if (color().visibility()) {
+        fl_color(color().as_int());
+        for (int i=1; i < number_of_points(); ++i)
+            fl_rect(point(i).x, point(i).y, item_size, item_size);
+    }
+    // Рисуем пешки
+    for (int i=0; i < checkers.size(); ++i)
+        checkers[i].draw();
+}
+
+//-----------------------------------------------------------------------------
 
 void Striped_rectangle::draw_lines() const
 {

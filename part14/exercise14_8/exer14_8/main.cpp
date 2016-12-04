@@ -11,7 +11,7 @@
 
 void exercise14_8()
 {
-    Simple_window win{Point {0, 0}, 1200, 800, "exercise 14_7"};
+    Simple_window win{Point {0, 0}, 1200, 800, "exercise 14_8"};
     Regular_octagon ro{Point{500,500}, 200};
     ro.center();
     ro.color();
