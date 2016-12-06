@@ -181,6 +181,24 @@ protected:
     Color fcolor;
 };
 
+//-----------------------------------------------------------------------------
+
+struct Group {
+    Group(){}
+    void add(Shape& s)  { shapes.push_back(s); }
+    void add(Shape* s)  { shapes.push_back(s); }
+
+    int size() const { return shapes.size(); }
+
+    Shape& operator[](int i) { return shapes[i]; }
+    const Shape& operator[](int i) const { return shapes[i]; }
+
+private:
+    Vector_ref<Shape> shapes;
+};
+
+//-----------------------------------------------------------------------------
+
 struct Line : Shape {
     Line(Point p1, Point p2) { add(p1); add(p2); }
 };
@@ -214,19 +232,30 @@ private:
 
 struct Binary_tree : Shape {
     Binary_tree(Point p, int ll, int ww, const string &ss = "l");
-    int levels()           const { return l;   }
-    int down_level_width() const { return dlw; }
-    double node_width()    const { return nw;  }
-    string kind_lines()    const { return kl; }
 
-    virtual void draw_nodes() const;
+    int levels()             const { return l;   }
+    int down_level_width()   const { return dlw; }
+    double node_width()      const { return nw;  }
+    string kind_lines()      const { return kl; }
+
+    const Shape& line(int i) const { return lines[i];}
+    int number_of_lines()    const { return lines.size(); }
+
+    void set_color_lines(Color col);
+
     void draw_lines() const override;
+    void move(int dx, int dy) override;
+protected:
+    virtual void draw_nodes() const;
+    virtual void choose_kind_lines(); // Выбор и расчет координат
+                                      // выбранного вида линий, соединяющих узлы
 private:
     void init();
-    int l;       // Количество уровней
-    int dlw;     // Длина нижнего уровня
-    double nw;   // Длина узла
-    string kl;   // Вид линии
+    int l;        // Количество уровней
+    int dlw;      // Длина нижнего уровня
+    double nw;    // Длина узла
+    string kl;    // Вид линий, соединяющих узлы
+    Group lines;  // Вектор линий, соединяющих узлы
 };
 
 //-----------------------------------------------------------------------------
@@ -234,24 +263,9 @@ private:
 struct Triangle_nodes_binary_tree : Binary_tree {
     using Binary_tree::Binary_tree;
     void draw_nodes() const override;
-    void draw_lines() const override;
+    //void draw_lines() const override;
 };
 
-//-----------------------------------------------------------------------------
-
-struct Group {
-    Group(){}
-    void add(Shape& s)  { shapes.push_back(s); }
-    void add(Shape* s)  { shapes.push_back(s); }
-
-    int size() const { return shapes.size(); }
-
-    Shape& operator[](int i) { return shapes[i]; }
-    const Shape& operator[](int i) const { return shapes[i]; }
-
-private:
-    Vector_ref<Shape> shapes;
-};
 
 //-----------------------------------------------------------------------------
 

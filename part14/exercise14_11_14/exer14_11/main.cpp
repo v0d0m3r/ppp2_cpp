@@ -1,4 +1,4 @@
-// exercise14_11
+// exercise14_11-14
 //-----------------------------------------------------------------------------
 
 #include "../../../bstroustrup_code/std_lib_facilities.h"
@@ -24,6 +24,19 @@ void exercise14_12()
 {
     Simple_window win{Point {0, 0}, 800, 600, "exercise 14_12"};
     Triangle_nodes_binary_tree bt{Point{100,200}, 4, 600};
+    bt.set_color_lines(Color::red);
+
+    win.attach(bt);
+    win.wait_for_button();
+}
+
+//-----------------------------------------------------------------------------
+
+void exercise14_13()
+{
+    Simple_window win{Point {0, 0}, 800, 600, "exercise 14_12"};
+    Triangle_nodes_binary_tree bt{Point{100,200}, 4, 600, "ad"};
+    bt.set_color_lines(Color::red);
 
     win.attach(bt);
     win.wait_for_button();
@@ -34,7 +47,8 @@ void exercise14_12()
 int main()
 try {
     //exercise14_11();
-    exercise14_12();
+    //exercise14_12();
+    exercise14_13();
     keep_window_open("~~");
     return 0;
 }
@@ -48,6 +62,3 @@ catch (...) {
     keep_window_open("~");
     return -2;
 }
-
-//-----------------------------------------------------------------------------
-

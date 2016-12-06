@@ -1,5 +1,6 @@
 #include "Graph.h"
 #include <map>
+#include <cassert>
 
 namespace Graph_lib {
 
@@ -23,11 +24,11 @@ void Shape::draw() const
 
 //-----------------------------------------------------------------------------
 
-bool is_kind_lines(const string& ss)
+/*bool is_kind_lines(const string& ss)
 {
     return (ss == "au" || ss == "ad"
                        || ss == "l");
-}
+}*/
 
 //-----------------------------------------------------------------------------
 
@@ -38,8 +39,8 @@ Binary_tree::Binary_tree(Point p, int ll, int ww, const string& ss)
         error("Bad Binary_tree: non-positive down_level_width");
     if (l < 0)
         error("Bad Binary_tree: no such level");
-    if (!is_kind_lines(kl))
-        error("Bad Binary_tree: don't known kind lines!");
+    /*if (!is_kind_lines(kl))
+        error("Bad Binary_tree: don't known kind lines!");*/
     add(p);
     init();
 }
@@ -60,26 +61,86 @@ void Binary_tree::init()
             add(Point{point(0).x - half_nw + coeff,
                       point(0).y + i*yh});
         }
+    choose_kind_lines();
+}
+
+//-----------------------------------------------------------------------------
+
+Arrow* get_arrow(Point b, Point e, char c)
+{
+    return (c == 'd') ? new Arrow{b,e}
+                      : new Arrow{e,b};
+}
+
+//-----------------------------------------------------------------------------
+
+void Binary_tree::choose_kind_lines()
+{
+    const double r = nw/2;
+    int half_np = number_of_points()/2;
+    int counter = 2;
+    Point b{0, 0};
+    Point e{0, 0};
+    switch (kl[0]) {
+    case 'a':
+        for (int i=1; i < half_np; ++i) {
+            for (int j=0; j < 2; ++j) {
+                if (j==0) { // Соединение с левым узлом
+                    b = Point{point(i).x+r/2.00,point(i).y+r+r};
+                    e = Point{point(counter).x+r+r/2.00,point(counter).y};
+                }
+                else {      // Соединение с правым узлом
+                    b = Point{point(i).x+r+r/2.00,point(i).y+r+r};
+                    e = Point{point(counter).x+r-r/2.00,point(counter).y};
+                }
+                lines.add(get_arrow(b, e, kl[1]));
+                ++counter;
+            }
+        }
+        break;
+    case 'l':
+        for (int i=1; i < half_np; ++i) {
+            for (int j=0; j < 2; ++j) {
+                if (j==0) {
+                    b = Point{point(i).x+r/2.00,point(i).y+r+r};
+                    e = Point{point(counter).x+r+r/2.00,point(counter).y};
+                }
+                else {
+                    b = Point{point(i).x+r+r/2.00,point(i).y+r+r};
+                    e = Point{point(counter).x+r-r/2.00,point(counter).y};
+                }
+                lines.add(new Line(b, e));
+                ++counter;
+            }
+        }
+        break;
+    }
+}
+
+//-----------------------------------------------------------------------------
+
+void Binary_tree::set_color_lines(Color col)
+{
+    for (int i=0; i < lines.size(); ++i)
+        lines[i].set_color(col);
+}
+
+//-----------------------------------------------------------------------------
+
+void Binary_tree::move(int dx, int dy)
+{
+    Shape::move(dx, dy);
+    for (int i=0; i < lines.size(); ++i)
+        lines[i].move(dx, dy);
 }
 
 //-----------------------------------------------------------------------------
 
 void Binary_tree::draw_lines() const
 {
-    const double r = nw/2;
-    int counter = 2;
-    int half_np = number_of_points()/2;
-    for (int i=1; i < half_np; ++i) {
-        for (int j=0; j < 2; ++j) {
-            if (j==0)
-                fl_line(point(i).x+r/2.00,point(i).y+r+r,
-                        point(counter).x+r+r/2.00,point(counter).y);
-            else
-                fl_line(point(i).x+r+r/2.00,point(i).y+r+r,
-                        point(counter).x+r-r/2.00,point(counter).y);
-            ++counter;
-        }
-    }
+    for (int i=0; i < lines.size(); ++i)
+        lines[i].draw();
+
     draw_nodes();
 }
 
@@ -95,9 +156,10 @@ void Binary_tree::draw_nodes() const
         fl_color(color().as_int());
     }
 
+    if (color().visibility())
+        for (int i=1; i < number_of_points(); ++i)
+            fl_arc(point(i).x, point(i).y, r+r, r+r, 0, 360);
 
-    for (int i=1; i < number_of_points(); ++i)
-        fl_arc(point(i).x, point(i).y, r+r, r+r, 0, 360);
 }
 
 //-----------------------------------------------------------------------------
@@ -116,19 +178,21 @@ void Triangle_nodes_binary_tree::draw_nodes() const
         }
         fl_color(color().as_int());
     }
-    for (int i=1; i < number_of_points(); ++i) {
-        fl_line(point(i).x+r, point(i).y,
-                point(i).x,point(i).y+r+r);
-        fl_line(point(i).x,point(i).y+r+r,
-                point(i).x+r+r,point(i).y+r+r);
-        fl_line(point(i).x+r+r,point(i).y+r+r,
-                point(i).x+r, point(i).y);
-    }
+
+    if (color().visibility())
+        for (int i=1; i < number_of_points(); ++i) {
+            fl_line(point(i).x+r, point(i).y,
+                    point(i).x,point(i).y+r+r);
+            fl_line(point(i).x,point(i).y+r+r,
+                    point(i).x+r+r,point(i).y+r+r);
+            fl_line(point(i).x+r+r,point(i).y+r+r,
+                    point(i).x+r, point(i).y);
+        }
 }
 
 //-----------------------------------------------------------------------------
 
-void Triangle_nodes_binary_tree::draw_lines() const
+/*void Triangle_nodes_binary_tree::draw_lines() const
 {
     const double r = node_width()/2.00;
     int counter = 2;
@@ -145,7 +209,7 @@ void Triangle_nodes_binary_tree::draw_lines() const
         }
     }
     draw_nodes();
-}
+}*/
 
 //-----------------------------------------------------------------------------
 // does two lines (p1,p2) and (p3,p4) intersect?
@@ -657,14 +721,13 @@ void Arrow::init()
 void Arrow::draw_lines() const
 {
     // Заполняем цветом усик
-    if (fill_color().visibility()) {
-        fl_color(fill_color().as_int());
+    if (color().visibility()) {
+        fl_color(color().as_int());
         fl_begin_complex_polygon();
         for(int i=2; i<number_of_points(); ++i){
             fl_vertex(point(i).x, point(i).y);
         }
         fl_end_complex_polygon();
-        fl_color(color().as_int());	// reset color
     }
     Lines::draw_lines();
 }
