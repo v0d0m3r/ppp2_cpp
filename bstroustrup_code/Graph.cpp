@@ -21,41 +21,133 @@ void Shape::draw() const
 	fl_line_style(0);
 }
 
+//-----------------------------------------------------------------------------
+
+bool is_kind_lines(const string& ss)
+{
+    return (ss == "au" || ss == "ad"
+                       || ss == "l");
+}
+
+//-----------------------------------------------------------------------------
+
+Binary_tree::Binary_tree(Point p, int ll, int ww, const string& ss)
+    : l{ll}, dlw{ww}, kl{ss}
+{
+    if (dlw < 0)
+        error("Bad Binary_tree: non-positive down_level_width");
+    if (l < 0)
+        error("Bad Binary_tree: no such level");
+    if (!is_kind_lines(kl))
+        error("Bad Binary_tree: don't known kind lines!");
+    add(p);
+    init();
+}
+
+//-----------------------------------------------------------------------------
+
 void Binary_tree::init()
 {
-
+    const double delta = (dlw / pow(2.00, l-1)) /  2.00;
+    nw = dlw / pow(2.00, l-1) - delta;
+    const double yh =  nw + delta;      // Шаг по ОУ
+    double coeff = 0.00;                // Расстояние от левой границы
+                                        // до узла
+    const double half_nw = nw/2.00;
+    for (int i=0; i < l; ++i)
+        for (int j=0; j < pow(2.00, i); ++j) {
+            coeff = dlw * (1+j*2) / pow(2.00, (i+1));
+            add(Point{point(0).x - half_nw + coeff,
+                      point(0).y + i*yh});
+        }
 }
+
+//-----------------------------------------------------------------------------
 
 void Binary_tree::draw_lines() const
 {
-    const double node_width = w / pow(2.0, l-1);
-    const double delta = node_width / 10;
-    const double r = node_width/2 - delta;
-    const int yh =  2*r + delta;            // Шаг по ОУ
-    const double h = l*yh - delta;          // Высота прямоугольника,
-                                            // окамляющего дерево
-    if (color().visibility()) {	// edge on top of fill
-        fl_color(color().as_int());
-        fl_rect(point(0).x,point(0).y,w,h);
-    }
-
-    fl_color(color().as_int());
-    vector<Point, Point> ponis;
-    double coeff = 0.00;    // Расстояние от левой границы, до узла
-    for (int i=0; i < l; ++i)
-        for (int j=0; j < pow(2.00, i); ++j) {
-            coeff = w * (1+j*2) / pow(2.00, (i+1));
-
-            ponis.push_back(Point{point(0).x - r + coeff,
-                                  point(0).y + i*yh});
-            fl_arc(ponis[ponis.size()-1].x,
-                   ponis[ponis.size()-1].y, r+r, r+r, 0, 360);
-
+    const double r = nw/2;
+    int counter = 2;
+    int half_np = number_of_points()/2;
+    for (int i=1; i < half_np; ++i) {
+        for (int j=0; j < 2; ++j) {
+            if (j==0)
+                fl_line(point(i).x+r/2.00,point(i).y+r+r,
+                        point(counter).x+r+r/2.00,point(counter).y);
+            else
+                fl_line(point(i).x+r+r/2.00,point(i).y+r+r,
+                        point(counter).x+r-r/2.00,point(counter).y);
+            ++counter;
         }
-
-
+    }
+    draw_nodes();
 }
 
+//-----------------------------------------------------------------------------
+
+void Binary_tree::draw_nodes() const
+{
+    const double r = nw/2.00;
+    if (fill_color().visibility()) {
+        fl_color(fill_color().as_int());
+        for (int i=1; i < number_of_points(); ++i)
+            fl_pie(point(i).x, point(i).y, r+r-1, r+r-1, 0, 360);
+        fl_color(color().as_int());
+    }
+
+
+    for (int i=1; i < number_of_points(); ++i)
+        fl_arc(point(i).x, point(i).y, r+r, r+r, 0, 360);
+}
+
+//-----------------------------------------------------------------------------
+
+void Triangle_nodes_binary_tree::draw_nodes() const
+{
+    const double r = node_width()/2.00;
+    if (fill_color().visibility()) {
+        fl_color(fill_color().as_int());
+        for(int i=1; i<number_of_points(); ++i){
+            fl_begin_complex_polygon();
+            fl_vertex(point(i).x+r, point(i).y);
+            fl_vertex(point(i).x,point(i).y+r+r);
+            fl_vertex(point(i).x+r+r,point(i).y+r+r);
+            fl_end_complex_polygon();
+        }
+        fl_color(color().as_int());
+    }
+    for (int i=1; i < number_of_points(); ++i) {
+        fl_line(point(i).x+r, point(i).y,
+                point(i).x,point(i).y+r+r);
+        fl_line(point(i).x,point(i).y+r+r,
+                point(i).x+r+r,point(i).y+r+r);
+        fl_line(point(i).x+r+r,point(i).y+r+r,
+                point(i).x+r, point(i).y);
+    }
+}
+
+//-----------------------------------------------------------------------------
+
+void Triangle_nodes_binary_tree::draw_lines() const
+{
+    const double r = node_width()/2.00;
+    int counter = 2;
+    int half_np = number_of_points()/2;
+    for (int i=1; i < half_np; ++i) {
+        for (int j=0; j < 2; ++j) {
+            if (j==0)
+                fl_line(point(i).x+r/2.0,point(i).y+r+r,
+                        point(counter).x+r,point(counter).y);
+            else
+                fl_line(point(i).x+r+r/2.0,point(i).y+r+r,
+                        point(counter).x+r,point(counter).y);
+            ++counter;
+        }
+    }
+    draw_nodes();
+}
+
+//-----------------------------------------------------------------------------
 // does two lines (p1,p2) and (p3,p4) intersect?
 // if se return the distance of the intersect point as distances from p1
 inline pair<double,double> line_intersect(Point p1, Point p2, Point p3, Point p4,
@@ -161,9 +253,10 @@ void Open_polyline::draw_lines() const
 		if (fill_color().visibility()) {
 			fl_color(fill_color().as_int());
 			fl_begin_complex_polygon();
-			for(int i=0; i<number_of_points(); ++i){
+
+            for(int i=0; i<number_of_points(); ++i)
 				fl_vertex(point(i).x, point(i).y);
-			}
+
 			fl_end_complex_polygon();
 			fl_color(color().as_int());	// reset color
 		}

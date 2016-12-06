@@ -213,19 +213,28 @@ private:
 //-----------------------------------------------------------------------------
 
 struct Binary_tree : Shape {
-    Binary_tree(Point p, int ll, int ww)
-        : l{ ll}, w{ww}
-    { add(p); }
+    Binary_tree(Point p, int ll, int ww, const string &ss = "l");
+    int levels()           const { return l;   }
+    int down_level_width() const { return dlw; }
+    double node_width()    const { return nw;  }
+    string kind_lines()    const { return kl; }
 
-    int levels() const { return l; }
-    int width() const  { return w; }
-    //void set_levels(int ll) { l = ll;}
+    virtual void draw_nodes() const;
     void draw_lines() const override;
-
 private:
     void init();
-    int l;  // Количество уровней
-    int w;  // Ширина прямоугольника, окамляющего дерево    
+    int l;       // Количество уровней
+    int dlw;     // Длина нижнего уровня
+    double nw;   // Длина узла
+    string kl;   // Вид линии
+};
+
+//-----------------------------------------------------------------------------
+
+struct Triangle_nodes_binary_tree : Binary_tree {
+    using Binary_tree::Binary_tree;
+    void draw_nodes() const override;
+    void draw_lines() const override;
 };
 
 //-----------------------------------------------------------------------------
