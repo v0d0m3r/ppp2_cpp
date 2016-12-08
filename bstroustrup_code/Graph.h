@@ -236,26 +236,30 @@ struct Binary_tree : Shape {
     int levels()             const { return l;   }
     int down_level_width()   const { return dlw; }
     double node_width()      const { return nw;  }
-    string kind_lines()      const { return kl; }
+    string kind_edges()      const { return ke; }
 
-    const Shape& line(int i) const { return lines[i];}
-    int number_of_lines()    const { return lines.size(); }
+    void add_text_node(const string& loc,
+                       const string& lab);
 
-    void set_color_lines(Color col);
+    const Shape& edge(int i) const { return edges[i];}
+    int number_of_edges()    const { return edges.size(); }
+
+    void set_color_edges(Color col);
 
     void draw_lines() const override;
     void move(int dx, int dy) override;
 protected:
     virtual void draw_nodes() const;
-    virtual void choose_kind_lines(); // Выбор и расчет координат
-                                      // выбранного вида линий, соединяющих узлы
+    virtual void choose_kind_edges(); // Выбор вида и расчет
+                                      // координат ребер
 private:
     void init();
-    int l;        // Количество уровней
-    int dlw;      // Длина нижнего уровня
-    double nw;    // Длина узла
-    string kl;    // Вид линий, соединяющих узлы
-    Group lines;  // Вектор линий, соединяющих узлы
+    int l;            // Количество уровней
+    int dlw;          // Длина нижнего уровня
+    double nw;        // Длина узла
+    string ke;        // Вид линий, соединяющих узлы
+    Group edges;      // Ребра, соединяющие узлы
+    vector<string> lab_nodes;
 };
 
 //-----------------------------------------------------------------------------

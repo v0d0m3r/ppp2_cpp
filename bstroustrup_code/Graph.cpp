@@ -33,7 +33,7 @@ void Shape::draw() const
 //-----------------------------------------------------------------------------
 
 Binary_tree::Binary_tree(Point p, int ll, int ww, const string& ss)
-    : l{ll}, dlw{ww}, kl{ss}
+    : l{ll}, dlw{ww}, ke{ss}
 {
     if (dlw < 0)
         error("Bad Binary_tree: non-positive down_level_width");
@@ -55,13 +55,28 @@ void Binary_tree::init()
     double coeff = 0.00;                // Расстояние от левой границы
                                         // до узла
     const double half_nw = nw/2.00;
+    lab_nodes.push_back("");
     for (int i=0; i < l; ++i)
         for (int j=0; j < pow(2.00, i); ++j) {
             coeff = dlw * (1+j*2) / pow(2.00, (i+1));
             add(Point{point(0).x - half_nw + coeff,
                       point(0).y + i*yh});
+            lab_nodes.push_back("");
         }
-    choose_kind_lines();
+    choose_kind_edges();
+}
+
+//-----------------------------------------------------------------------------
+
+void Binary_tree::add_text_node(const string& loc,
+                                const string& lab)
+{
+    if (loc.size() > l || loc.size() == 0)
+        error("Binary_tree::add_text_node:",
+              "don't correct location nodes");
+
+
+
 }
 
 //-----------------------------------------------------------------------------
@@ -74,14 +89,14 @@ Arrow* get_arrow(Point b, Point e, char c)
 
 //-----------------------------------------------------------------------------
 
-void Binary_tree::choose_kind_lines()
+void Binary_tree::choose_kind_edges()
 {
     const double r = nw/2;
     int half_np = number_of_points()/2;
     int counter = 2;
     Point b{0, 0};
     Point e{0, 0};
-    switch (kl[0]) {
+    switch (ke.front()) {
     case 'a':
         for (int i=1; i < half_np; ++i) {
             for (int j=0; j < 2; ++j) {
@@ -93,7 +108,7 @@ void Binary_tree::choose_kind_lines()
                     b = Point{point(i).x+r+r/2.00,point(i).y+r+r};
                     e = Point{point(counter).x+r-r/2.00,point(counter).y};
                 }
-                lines.add(get_arrow(b, e, kl[1]));
+                edges.add(get_arrow(b, e, ke[1]));
                 ++counter;
             }
         }
@@ -109,7 +124,7 @@ void Binary_tree::choose_kind_lines()
                     b = Point{point(i).x+r+r/2.00,point(i).y+r+r};
                     e = Point{point(counter).x+r-r/2.00,point(counter).y};
                 }
-                lines.add(new Line(b, e));
+                edges.add(new Line(b, e));
                 ++counter;
             }
         }
@@ -119,10 +134,10 @@ void Binary_tree::choose_kind_lines()
 
 //-----------------------------------------------------------------------------
 
-void Binary_tree::set_color_lines(Color col)
+void Binary_tree::set_color_edges(Color col)
 {
-    for (int i=0; i < lines.size(); ++i)
-        lines[i].set_color(col);
+    for (int i=0; i < edges.size(); ++i)
+        edges[i].set_color(col);
 }
 
 //-----------------------------------------------------------------------------
@@ -130,16 +145,16 @@ void Binary_tree::set_color_lines(Color col)
 void Binary_tree::move(int dx, int dy)
 {
     Shape::move(dx, dy);
-    for (int i=0; i < lines.size(); ++i)
-        lines[i].move(dx, dy);
+    for (int i=0; i < edges.size(); ++i)
+        edges[i].move(dx, dy);
 }
 
 //-----------------------------------------------------------------------------
 
 void Binary_tree::draw_lines() const
 {
-    for (int i=0; i < lines.size(); ++i)
-        lines[i].draw();
+    for (int i=0; i < edges.size(); ++i)
+        edges[i].draw();
 
     draw_nodes();
 }
