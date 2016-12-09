@@ -70,13 +70,49 @@ void Binary_tree::init()
 
 void Binary_tree::add_text_node(const string& loc,
                                 const string& lab)
-{
-    if (loc.size() > l || loc.size() == 0)
+{    
+    if (loc.size() > l)
         error("Binary_tree::add_text_node:",
               "don't correct location nodes");
+    if (loc.front() != 'b')
+        error("Binary_tree::add_text_node:",
+              "location must have symbol base");
 
+    static constexpr int lcoeff = 0;
+    static constexpr int rcoeff = 1;
 
+    int counter = 1;
+    istringstream is{loc};
+    for (char ch = 0; is >> ch;) {
+        switch (ch) {
+        case 'b':
+            break;
+        case 'l':
+            counter *= 2;
+            counter += lcoeff;
+            break;
+        case 'r':
+            counter *= 2;
+            counter+=rcoeff;
+            break;
+        default:
+            error("Binary_tree::add_text_node:",
+                  "don't known symbol location");
+            break;
+        }
 
+    }
+    lab_nodes[counter] = lab;
+}
+
+//-----------------------------------------------------------------------------
+
+void draw_label(Point xy, const string& lab)
+{
+    static const int dx = 4;
+    static const int dy = 4;
+
+    fl_draw(lab.c_str(),xy.x-dx,xy.y+dy);
 }
 
 //-----------------------------------------------------------------------------
@@ -157,6 +193,10 @@ void Binary_tree::draw_lines() const
         edges[i].draw();
 
     draw_nodes();
+
+    for (int i = 1; i < number_of_points(); ++i)
+        if (lab_nodes[i] != "")
+            draw_label(point(i), lab_nodes[i]);
 }
 
 //-----------------------------------------------------------------------------

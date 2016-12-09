@@ -236,12 +236,12 @@ struct Binary_tree : Shape {
     int levels()             const { return l;   }
     int down_level_width()   const { return dlw; }
     double node_width()      const { return nw;  }
-    string kind_edges()      const { return ke; }
+    string kind_edges()      const { return ke;  }
 
     void add_text_node(const string& loc,
                        const string& lab);
 
-    const Shape& edge(int i) const { return edges[i];}
+    const Shape& edge(int i) const { return edges[i];     }
     int number_of_edges()    const { return edges.size(); }
 
     void set_color_edges(Color col);
