@@ -346,6 +346,7 @@ private:
 struct Texted_box : Box {
     Texted_box(Point xy, int rww, int rhh, const string& s)
         : Box {xy, rww, rhh}, lab{s} {}
+    Texted_box(Point xy, const string& s);
     void draw_lines() const;
 private:
     string lab;

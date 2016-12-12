@@ -1269,6 +1269,35 @@ void Marked_polyline::draw_lines() const
 }
 
 //-----------------------------------------------------------------------------
+
+int get_width_string(const string& s)
+{
+    int ofsize = fl_size();
+    fl_font(fl_font(), 14);
+    int width = fl_width(s.c_str());
+    width += 20;
+    fl_font(fl_font(), ofsize);
+    return width;
+}
+
+//-----------------------------------------------------------------------------
+
+int get_height_string()
+{
+    int height = fl_height(fl_font(), 14);
+    height += 20;
+    return height;
+}
+
+//-----------------------------------------------------------------------------
+
+Texted_box::Texted_box(Point xy, const string &s)
+    : Box {xy, get_width_string(s), get_height_string()}, lab{s}
+{
+
+}
+
+//-----------------------------------------------------------------------------
 // Exercise 13_6
 void Texted_box::draw_lines() const
 {
