@@ -1,3 +1,4 @@
+//-----------------------------------------------------------------------------
 // exercise14_17
 //-----------------------------------------------------------------------------
 
@@ -8,33 +9,64 @@
 #include <locale.h>
 
 //-----------------------------------------------------------------------------
+// Имена прямых потомков exception
+const vector<string> exception_labels = {
+    "logic_error", "bad_typeid",   "runtime_error",
+    "bad_cast",    "bad_weak_ptr", "bad_function_call",
+    "bad_alloc",   "bad_exception"
+};
 
-void init_exeption_items(Simple_window& win,
-                         Vector_ref<Texted_box>& vr)
+//-----------------------------------------------------------------------------
+// Номера элементов ..._labels имеющие потомков
+enum kind_exception {
+    logic = 1, runtime = 3, badalloc = 7, syst = 3
+};
+
+//-----------------------------------------------------------------------------
+// Имена прямых потомков logic_error
+const vector<string> logic_labels = {
+    "invalid_argument", "domain_error",
+    "length_error",     "out_of_range",
+    "future_error"
+};
+
+//-----------------------------------------------------------------------------
+// Имена прямых потомков runtime_error
+const vector<string> runtime_labels = {
+    "range_error",      "overflow_error",
+    "underflow_error",  "system_error"
+};
+
+//-----------------------------------------------------------------------------
+// Создание текстовых ячеек и связывание их с окном
+void init_items(Point start, Point d, const vector<string>& labels,
+                Vector_ref<Texted_box>& vr)
 {
-    const int height0 = win.y_max()/20;
-    const int hy = 4 * height0;
-    constexpr int xborder = 10;
-
-    static const vector<string> exception_labels = {
-        "logic_error", "bad_typeid",   "runtime_error",
-        "bad_cast",    "bad_weak_ptr", "bad_function_call",
-        "bad_alloc",   "bad_exception"
-    };
-    const double dx = win.x_max() * 1.00 / exception_labels.size();
-    for (int i=0; i < exception_labels.size(); ++i)
+    for (int i=0; i < labels.size(); ++i)
         if (i == 0)
-            vr.push_back(new Texted_box {
-                                Point{xborder, height0 + hy},
-                                exception_labels[i]
-                         });
+            vr.push_back(new Texted_box{start,labels[i]});
         else
             vr.push_back(new Texted_box {
-                                Point{vr[vr.size()-1].point(0).x + dx,
-                                      vr[vr.size()-1].point(0).y},
-                                exception_labels[i]
+                                Point{
+                                 vr[vr.size()-1].point(0).x + d.x,
+                                 vr[vr.size()-1].point(0).y + d.y
+                             },
+                             labels[i]
                          });
-    for (int i =0; i < vr.size(); ++i)
+}
+
+//-----------------------------------------------------------------------------
+
+void init_exception_items(Simple_window& win,
+                          Vector_ref<Texted_box>& vr)
+{
+    const int height0 = win.y_max()/20; // Начальная высота
+    const int hy = 6 * height0;         // Шаг по ОУ
+    const int dx = win.x_max() * 1.00 / exception_labels.size();
+    const int dy = 0;
+    init_items(Point{10, height0 + hy}, Point{dx, dy},
+               exception_labels, vr);
+    for (int i=0; i < vr.size(); ++i)
         win.attach(vr[i]);
 }
 
@@ -44,60 +76,113 @@ void init_logic_items(Simple_window& win,
                       Vector_ref<Texted_box>& vr)
 {
     const int height0 = win.y_max()/20;
-    const int hy = 4 * height0;
-    constexpr int xborder = 40;
-    static const vector<string> logic_labels = {
-        "invalid_argument", "domain_error",
-        "length_error",     "out_of_range",
-        "future_error"
-    };
-    for (int i=0; i < logic_labels.size(); ++i)
-        if (i == 0)
-            vr.push_back(new Texted_box {
-                                Point{xborder, height0 + hy + hy/3},
-                                logic_labels[i]
-                         });
-        else
-            vr.push_back(new Texted_box {
-                                Point{xborder, vr[vr.size()-1].point(0).y + hy/3},
-                                logic_labels[i]
-                         });
+    const int hy = 6 * height0;
+    const int dx = 0;
+    const int dy = hy/4;
+    init_items(Point{40, height0 + hy + hy/3}, Point{dx, dy},
+               logic_labels, vr);
     for (int i =0; i < vr.size(); ++i)
         win.attach(vr[i]);
 }
 
 //-----------------------------------------------------------------------------
 
-void init_runtime_items(int width0, int height0,
+void init_runtime_items(Simple_window& win,
                         Vector_ref<Texted_box>& vr)
 {
-    /*static const vector<string> labels = {
+    const int height0 = win.y_max()/20;
+    const int hy = 6 * height0;
+    const int dx = 0;
+    const int dy = hy/4;
+    init_items(Point{350, height0 + hy + hy/3}, Point{dx, dy},
+               runtime_labels, vr);
 
-                  ,        ,
-        ,    ,
-        ,     ,    ,
-        ,         ,    ,
-        ,       , ,
-        "bad_array_new_length", "ios_base::failure"
-    };*/
-    const int hy = 4 * height0;
-    constexpr int xborder = 220;
-    int dw = -20;
-    vr.push_back(new Texted_box {Point{xborder, height0 + hy + hy/3},
-                                 width0 + dw, height0, "range_error"});
-    dw = -2;
-    vr.push_back(new Texted_box {Point{vr[vr.size()-1].point(0).x,
-                                       vr[vr.size()-1].point(0).y + hy/3},
-                                 width0 + dw, height0, "overflow_error"});
-    dw = 5;
-    vr.push_back(new Texted_box {Point{vr[vr.size()-1].point(0).x,
-                                       vr[vr.size()-1].point(0).y + hy/3},
-                                 width0 + dw, height0, "underflow_error"});
-    dw = -13;
-    vr.push_back(new Texted_box {Point{vr[vr.size()-1].point(0).x,
-                                       vr[vr.size()-1].point(0).y + hy/3},
-                                 width0 + dw, height0, "system_error"});
+    for (int i =0; i < vr.size(); ++i)
+        win.attach(vr[i]);
+}
 
+//-----------------------------------------------------------------------------
+
+void init_badalloc_items(Simple_window& win,
+                         Vector_ref<Texted_box>& vr)
+{
+    const int height0 = win.y_max()/20;
+    const int hy = 6 * height0;
+    static const vector<string> badalloc_labels = {
+        "bad_array_new_length"
+    };
+    const int dx = 0;
+    const int dy = hy/4;
+    init_items(Point{930, height0 + hy + hy/3}, Point{dx, dy},
+               badalloc_labels, vr);
+
+    for (int i =0; i < vr.size(); ++i)
+        win.attach(vr[i]);
+}
+
+//-----------------------------------------------------------------------------
+
+void init_system_items(Simple_window& win,
+                       Vector_ref<Texted_box>& vr)
+{
+    const int height0 = win.y_max()/20;
+    const int hy = 6 * height0;
+    static const vector<string> system_labels = {
+        "ios_base::failure"
+    };
+    const int dx = 0;
+    const int dy = hy/4;
+    init_items(Point{380, height0 + hy + hy + hy/3}, Point{dx, dy},
+               system_labels, vr);
+
+    for (int i =0; i < vr.size(); ++i)
+        win.attach(vr[i]);
+}
+
+//-----------------------------------------------------------------------------
+
+void go_to_exception(const Vector_ref<Texted_box>& vr,
+                     Vector_ref<Arrow>& arrows)
+{
+    Point b{0, 0};
+    Point e{vr[0].point(0).x,
+            vr[0].point(0).y + vr[0].height()};
+    int dx = vr[0].width() / vr.size();
+    for (int i=1; i < vr.size(); ++i) {
+        b = Point{vr[i].point(0).x + vr[i].width()/2,
+                  vr[i].point(0).y};
+        e = Point{e.x + dx,e.y};
+        arrows.push_back(new Arrow(b, e));
+
+    }
+}
+
+//-----------------------------------------------------------------------------
+
+void go_to_item(kind_exception ke,
+                const Vector_ref<Texted_box>& from,
+                const Vector_ref<Texted_box>& to,
+                Vector_ref<Arrow>& arrows, Lines& lines)
+
+{
+    for (int i=0; i < from.size(); ++i)
+        lines.add(Point{
+                      from[i].point(0).x,
+                      from[i].point(0).y+from[i].height()/2,
+                  },
+                  Point{
+                      to[ke].point(0).x,
+                      from[i].point(0).y+from[i].height()/2
+                  });
+    arrows.push_back(new Arrow(
+                         Point{
+                             lines.point(lines.number_of_points()-1).x,
+                             lines.point(lines.number_of_points()-1).y
+                         },
+                         Point{
+                             to[ke].point(0).x,
+                             to[ke].point(0).y+to[ke].height()
+                         }));
 }
 
 //-----------------------------------------------------------------------------
@@ -106,26 +191,40 @@ void exercise14_17()
 {
     Simple_window win{Point {0, 0}, 1200, 800, "exercise 14_17"};
 
-    const int width0 = win.x_max()/10;
-    const int height0 = win.y_max()/20;
-
+    const int width0 = 175;
     Point start{win.x_max()/2-width0,win.y_max()/10};
-    Vector_ref<Texted_box> exeption_items;
-    exeption_items.push_back(new Texted_box {start, "exception"});
-    init_exeption_items(win, exeption_items);
-
-    Vector_ref<Texted_box> logic_items;
-    init_logic_items(win, logic_items);
-
-    Vector_ref<Texted_box> runtime_items;
-    init_runtime_items(width0, height0, runtime_items);
-
-    for (int i=0; i < exeption_items.size(); ++i)
-        win.attach(exeption_items[i]);
-    for (int i =0; i < runtime_items.size(); ++i)
-        win.attach(runtime_items[i]);
 
 
+    Vector_ref<Texted_box> ei;  // Потомки exception
+    ei.push_back(new Texted_box {start,350, 30,
+                                        "                    "
+                                        "               exception"});
+    init_exception_items(win, ei);
+
+    Vector_ref<Texted_box> li;  // Потомки logic_error
+    init_logic_items(win, li);
+
+    Vector_ref<Texted_box> ri;  // Потомки runtime_error
+    init_runtime_items(win, ri);
+
+    Vector_ref<Texted_box> bi;  // Потомки bad_alloc
+    init_badalloc_items(win, bi);
+
+    Vector_ref<Texted_box> si;  // Потомки bad_alloc
+    init_system_items(win, si);
+
+    Vector_ref<Arrow> arrows;   // Стрелки от потомков к родителям
+    go_to_exception(ei, arrows);
+
+    Lines lines;                // Линии для общих родителей
+    go_to_item(badalloc, bi, ei, arrows, lines);
+    go_to_item(logic,    li, ei, arrows, lines);
+    go_to_item(runtime,  ri, ei, arrows, lines);
+    go_to_item(syst,     si, ri, arrows, lines);
+
+    for(int i=0; i < arrows.size(); ++i)
+        win.attach(arrows[i]);
+    win.attach(lines);
     win.wait_for_button();
 }
 
