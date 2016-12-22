@@ -7,8 +7,8 @@ namespace Graph_lib {
 void Shape::draw_lines() const
 {
 	if (color().visibility() && 1<points.size())	// draw sole pixel?
-		for (unsigned int i=1; i<points.size(); ++i)
-			fl_line(points[i-1].x,points[i-1].y,points[i].x,points[i].y);
+        for (unsigned int i=1; i<points.size(); ++i)
+            fl_line(points[i-1].x,points[i-1].y,points[i].x,points[i].y);
 }
 
 void Shape::draw() const
@@ -510,14 +510,29 @@ Function::Function(Fct f, double r1, double r2, Point xy, int count,
 // graph f(x) for x in [r1:r2) using count line segments with (0,0) displayed at xy
 // x coordinates are scaled by xscale and y coordinates scaled by yscale
 {
-	if (r2-r1<=0) error("bad graphing range");
-	if (count<=0) error("non-positive graphing count");
-	double dist = (r2-r1)/count;
-	double r = r1;
-	for (int i = 0; i<count; ++i) {
-		add(Point(xy.x+int(r*xscale),xy.y-int(f(r)*yscale)));
-		r += dist;
-	}
+    if (r2-r1<=0) error("bad graphing range");
+    if (count<=0) error("non-positive graphing count");
+    double dist = (r2-r1)/count;
+    double r = r1;
+    for (int i = 0; i<count; ++i) {
+        add(Point(xy.x+int(r*xscale),xy.y-int(f(r)*yscale)));
+        r += dist;
+    }
+}
+
+Function::Function(Point xy, Fct_capture f, double r1, double r2,  int count,
+                   double xscale, double yscale)
+// graph f(x) for x in [r1:r2) using count line segments with (0,0) displayed at xy
+// x coordinates are scaled by xscale and y coordinates scaled by yscale
+{
+    if (r2-r1<=0) error("bad graphing range");
+    if (count<=0) error("non-positive graphing count");
+    double dist = (r2-r1)/count;
+    double r = r1;
+    for (int i = 0; i<count; ++i) {
+        add(Point(xy.x+int(r*xscale),xy.y-int(f(r)*yscale)));
+        r += dist;
+    }
 }
 
 void Rectangle::draw_lines() const
@@ -973,44 +988,47 @@ void Right_triangle::draw_lines() const
 
 //-----------------------------------------------------------------------------
 
-Axis::Axis(Orientation d, Point xy, int length, int n, string lab)
-	:label(Point(0,0),lab)
+Axis::Axis(Orientation d, Point xy, int length,
+           int n, string lab) : label{Point{0, 0}, lab}
 {
-	if (length<0) error("bad axis length");
-	switch (d){
-	case Axis::x:
-		{	Shape::add(xy);	// axis line
-			Shape::add(Point(xy.x+length,xy.y));	// axis line
-			if (1<n) {
-				int dist = length/n;
-				int x = xy.x+dist;
-				for (int i = 0; i<n; ++i) {
-					notches.add(Point(x,xy.y),Point(x,xy.y-5));
-				x += dist;
-			}
-		}
-		// label under the line
-		label.move(length/3,xy.y+20);
-		break;
-	}
-	case Axis::y:
-		{	Shape::add(xy);	// a y-axis goes up
-			Shape::add(Point(xy.x,xy.y-length));
-			if (1<n) {
-			int dist = length/n;
-			int y = xy.y-dist;
-			for (int i = 0; i<n; ++i) {
-				notches.add(Point(xy.x,y),Point(xy.x+5,y));
-				y -= dist;
-			}
-		}
-		// label at top
-		label.move(xy.x-10,xy.y-length-10);
-		break;
-	}
-	case Axis::z:
-		error("z axis not implemented");
-	}
+    if (length < 0) error("Неверная длина оси");
+    switch (d) {
+    case Axis::x:
+    {
+        Shape::add(xy); // Линия Оси
+        Shape::add(Point{xy.x+length, xy.y});
+
+        if (n > 0) {    // Добавление делений
+            int dist = length / n;
+            int x = xy.x + dist;
+            for (int i=0; i < n; ++i) {
+                notches.add(Point{x, xy.y}, Point{x, xy.y - 5});
+                x += dist;
+            }
+        }
+        label.move(length/3, xy.y+20);  // Метка под линией
+        break;
+    }
+    case Axis::y:
+    {
+        Shape::add(xy); // Линия Оси y
+        Shape::add(Point{xy.x, xy.y - length});
+
+        if (0 < n) {    // Добавление делений
+            int dist = length / n;
+            int y = xy.y - dist;
+            for (int i=0; i < n; ++i) {
+                notches.add(Point{xy.x, y}, Point{xy.x + 5, y});
+                y -= dist;
+            }
+        }
+        label.move(xy.x - 10, xy.y- length - 10);  // Метка вверху
+        break;
+    }
+    case Axis::z:
+        error("Ось z не реализована");
+    }
+
 }
 
 void Axis::draw_lines() const
@@ -1023,9 +1041,9 @@ void Axis::draw_lines() const
 
 void Axis::set_color(Color c)
 {
-	Shape::set_color(c);
-	notches.set_color(c);
-	label.set_color(c);
+    Shape::set_color(c);
+    notches.set_color(c);
+    label.set_color(c);
 }
 
 void Axis::move(int dx, int dy)

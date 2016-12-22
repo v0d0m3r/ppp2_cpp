@@ -112,6 +112,7 @@ public:
 };
 
 typedef double Fct(double);
+typedef function<double(double)> Fct_capture ;
 
 class Shape  {	// deals with color and style, and holds sequence of lines
 protected:
@@ -167,6 +168,7 @@ private:
 struct Function : Shape {
     // the function parameters are not stored
     Function(Fct f, double r1, double r2, Point orig, int count = 100, double xscale = 25, double yscale = 25);
+    Function(Point orig, Fct_capture f, double r1, double r2, int count = 100, double xscale = 25, double yscale = 25);
     //Function(Point orig, Fct f, double r1, double r2, int count, double xscale = 1, double yscale = 1);
 };
 
@@ -446,19 +448,16 @@ private:
 };
 
 struct Axis : Shape {
-    // representation left public
-    enum Orientation { x, y, z };
-    Axis(Orientation d, Point xy, int length, int nummber_of_notches=0, string label = "");
+    enum Orientation{ x, y, z };
+    Axis(Orientation d, Point xy, int length,
+         int number_of_notches = 0, string label = 0);
 
-    void draw_lines() const;
-    void move(int dx, int dy);
-
+    void draw_lines() const override;
+    void move(int dx, int dy) override;
     void set_color(Color c);
 
     Text label;
     Lines notches;
-//	Orientation orin;
-//	int notches;
 };
 
 struct Circle : Shape {
