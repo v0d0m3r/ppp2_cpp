@@ -54,7 +54,7 @@ void example()
     win.wait_for_button();
 
     constexpr int xlength = xmax - 40;  // Оси чуть меньше окна
-    constexpr int ylength = xmax - 40;
+    constexpr int ylength = ymax - 40;
 
     Axis x{Axis::x, Point{20, y_orig},
            xlength, xlength/x_scale, "one notch = 1"};
@@ -264,9 +264,10 @@ void grafical_present_data15_6()
 
     Axis x{Axis::x, Point{xoffset, ymax-yoffset}, xlenght,
            (end_year-base_year)/10,
-           "year 1960 1970 1980 1990 "
-           "2000 2010 2020 2030 2040"};
-    x.label.move(-100, 0);
+           "year  "
+           "1960      1970      1980      1990      "
+           "2000      2010      2020      2030      2040"};
+    x.label.move(-90, 0);
 
     Axis y{Axis::y, Point{xoffset, ymax-yoffset}, ylenght, 10,
            "% of population"};
@@ -380,32 +381,39 @@ void task_build_graph()
 //-----------------------------------------------------------------------------
 
 struct Person {
-    Person(const string& name, int age);
+    Person(const string& first_name,
+           const string& second_name, int age);
     Person();
 
-    string name() const {return n;}
-    int    age () const {return a;}
+    string first_name()  const {return fn;}
+    string second_name() const {return sn;}
+    int    age()         const {return a;}
 
     //void set_name(const string& name) { n = name; }
     //void set_age (int age)            { a = age;  }
 private:
-    string n;
+    string fn;
+    string sn;
     int    a;
 };
 
 //-----------------------------------------------------------------------------
 
-bool is_person(const string& name, int age)
+bool is_person(const string& first_name,
+               const string& second_name, int age)
 {
     static constexpr int max_age = 149; // Возраст в диапозоне [0, 150)
     static constexpr int min_age = 0;
-    if (age<min_age && age>max_age) return false;
-    stringstream ss{name};
+
+    if (age<min_age || age>max_age) return false;
+
+    stringstream ss{first_name + second_name};
     for (char ch=0; ss >> ch;) {
         switch (ch) {
         case ';': case ':': case '"': case '\'': case'[':
         case ']': case '*': case '&': case '^' : case '%':
-
+        case '$': case '#': case '@': case '!':
+            return false;
         }
     }
     return true;
@@ -413,23 +421,26 @@ bool is_person(const string& name, int age)
 
 //-----------------------------------------------------------------------------
 
-Person::Person(const string& name, int age) : n{name}, a{age}
+Person::Person(const string& first_name,
+               const string& second_name, int age)
+    : fn{first_name}, sn{second_name}, a{age}
 {
-    if (!is_person(name, age)) error("not person");
+    if (!is_person(first_name, second_name, age)) error("not person");
 }
 
 //-----------------------------------------------------------------------------
 
 const Person& default_person()
 {
-    static Person pp{"Unnamed", 0};
+    static Person pp{"Unnamed", "Unsonamed", 0};
     return pp;
 }
 
 //-----------------------------------------------------------------------------
 
 Person::Person()
-    : n{default_person().name()},
+    : fn{default_person().first_name()},
+      sn{default_person().second_name()},
       a{default_person().age()}
 {}
 
@@ -440,10 +451,11 @@ istream& operator>>(istream& is, Person& p)
     char ch1 = 0;
     char ch2 = 0;
 
-    string name;
+    string fname;
+    string sname;
     int age = 0;
 
-    if (is >> ch1 >> name
+    if (is >> ch1 >> fname >> sname
            >> age >> ch2) {
         if (ch1!='(' || ch2!=')') {
             is.clear(ios_base::failbit);
@@ -452,7 +464,7 @@ istream& operator>>(istream& is, Person& p)
     }
     else
         return is;
-    p = Person{name, age};
+    p = Person{fname, sname, age};
     return is;
 }
 
@@ -460,7 +472,8 @@ istream& operator>>(istream& is, Person& p)
 
 ostream& operator<<(ostream& os, const Person& p)
 {
-   return os << '(' << p.name() << ' ' << p.age() << ')';
+   return os << '(' << p.first_name()
+             << ' ' << p.second_name() << ' ' << p.age() << ')';
 }
 
 //-----------------------------------------------------------------------------
@@ -480,12 +493,16 @@ ostream& operator<<(ostream& os, const Person& p)
 void task_class_definition2()
 {
     string greeting = "Введите персону в формате "
-                      "\"(имя возвраст)\"\n";
+                      "\"(имя фамилия возвраст)\"\n";
     cout << greeting;
-    for(Person p; cin >> p;)
-        cout << "Вы ввели персону - " << p << '\n'
-             << greeting;
+    vector<Person> vp;
+    for(Person p; cin >> p;) {
+        vp.push_back(p);
+        cout << greeting;
+    }
 
+    for(int i=0; i < vp.size(); ++i)
+        cout << "Вы ввели персону - " << vp[i] << '\n';
 }
 
 //-----------------------------------------------------------------------------

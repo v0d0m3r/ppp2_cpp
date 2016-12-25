@@ -112,7 +112,8 @@ public:
 };
 
 typedef double Fct(double);
-typedef function<double(double)> Fct_capture ;
+typedef function<double(double)> Fct_capture;
+
 
 class Shape  {	// deals with color and style, and holds sequence of lines
 protected:
@@ -165,12 +166,32 @@ private:
 //	Shape& operator=(const Shape&);
 };
 
+// Note that f can be either a function or a lambda.
+// Solution courtesy of Jordan Harris <jordanharris1175@gmail.com>
 struct Function : Shape {
     // the function parameters are not stored
-    Function(Fct f, double r1, double r2, Point orig, int count = 100, double xscale = 25, double yscale = 25);
-    Function(Point orig, Fct_capture f, double r1, double r2, int count = 100, double xscale = 25, double yscale = 25);
+    Function(Fct f, double r1, double r2, Point orig, int count = 100,
+             double xscale = 25, double yscale = 25);
+    Function(Point orig, Fct_capture f, double r1, double r2, int count = 100,
+             double xscale = 25, double yscale = 25);
     //Function(Point orig, Fct f, double r1, double r2, int count, double xscale = 1, double yscale = 1);
 };
+
+/*struct Function : Shape {
+      // the function parameters are not stored
+      template <typename Fct = double(double)>
+      Function(Fct f, double r1, double r2, Point xy,
+               int count = 100, double xscale = 25, double yscale = 25) {
+         if (r2-r1<=0) error("bad graphing range");
+         if (count<=0) error("non-positive graphing count");
+         double dist = (r2-r1)/count;
+         double r = r1;
+         for (int i = 0; i<count; ++i) {
+            add(Point{xy.x+int(r*xscale), xy.y-int(f(r)*yscale)});
+            r += dist;
+         }
+      }
+   };*/
 
 struct Fill {
     Fill() :no_fill(true), fcolor(0) { }

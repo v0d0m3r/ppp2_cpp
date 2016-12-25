@@ -515,7 +515,7 @@ Function::Function(Fct f, double r1, double r2, Point xy, int count,
     double dist = (r2-r1)/count;
     double r = r1;
     for (int i = 0; i<count; ++i) {
-        add(Point(xy.x+int(r*xscale),xy.y-int(f(r)*yscale)));
+        add(Point{xy.x+int(r*xscale),xy.y-int(f(r)*yscale)});
         r += dist;
     }
 }
