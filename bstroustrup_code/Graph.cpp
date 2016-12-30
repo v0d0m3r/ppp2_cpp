@@ -552,6 +552,7 @@ Fnctn::Fnctn(Fct ff, double r_min, double r_max, Point orig, int count,
     if (is_fnctn(r_min, r_max, count))
         error("Don't correct Fnctn");
     add(orig);
+    recalculate();
 }
 
 //-----------------------------------------------------------------------------
@@ -563,24 +564,14 @@ Fnctn::Fnctn(Fct_capture ff, double r_min, double r_max, Point orig, int count,
 {
     if (is_fnctn(r_min, r_max, count))
         error("Don't correct Fnctn");
-    add(orig);
+    recalculate();
 }
 
 //-----------------------------------------------------------------------------
 
-void Fnctn::draw_lines() const
+void Fnctn::recalculate()
 {
-    double dist = (r2-r1)/cp;
-    double r = r1;
-    Point a{0, 0};
-    Point b{0, 0};
-    if (color().visibility())	// draw sole pixel?
-        for (int i = 0; i < cp-1; ++i) {
-            a = Point{point(0).x+int(r*xs),point(0).y-int(f(r)*ys)};
-            r += dist;
-            b = Point{point(0).x+int(r*xs),point(0).y-int(f(r)*ys)};
-            fl_line(a.x, a.y, b.x, b.y);
-        }
+
 }
 
 //-----------------------------------------------------------------------------

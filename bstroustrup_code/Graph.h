@@ -180,25 +180,39 @@ struct Function : Shape {
 
 //-----------------------------------------------------------------------------
 
-class Fnctn : Shape{
+class Fnctn : Shape {
 public:
     Fnctn(Fct ff, double r_min, double r_max, Point orig, int count = 100,
           double xscale = 25, double yscale = 25);
     Fnctn(Fct_capture ff, double r_min, double r_max, Point orig, int count = 100,
           double xscale = 25, double yscale = 25);
 
-    double r_min()       const { return r1; }
-    double r_max()       const { return r2; }
+    double r_min()                  const { return r1; }
+    double r_max()                  const { return r2; }
 
-    double xscale()      const { return xs; }
-    double yscale()      const { return ys; }
+    double xscale()                 const { return xs; }
+    double yscale()                 const { return ys; }
 
-    int count_of_point() const { return cp; }
-    bool is_fct()        const { return fct_flag; }
+    int count_of_point()            const { return cp; }
+    //Point orig()                    const { return xy; }
 
-    void draw_lines()    const override;
+    void set_r_min(double r_min)          { r1 = r_min; }
+    void set_r_max(double r_max)          { r2 = r_max; }
 
+    void set_xscale(double xscale)        { xs = xscale; }
+    void set_yscale(double yscale)        { ys = yscale; }
 
+    void set_count_of_point(int count)    { cp = count; }
+
+    void set_function(Fct* ff)            { f = ff;  }
+    void set_function(Fct_capture* ff)    { fc = ff; }
+
+protected:
+    Fct*         function()         const { return f;  }
+    Fct_capture* function_capture() const { return fc; }
+    void set_function_flag() ;
+    bool is_function()              const { return fct_flag; }
+    virtual void recalculate();
 private:
     bool fct_flag;
     Fct* f;
@@ -206,6 +220,7 @@ private:
     double r1, r2;
     int cp;
     double xs, ys;
+    Point xy;
 };
 
 //-----------------------------------------------------------------------------
