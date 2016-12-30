@@ -505,7 +505,89 @@ void Text::draw_lines() const
 	fl_font(ofnt,osz);
 }
 
+
+// the function parameters are not stored
 Function::Function(Fct f, double r1, double r2, Point xy, int count,
+         double xscale, double yscale)
+{
+    if (r2-r1<=0) error("bad graphing range");
+    if (count<=0) error("non-positive graphing count");
+    double dist = (r2-r1)/count;
+    double r = r1;
+    for (int i = 0; i<count; ++i) {
+        add(Point{xy.x+int(r*xscale),xy.y-int(f(r)*yscale)});
+        r += dist;
+    }
+}
+
+Function::Function(Fct_capture f, double r1, double r2, Point xy, int count,
+         double xscale, double yscale)
+{
+    if (r2-r1<=0) error("bad graphing range");
+    if (count<=0) error("non-positive graphing count");
+    double dist = (r2-r1)/count;
+    double r = r1;
+    for (int i = 0; i<count; ++i) {
+        add(Point{xy.x+int(r*xscale),xy.y-int(f(r)*yscale)});
+        r += dist;
+    }
+}
+
+//-----------------------------------------------------------------------------
+
+bool is_fnctn(double rmin, double rmax, int count)
+{
+    if (rmax-rmin<=0) return false;
+    if (count<=0)     return false;
+    return true;
+}
+
+//-----------------------------------------------------------------------------
+
+Fnctn::Fnctn(Fct ff, double r_min, double r_max, Point orig, int count,
+      double xscale, double yscale)
+    : f{ff}, r1{r_min}, r2{r_max}, cp{count}, xs{xscale}, ys{yscale},
+      fct_flag{true}
+{
+    if (is_fnctn(r_min, r_max, count))
+        error("Don't correct Fnctn");
+    add(orig);
+}
+
+//-----------------------------------------------------------------------------
+
+Fnctn::Fnctn(Fct_capture ff, double r_min, double r_max, Point orig, int count,
+      double xscale, double yscale)
+    : fc{&ff}, r1{r_min}, r2{r_max}, cp{count}, xs{xscale}, ys{yscale},
+      fct_flag{false}
+{
+    if (is_fnctn(r_min, r_max, count))
+        error("Don't correct Fnctn");
+    add(orig);
+}
+
+//-----------------------------------------------------------------------------
+
+void Fnctn::draw_lines() const
+{
+    double dist = (r2-r1)/cp;
+    double r = r1;
+    Point a{0, 0};
+    Point b{0, 0};
+    if (color().visibility())	// draw sole pixel?
+        for (int i = 0; i < cp-1; ++i) {
+            a = Point{point(0).x+int(r*xs),point(0).y-int(f(r)*ys)};
+            r += dist;
+            b = Point{point(0).x+int(r*xs),point(0).y-int(f(r)*ys)};
+            fl_line(a.x, a.y, b.x, b.y);
+        }
+}
+
+//-----------------------------------------------------------------------------
+
+/*Fnctn::Fnctn(Fct_capture ff, double rmin, double rmax, Point orig, int count = 100,
+      double xscale = 25, double yscale = 25);*/
+/*Function::Function(Fct f, double r1, double r2, Point xy, int count,
                    double xscale, double yscale)
 // graph f(x) for x in [r1:r2) using count line segments with (0,0) displayed at xy
 // x coordinates are scaled by xscale and y coordinates scaled by yscale
@@ -518,9 +600,9 @@ Function::Function(Fct f, double r1, double r2, Point xy, int count,
         add(Point{xy.x+int(r*xscale),xy.y-int(f(r)*yscale)});
         r += dist;
     }
-}
+}*/
 
-Function::Function(Point xy, Fct_capture f, double r1, double r2,  int count,
+/*Function::Function(Point xy, Fct f, double r1, double r2,  int count,
                    double xscale, double yscale)
 // graph f(x) for x in [r1:r2) using count line segments with (0,0) displayed at xy
 // x coordinates are scaled by xscale and y coordinates scaled by yscale
@@ -533,7 +615,7 @@ Function::Function(Point xy, Fct_capture f, double r1, double r2,  int count,
         add(Point(xy.x+int(r*xscale),xy.y-int(f(r)*yscale)));
         r += dist;
     }
-}
+}*/
 
 void Rectangle::draw_lines() const
 {

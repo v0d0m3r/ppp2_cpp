@@ -70,7 +70,7 @@ void example()
 
     Function f4{cos, r_min, r_max, orig, 400, 30, 30};
     f4.set_color(Color::blue);
-    Function f5{[](double x) { return cos(x) + slope(x); },
+    Function f5{Fct_capture([](double x) { return cos(x) + slope(x); }),
                 r_min, r_max, orig, 400, 30, 30};
     x.label.move(-160, 0);
     x.notches.set_color(Color::dark_red);
@@ -105,6 +105,10 @@ double fac(int n)          // n! Факториал
     }
     return r;
 }
+
+//-----------------------------------------------------------------------------
+
+double fac_recursive(int n) { return n>1 ? n*fac_recursive(n-1) : 1 ; }
 
 //-----------------------------------------------------------------------------
 
@@ -165,8 +169,8 @@ void approximation15_5()
         ss << "exp approximation; n==" << n;
         win.set_label(ss.str());
         // Очередное приближение:
-        Function e{orig, [n] (double x) { return expe(x, n); },
-                   r_min, r_max, n_points, x_scale, y_scale};
+        Function e{[n] (double x) { return expe(x, n); },
+                   r_min, r_max, orig ,n_points, x_scale, y_scale};
         win.attach(e);
         win.wait_for_button();
         win.detach(e);
@@ -364,7 +368,7 @@ void task_build_graph()
 
     Function f3{cos, r_min, r_max, orig, n_points, x_scale, y_scale};
     f3.set_color(Color::blue);
-    Function f4{[](double x) { return cos(x) + slope(x); },
+    Function f4{Fct_capture([](double x) { return cos(x) + slope(x); }),
                 r_min, r_max, orig, n_points, x_scale, y_scale};
     x.label.move(-120, 0);
     x.notches.set_color(Color::dark_red);\

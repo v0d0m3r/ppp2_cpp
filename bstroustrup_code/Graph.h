@@ -4,10 +4,11 @@
 
 #include "Point.h"
 #include<vector>
-//#include<string>
-//#include<cmath>
+
 #include "fltk.h"
 #include "std_lib_facilities.h"
+
+#include <functional>
 
 namespace Graph_lib {
 // defense against ill-behaved Linux macros:
@@ -112,8 +113,7 @@ public:
 };
 
 typedef double Fct(double);
-typedef function<double(double)> Fct_capture;
-
+typedef function<double(double)> Fct_capture ;
 
 class Shape  {	// deals with color and style, and holds sequence of lines
 protected:
@@ -169,13 +169,46 @@ private:
 // Note that f can be either a function or a lambda.
 // Solution courtesy of Jordan Harris <jordanharris1175@gmail.com>
 struct Function : Shape {
+    // graph f(x) for x in [r1:r2) using count line segments with (0,0) displayed at xy
+    // x coordinates are scaled by xscale and y coordinates scaled by yscale
     // the function parameters are not stored
     Function(Fct f, double r1, double r2, Point orig, int count = 100,
              double xscale = 25, double yscale = 25);
-    Function(Point orig, Fct_capture f, double r1, double r2, int count = 100,
+    Function(Fct_capture f, double r1, double r2, Point orig, int count = 100,
              double xscale = 25, double yscale = 25);
-    //Function(Point orig, Fct f, double r1, double r2, int count, double xscale = 1, double yscale = 1);
 };
+
+//-----------------------------------------------------------------------------
+
+class Fnctn : Shape{
+public:
+    Fnctn(Fct ff, double r_min, double r_max, Point orig, int count = 100,
+          double xscale = 25, double yscale = 25);
+    Fnctn(Fct_capture ff, double r_min, double r_max, Point orig, int count = 100,
+          double xscale = 25, double yscale = 25);
+
+    double r_min()       const { return r1; }
+    double r_max()       const { return r2; }
+
+    double xscale()      const { return xs; }
+    double yscale()      const { return ys; }
+
+    int count_of_point() const { return cp; }
+    bool is_fct()        const { return fct_flag; }
+
+    void draw_lines()    const override;
+
+
+private:
+    bool fct_flag;
+    Fct* f;
+    Fct_capture* fc;
+    double r1, r2;
+    int cp;
+    double xs, ys;
+};
+
+//-----------------------------------------------------------------------------
 
 /*struct Function : Shape {
       // the function parameters are not stored
