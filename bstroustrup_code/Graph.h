@@ -180,47 +180,48 @@ struct Function : Shape {
 
 //-----------------------------------------------------------------------------
 
-class Fnctn : Shape {
+class Fnctn : public Shape {
 public:
     Fnctn(Fct ff, double r_min, double r_max, Point orig, int count = 100,
           double xscale = 25, double yscale = 25);
     Fnctn(Fct_capture ff, double r_min, double r_max, Point orig, int count = 100,
           double xscale = 25, double yscale = 25);
 
+    Point orig() const                    { return point(0);}
+    void set_orig(Point orig)             { set_point(0, orig);}
+
+    void set_r_min(double r_min);
     double r_min()                  const { return r1; }
+
+    void set_r_max(double r_max);
     double r_max()                  const { return r2; }
 
+    void set_xscale(double xscale)        { xs = xscale; }
     double xscale()                 const { return xs; }
+
+    void set_yscale(double yscale)        { ys = yscale; }
     double yscale()                 const { return ys; }
 
+    void set_count_of_point(int count);
     int count_of_point()            const { return cp; }
-    //Point orig()                    const { return xy; }
 
-    void set_r_min(double r_min)          { r1 = r_min; }
-    void set_r_max(double r_max)          { r2 = r_max; }
+    void set_function(Fct* ff)
+    { f = ff; fc = nullptr; }
+    void set_function_capture(Fct_capture ff)
+    { fc = ff; f = nullptr; }
 
-    void set_xscale(double xscale)        { xs = xscale; }
-    void set_yscale(double yscale)        { ys = yscale; }
-
-    void set_count_of_point(int count)    { cp = count; }
-
-    void set_function(Fct* ff)            { f = ff;  }
-    void set_function(Fct_capture* ff)    { fc = ff; }
+    void draw_lines() const override;
 
 protected:
-    Fct*         function()         const { return f;  }
-    Fct_capture* function_capture() const { return fc; }
-    void set_function_flag() ;
-    bool is_function()              const { return fct_flag; }
-    virtual void recalculate();
-private:
-    bool fct_flag;
-    Fct* f;
-    Fct_capture* fc;
-    double r1, r2;
-    int cp;
-    double xs, ys;
-    Point xy;
+    const Fct*   function()         const { return f;  }
+    Fct_capture  function_capture() const { return fc; }
+    //virtual void recalculate();
+private:    
+    Fct* f;             // Обычная функция
+    Fct_capture fc;     // Функция захвата (лямбда-выражение)
+    double r1, r2;      // Диапазон (r1, r2)
+    int cp;             // Количество точек в диапазоне
+    double xs, ys;      // Масштабные множетели
 };
 
 //-----------------------------------------------------------------------------
