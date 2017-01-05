@@ -590,7 +590,7 @@ void Fnctn::set_r_min(double r_min)
 void Fnctn::set_r_max(double r_max)
 {
     if (!is_fnctn(r1, r_max, cp))
-        error("Fnctn::set_r_min:", error_fctn());
+        error("Fnctn::set_r_max:", error_fctn());
     r2 = r_max;
 }
 

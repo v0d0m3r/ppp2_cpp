@@ -8,6 +8,34 @@
 
 //-----------------------------------------------------------------------------
 
+double fac(int n)          // n! Факториал
+{
+    double r = 1;
+    while (n > 1) {
+        r *= n;
+        --n;
+    }
+    return r;
+}
+
+//-----------------------------------------------------------------------------
+
+double term(double x, int n)    // n-й член ряда
+{
+    return pow(x, n) / fac(n);
+}
+
+//-----------------------------------------------------------------------------
+
+double expe(double x, int n)
+{
+    double sum = 0;
+    for (int i=0; i < n; ++i) sum += term(x, i);
+    return sum;
+}
+
+//-----------------------------------------------------------------------------
+
 void exercise15_2_3()
 {
     constexpr int xmax = 600;       // Размер окна
@@ -42,18 +70,42 @@ void exercise15_2_3()
 
     win.wait_for_button();
 
-    Fnctn real_exp{exp, r_min, r_max, orig, n_points, x_scale, y_scale};
-    real_exp.set_color(Color::blue);
-    win.attach(real_exp);
+    Fnctn tf{exp, r_min, r_max, orig, n_points, x_scale, y_scale};
+
+    tf.set_color(Color::blue);
+    win.attach(tf);
     win.wait_for_button();
 
-    real_exp.set_function_capture(Fct_capture([](double x)
-                                              { return sin(x); }));
+    tf.set_function_capture([](double x)
+                                    { return sin(x); });
+    tf.set_r_min(-20);
     win.wait_for_button();
 
-    real_exp.set_function(exp);
+    tf.set_orig(Point{xmax/4, ymax/2});
+    y.move(tf.point(0).x - y.point(0).x, 0);
+
+    tf.set_r_max(19);
+
+    tf.set_xscale(10);
+    tf.set_yscale(40);
+
+    tf.set_color(Color::dark_green);
+
+    tf.set_function(cos);
     win.wait_for_button();
 
+    for (int n=0; n < 2; ++n) {
+        // Очередное приближение:
+        tf.set_function_capture([n] (double x) { return expe(x, n); });
+        win.wait_for_button();
+    }
+
+    cout << "r_min          - " << tf.r_min() << '\n'
+         << "r_max          - " << tf.r_max() << '\n'
+         << "orig           - " << tf.orig().x << ", "<< tf.orig().y << '\n'
+         << "count_of_point - " << tf.count_of_point() << '\n'
+         << "xscale         - " << tf.xscale() << '\n'
+         << "yscale         - " << tf.yscale() << '\n';
 }
 
 //-----------------------------------------------------------------------------

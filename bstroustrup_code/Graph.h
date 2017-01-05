@@ -187,8 +187,8 @@ public:
     Fnctn(Fct_capture ff, double r_min, double r_max, Point orig, int count = 100,
           double xscale = 25, double yscale = 25);
 
-    Point orig() const                    { return point(0);}
     void set_orig(Point orig)             { set_point(0, orig);}
+    Point orig() const                    { return point(0);}
 
     void set_r_min(double r_min);
     double r_min()                  const { return r1; }
