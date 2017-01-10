@@ -17,18 +17,18 @@ void exercise15_2_3()
     constexpr int y_orig = ymax/2;
     const Point orig{x_orig, y_orig};
 
-    constexpr int r_min = -10;      // Диапазон {-10, 11)
+    constexpr int r_min = -10;      // Диапазон {-10, 7)
     constexpr int r_max = 7;
 
-    constexpr int n_points = 200;   // Количество точек в диапазоне
+    constexpr int n_points = 100;   // Количество точек в диапазоне
 
-    constexpr int x_scale = 30;     // Масштабные множетели
-    constexpr int y_scale = 30;
+    constexpr int x_scale = 40;     // Масштабные множетели
+    constexpr int y_scale = 40;
 
     constexpr int xlength = xmax - 40;  // Оси чуть меньше окна
     constexpr int ylength = ymax - 40;
 
-    Simple_window win{Point{100, 100}, xmax, ymax, "Approximation"};
+    Simple_window win{Point{100, 100}, xmax, ymax, "Exercise15_2_3"};
 
     Axis x{Axis::x, Point{20, y_orig},
            xlength, xlength/x_scale, "one notch = 1"};
@@ -42,9 +42,16 @@ void exercise15_2_3()
 
     win.wait_for_button();
 
-    Fnctn real_exp{exp, r_min, r_max, orig, n_points, x_scale, y_scale};
+    Funct real_exp{exp, r_min, r_max, orig, n_points, x_scale, y_scale, 0.000001};
     real_exp.set_color(Color::blue);
+
     win.attach(real_exp);
+
+    Funct real_exp1{exp, r_min, r_max, orig, n_points, x_scale, y_scale, 0.01};
+    real_exp1.set_color(Color::yellow);
+
+    win.attach(real_exp1);
+
     win.wait_for_button();
 
     real_exp.set_function_capture(Fct_capture([](double x)

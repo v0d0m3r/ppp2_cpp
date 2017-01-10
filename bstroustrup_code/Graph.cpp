@@ -537,7 +537,7 @@ Function::Function(Fct_capture f, double r1, double r2, Point xy, int count,
 
 //-----------------------------------------------------------------------------
 
-bool is_fnctn(double rmin, double rmax, int count)
+bool is_funct(double rmin, double rmax, int count)
 {
     if (rmax-rmin<=0) return false;
     if (count<=0)     return false;
@@ -546,91 +546,94 @@ bool is_fnctn(double rmin, double rmax, int count)
 
 //-----------------------------------------------------------------------------
 
-const string& error_fctn()
+const string& error_funct()
 {
-    static string err = "Don't correct Fnctn";
+    static string err = "Don't correct Funct";
     return err;
 }
 
 //-----------------------------------------------------------------------------
 
-Fnctn::Fnctn(Fct ff, double r_min, double r_max, Point orig, int count,
-      double xscale, double yscale)
+Funct::Funct(Fct ff, double r_min, double r_max, Point orig, int count,
+      double xscale, double yscale, double precision)
     : f{ff}, r1{r_min}, r2{r_max}, cp{count}, xs{xscale}, ys{yscale},
-      fc {nullptr}
+      pr{precision}, fc {nullptr}
 {
-    if (!is_fnctn(r_min, r_max, count))
-        error(error_fctn());
+    if (!is_funct(r_min, r_max, count))
+        error(error_funct());
     add(orig);
 }
 
 //-----------------------------------------------------------------------------
 
-Fnctn::Fnctn(Fct_capture ff, double r_min, double r_max, Point orig, int count,
-      double xscale, double yscale)
+Funct::Funct(Fct_capture ff, double r_min, double r_max, Point orig, int count,
+      double xscale, double yscale, double precision)
     : fc{ff}, r1{r_min}, r2{r_max}, cp{count}, xs{xscale}, ys{yscale},
-      f{nullptr}
+      pr{precision}, f{nullptr}
 {
-    if (!is_fnctn(r_min, r_max, count))
-        error("Fnctn::Fnctn:", error_fctn());
+    if (!is_funct(r_min, r_max, count))
+        error("Funct::Funct:", error_funct());
     add(orig);
 }
 
 //-----------------------------------------------------------------------------
 
-void Fnctn::set_r_min(double r_min)
+void Funct::set_r_min(double r_min)
 {
-    if (!is_fnctn(r_min, r2, cp))
-        error("Fnctn::set_r_min:", error_fctn());
+    if (!is_funct(r_min, r2, cp))
+        error("Funct::set_r_min:", error_funct());
     r1 = r_min;
 }
 
 //-----------------------------------------------------------------------------
 
-void Fnctn::set_r_max(double r_max)
+void Funct::set_r_max(double r_max)
 {
-    if (!is_fnctn(r1, r_max, cp))
-        error("Fnctn::set_r_min:", error_fctn());
+    if (!is_funct(r1, r_max, cp))
+        error("Funct::set_r_min:", error_funct());
     r2 = r_max;
 }
 
 //-----------------------------------------------------------------------------
 
-void Fnctn::set_count_of_point(int count)
+void Funct::set_count_of_point(int count)
 {
-    if (!is_fnctn(r1, r2, count))
-        error("Fnctn::set_count_of_point:", error_fctn());
+    if (!is_funct(r1, r2, count))
+        error("Funct::set_count_of_point:", error_funct());
     cp = count;
 }
 
 //-----------------------------------------------------------------------------
 
-void Fnctn::draw_lines() const
+void Funct::draw_lines() const
 {
-    double dist = (r2-r1)/cp;
+    double dist = (r2-r1)/cp;    
     double r = r1;
     Point a{0, 0};
     Point b{0, 0};
     if (color().visibility())	// draw sole pixel?
         for (int i = 0; i < cp-1; ++i) {
             if (fc == nullptr)
-                a = Point{point(0).x+int(r*xs),point(0).y-int(f(r)*ys)};
+                a = Point{point(0).x+int(int(r*xs)/pr)*pr,
+                          point(0).y-int(int(f(r)*ys)/pr)*pr};
             else
-                a = Point{point(0).x+int(r*xs),point(0).y-int(fc(r)*ys)};
-
+                a = Point{point(0).x+int(int(r*xs)/pr)*pr,
+                          point(0).y-int(int(fc(r)*ys)/pr)*pr};
             r += dist;
 
             if (fc == nullptr)
-                b = Point{point(0).x+int(r*xs),point(0).y-int(f(r)*ys)};
+                b = Point{point(0).x+int(int(r*xs)/pr)*pr,
+                          point(0).y-int(int(f(r)*ys)/pr)*pr};
             else
-                b = Point{point(0).x+int(r*xs),point(0).y-int(fc(r)*ys)};
+                b = Point{point(0).x+int(int(r*xs)/pr)*pr,
+                          point(0).y-int(int(fc(r)*ys)/pr)*pr};
             fl_line(a.x, a.y, b.x, b.y);
         }
 }
 
 //-----------------------------------------------------------------------------
 
-/*void Fnctn::recalculate()
+/*void Funct::recalculate()
 {
     double dist = (r2-r1)/cp;
     double r = r1;
@@ -642,7 +645,7 @@ void Fnctn::draw_lines() const
 
 //-----------------------------------------------------------------------------
 
-/*Fnctn::Fnctn(Fct_capture ff, double rmin, double rmax, Point orig, int count = 100,
+/*Funct::Funct(Fct_capture ff, double rmin, double rmax, Point orig, int count = 100,
       double xscale = 25, double yscale = 25);*/
 /*Function::Function(Fct f, double r1, double r2, Point xy, int count,
                    double xscale, double yscale)

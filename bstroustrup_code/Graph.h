@@ -180,15 +180,15 @@ struct Function : Shape {
 
 //-----------------------------------------------------------------------------
 
-class Fnctn : public Shape {
+class Funct : public Shape {
 public:
-    Fnctn(Fct ff, double r_min, double r_max, Point orig, int count = 100,
-          double xscale = 25, double yscale = 25);
-    Fnctn(Fct_capture ff, double r_min, double r_max, Point orig, int count = 100,
-          double xscale = 25, double yscale = 25);
+    Funct(Fct ff, double r_min, double r_max, Point orig, int count = 100,
+          double xscale = 25, double yscale = 25, double precision = 1.00);
+    Funct(Fct_capture ff, double r_min, double r_max, Point orig, int count = 100,
+          double xscale = 25, double yscale = 25, double precision = 1.00);
 
-    Point orig() const                    { return point(0);}
     void set_orig(Point orig)             { set_point(0, orig);}
+    Point orig() const                    { return point(0);}
 
     void set_r_min(double r_min);
     double r_min()                  const { return r1; }
@@ -204,6 +204,9 @@ public:
 
     void set_count_of_point(int count);
     int count_of_point()            const { return cp; }
+
+    void set_precision(double precision)  { pr = precision;}
+    double precision()              const { return pr; }
 
     void set_function(Fct* ff)
     { f = ff; fc = nullptr; }
@@ -222,6 +225,7 @@ private:
     double r1, r2;      // Диапазон (r1, r2)
     int cp;             // Количество точек в диапазоне
     double xs, ys;      // Масштабные множетели
+    double pr;          // Точность вычислений
 };
 
 //-----------------------------------------------------------------------------
