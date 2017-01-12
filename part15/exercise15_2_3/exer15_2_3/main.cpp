@@ -71,24 +71,23 @@ void exercise15_2_3()
     win.wait_for_button();
 
 
-    Funct real_exp{exp, r_min, r_max, orig, n_points, x_scale, y_scale, 0.000001};
-    real_exp.set_color(Color::blue);
+    Funct real_exp{exp, r_min, r_max, orig, n_points, x_scale, y_scale};
+    real_exp.set_color(Color::cyan);
 
     win.attach(real_exp);
 
-    Funct real_exp1{exp, r_min, r_max, orig, n_points, x_scale, y_scale, 0.01};
+    Funct_precision real_exp1{exp, r_min, r_max, orig, n_points, x_scale, y_scale, 0.0001};
     real_exp1.set_color(Color::yellow);
 
     win.attach(real_exp1);
+    win.wait_for_button();
 
 
     Funct tf{exp, r_min, r_max, orig, n_points, x_scale, y_scale};
 
     tf.set_color(Color::blue);
     win.attach(tf);
-
     win.wait_for_button();
-
     tf.set_function_capture([](double x)
                             { return sin(x); });
     tf.set_r_min(-20);
@@ -116,7 +115,7 @@ void exercise15_2_3()
     cout << "r_min          - " << tf.r_min() << '\n'
          << "r_max          - " << tf.r_max() << '\n'
          << "orig           - " << tf.orig().x << ", "<< tf.orig().y << '\n'
-         << "count_of_point - " << tf.count_of_point() << '\n'
+         << "count_of_point - " << tf.count_of_points() << '\n'
          << "xscale         - " << tf.xscale() << '\n'
          << "yscale         - " << tf.yscale() << '\n';
 }

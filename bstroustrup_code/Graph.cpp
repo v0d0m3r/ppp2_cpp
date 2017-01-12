@@ -555,25 +555,25 @@ const string& error_funct()
 //-----------------------------------------------------------------------------
 
 Funct::Funct(Fct ff, double r_min, double r_max, Point orig, int count,
-      double xscale, double yscale, double precision)
-    : f{ff}, r1{r_min}, r2{r_max}, cp{count}, xs{xscale}, ys{yscale},
-      pr{precision}, fc {nullptr}
+             double xscale, double yscale)
+    : f{ff}, r1{r_min}, r2{r_max}, xy{orig}, cp{count},
+      xs{xscale}, ys{yscale}, fc {nullptr}
 {
     if (!is_funct(r_min, r_max, count))
         error(error_funct());
-    add(orig);
+    recalculate();
 }
 
 //-----------------------------------------------------------------------------
 
-Funct::Funct(Fct_capture ff, double r_min, double r_max, Point orig, int count,
-      double xscale, double yscale, double precision)
-    : fc{ff}, r1{r_min}, r2{r_max}, cp{count}, xs{xscale}, ys{yscale},
-      pr{precision}, f{nullptr}
+Funct::Funct(Fct_capture ff, double r_min, double r_max, Point orig,
+             int count, double xscale, double yscale)
+    : fc{ff}, r1{r_min}, r2{r_max}, xy{orig}, cp{count},
+      xs{xscale}, ys{yscale}, f{nullptr}
 {
     if (!is_funct(r_min, r_max, count))
         error("Funct::Funct:", error_funct());
-    add(orig);
+    recalculate();
 }
 
 //-----------------------------------------------------------------------------
@@ -583,6 +583,7 @@ void Funct::set_r_min(double r_min)
     if (!is_funct(r_min, r2, cp))
         error("Funct::set_r_min:", error_funct());
     r1 = r_min;
+    recalculate();
 }
 
 //-----------------------------------------------------------------------------
@@ -590,58 +591,59 @@ void Funct::set_r_min(double r_min)
 void Funct::set_r_max(double r_max)
 {
     if (!is_funct(r1, r_max, cp))
-        error("Funct::set_r_min:", error_funct());
+        error("Funct::set_r_max:", error_funct());
     r2 = r_max;
+    recalculate();
 }
 
 //-----------------------------------------------------------------------------
 
-void Funct::set_count_of_point(int count)
+void Funct::set_count_of_points(int count)
 {
     if (!is_funct(r1, r2, count))
-        error("Funct::set_count_of_point:", error_funct());
+        error("Funct::set_count_of_points:", error_funct());
     cp = count;
+    recalculate();
 }
 
 //-----------------------------------------------------------------------------
 
-void Funct::draw_lines() const
+void Funct::recalculate()
 {
-    double dist = (r2-r1)/cp;    
-    double r = r1;
-    Point a{0, 0};
-    Point b{0, 0};
-    if (color().visibility())	// draw sole pixel?
-        for (int i = 0; i < cp-1; ++i) {
-            if (fc == nullptr)
-                a = Point{point(0).x+int(int(r*xs)/pr)*pr,
-                          point(0).y-int(int(f(r)*ys)/pr)*pr};
-            else
-                a = Point{point(0).x+int(int(r*xs)/pr)*pr,
-                          point(0).y-int(int(fc(r)*ys)/pr)*pr};
-            r += dist;
-
-            if (fc == nullptr)
-                b = Point{point(0).x+int(int(r*xs)/pr)*pr,
-                          point(0).y-int(int(f(r)*ys)/pr)*pr};
-            else
-                b = Point{point(0).x+int(int(r*xs)/pr)*pr,
-                          point(0).y-int(int(fc(r)*ys)/pr)*pr};
-            fl_line(a.x, a.y, b.x, b.y);
-        }
-}
-
-//-----------------------------------------------------------------------------
-
-/*void Funct::recalculate()
-{
+    clear_points();
     double dist = (r2-r1)/cp;
     double r = r1;
-    for (int i = 0; i<count; ++i) {
-        add(Point{xy.x+int(r*xscale),xy.y-int(f(r)*yscale)});
+    for (int i = 0; i < cp; ++i) {
+        if (fc == nullptr)
+            add(Point{xy.x + int(r*xs),
+                      xy.y - int(f(r)*ys)});
+        else
+            add(Point{xy.x + int(r*xs),
+                      xy.y - int(fc(r)*ys)});
         r += dist;
     }
-}*/
+}
+
+//-----------------------------------------------------------------------------
+
+void Funct_precision::recalculate()
+{
+    clear_points();
+    double dist = (r_max()-r_min())/count_of_points();
+    double r = r_min();
+    Fct* f = function();
+    Fct_capture fc = function_capture();
+    double pr = precision();
+    for (int i = 0; i < count_of_points(); ++i) {
+        if (fc == nullptr)
+            add(Point{orig().x + int(int(r*xscale())/pr)*pr,
+                      orig().y - int(int(f(r)*yscale())/pr)*pr});
+        else
+            add(Point{orig().x + int(int(r*xscale())/pr)*pr,
+                      orig().y - int(int(fc(r)*yscale())/pr)*pr});
+        r += dist;
+    }
+}
 
 //-----------------------------------------------------------------------------
 

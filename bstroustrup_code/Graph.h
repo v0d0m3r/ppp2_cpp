@@ -113,6 +113,8 @@ public:
 };
 
 typedef double Fct(double);
+// Note that f can be either a function or a lambda.
+// Solution courtesy of Jordan Harris <jordanharris1175@gmail.com>
 typedef function<double(double)> Fct_capture ;
 
 class Shape  {	// deals with color and style, and holds sequence of lines
@@ -126,6 +128,7 @@ protected:
 
     void add(Point p){ points.push_back(p); }
     void set_point(int i, Point p) { points[i] = p; }
+    void clear_points() { points.clear(); }
 public:
     void draw() const;					// deal with color and draw_lines
 protected:
@@ -166,8 +169,6 @@ private:
 //	Shape& operator=(const Shape&);
 };
 
-// Note that f can be either a function or a lambda.
-// Solution courtesy of Jordan Harris <jordanharris1175@gmail.com>
 struct Function : Shape {
     // graph f(x) for x in [r1:r2) using count line segments with (0,0) displayed at xy
     // x coordinates are scaled by xscale and y coordinates scaled by yscale
@@ -183,49 +184,87 @@ struct Function : Shape {
 class Funct : public Shape {
 public:
     Funct(Fct ff, double r_min, double r_max, Point orig, int count = 100,
-          double xscale = 25, double yscale = 25, double precision = 1.00);
+          double xscale = 25, double yscale = 25);
     Funct(Fct_capture ff, double r_min, double r_max, Point orig, int count = 100,
-          double xscale = 25, double yscale = 25, double precision = 1.00);
+          double xscale = 25, double yscale = 25);
 
-    void set_orig(Point orig)             { set_point(0, orig);}
-    Point orig() const                    { return point(0);}
+    void set_orig(Point orig) { xy = orig; recalculate();}
+    Point orig()        const { return xy;}
 
     void set_r_min(double r_min);
-    double r_min()                  const { return r1; }
+    double r_min() const { return r1; }
 
     void set_r_max(double r_max);
-    double r_max()                  const { return r2; }
+    double r_max() const { return r2; }
 
-    void set_xscale(double xscale)        { xs = xscale; }
-    double xscale()                 const { return xs; }
+    void set_xscale(double xscale) { xs = xscale; recalculate();}
+    double xscale()          const { return xs; }
 
-    void set_yscale(double yscale)        { ys = yscale; }
-    double yscale()                 const { return ys; }
+    void set_yscale(double yscale) { ys = yscale; recalculate();}
+    double yscale()          const { return ys; }
 
-    void set_count_of_point(int count);
-    int count_of_point()            const { return cp; }
-
-    void set_precision(double precision)  { pr = precision;}
-    double precision()              const { return pr; }
+    void set_count_of_points(int count);
+    int count_of_points() const { return cp; }
 
     void set_function(Fct* ff)
-    { f = ff; fc = nullptr; }
+    { f = ff; fc = nullptr;  recalculate();}
     void set_function_capture(Fct_capture ff)
-    { fc = ff; f = nullptr; }
-
-    void draw_lines() const override;
+    { fc = ff; f = nullptr;  recalculate();}
 
 protected:
     const Fct*   function()         const { return f;  }
     Fct_capture  function_capture() const { return fc; }
-    //virtual void recalculate();
-private:    
+    virtual void recalculate();
+private:
     Fct* f;             // Обычная функция
     Fct_capture fc;     // Функция захвата (лямбда-выражение)
     double r1, r2;      // Диапазон (r1, r2)
     int cp;             // Количество точек в диапазоне
-    double xs, ys;      // Масштабные множетели
-    double pr;          // Точность вычислений
+    double xs, ys;      // Масштабные множетели    
+    Point xy;           // Начало координат
+};
+
+//-----------------------------------------------------------------------------
+
+struct Funct_precision : Funct {
+    Funct_precision(Fct ff, double r_min, double r_max, Point orig, int count = 100,
+          double xscale = 25, double yscale = 25, double precision=1)
+        : Funct(ff, r_min, r_max, orig, count, xscale, yscale),
+          pr{precision}
+    { recalculate();}
+    Funct_precision(Fct_capture ff, double r_min, double r_max, Point orig, int count = 100,
+          double xscale = 25, double yscale = 25, double precision=1)
+        : Funct(ff, r_min, r_max, orig, count, xscale, yscale),
+          pr{precision}
+    { recalculate(); }
+
+    void set_precision(double precision) { pr = precision; recalculate();}
+    double precision()             const { return pr; }
+
+protected:
+    void recalculate() override;
+
+private:
+    double pr;
+};
+
+//-----------------------------------------------------------------------------
+
+struct Bar_chart : Shape {
+    Bar_chart(Point orig, double width, double height,
+              double xscale=1.00, double yscale=1.00) {}
+
+    int number_of_heights() const { return heights.size(); }
+    void height(int i) const  { return  heights[i]; }
+    void add(double height);
+
+    void set_width(double width);
+    void width() const { return w; }
+//protected:
+    void set_height(int i, double height);
+private:
+    double w;
+    vector<double> heights;
 };
 
 //-----------------------------------------------------------------------------
