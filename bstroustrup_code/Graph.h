@@ -250,21 +250,25 @@ private:
 
 //-----------------------------------------------------------------------------
 
-struct Bar_chart : Shape {
-    Bar_chart(Point orig, double width, double height,
-              double xscale=1.00, double yscale=1.00) {}
+struct Column_chart : Shape {
+    Column_chart(Point orig, double ww, double hh,
+                 double wscale=25, double hscale=25);
 
-    int number_of_heights() const { return heights.size(); }
-    void height(int i) const  { return  heights[i]; }
+    //int number_of_heights() const { return heights.size(); }
+    //void height(int i)      const { return  heights[i]; }
     void add(double height);
 
-    void set_width(double width);
-    void width() const { return w; }
+    //void set_width(double width);
+    //void width() const { return w; }
+
+    void draw_lines() const;
 //protected:
-    void set_height(int i, double height);
+    //void set_height(int i, double height);
 private:
-    double w;
-    vector<double> heights;
+    double w;           // Ширина столбцов
+    vector<double> vh;   // Высоты столбцов
+    double ws;
+    double hs;
 };
 
 //-----------------------------------------------------------------------------
@@ -572,6 +576,30 @@ struct Axis : Shape {
     Text label;
     Lines notches;
 };
+
+//-----------------------------------------------------------------------------
+
+struct Marked_column_chart : Column_chart {
+    Marked_column_chart(Point orig, double ww, double hh, string mm,
+                        double wscale=25, double hscale=25)
+        : Column_chart(orig, ww, hh, wscale, hscale)
+    {
+        marks.push_back(new Text{Point{0,0}, mm});
+    }
+
+    int number_of_marks() const { return marks.size(); }
+    Text& mark(int i) { return marks[i]; }
+    void add_mark(string mm) { marks.push_back(new Text{Point{0,0}, mm}); }
+
+
+    void move(int dx, int dy) override;
+    void draw_lines()   const override;
+    void set_color(Color col);
+private:
+    Vector_ref<Text> marks;     // Метки
+};
+
+//-----------------------------------------------------------------------------
 
 struct Circle : Shape {
     Circle(Point p, int rr)	// center and radius

@@ -58,7 +58,7 @@ void exercise15_4()
     constexpr int xlength = xmax - 40;  // Оси чуть меньше окна
     constexpr int ylength = ymax - 40;
 
-    Simple_window win{Point{100, 100}, xmax, ymax, "Exercise15_4"};
+    Simple_window win{Point{100, 100}, xmax, ymax, "Exercise15_4_5"};
 
     Axis x{Axis::x, Point{20, y_orig},
            xlength, xlength/x_scale, "one notch = 1"};

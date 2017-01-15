@@ -647,37 +647,87 @@ void Funct_precision::recalculate()
 
 //-----------------------------------------------------------------------------
 
-/*Funct::Funct(Fct_capture ff, double rmin, double rmax, Point orig, int count = 100,
-      double xscale = 25, double yscale = 25);*/
-/*Function::Function(Fct f, double r1, double r2, Point xy, int count,
-                   double xscale, double yscale)
-// graph f(x) for x in [r1:r2) using count line segments with (0,0) displayed at xy
-// x coordinates are scaled by xscale and y coordinates scaled by yscale
+bool is_column_chart(double w, double h)
 {
-    if (r2-r1<=0) error("bad graphing range");
-    if (count<=0) error("non-positive graphing count");
-    double dist = (r2-r1)/count;
-    double r = r1;
-    for (int i = 0; i<count; ++i) {
-        add(Point{xy.x+int(r*xscale),xy.y-int(f(r)*yscale)});
-        r += dist;
-    }
-}*/
+    return (h<=0 || w<=0) ? false : true;
 
-/*Function::Function(Point xy, Fct f, double r1, double r2,  int count,
-                   double xscale, double yscale)
-// graph f(x) for x in [r1:r2) using count line segments with (0,0) displayed at xy
-// x coordinates are scaled by xscale and y coordinates scaled by yscale
+}
+
+//-----------------------------------------------------------------------------
+
+Column_chart::Column_chart(Point xy, double ww, double hh,
+                           double wscale, double hscale)
+    : w{ww*wscale}, ws{wscale}, hs {hscale}
 {
-    if (r2-r1<=0) error("bad graphing range");
-    if (count<=0) error("non-positive graphing count");
-    double dist = (r2-r1)/count;
-    double r = r1;
-    for (int i = 0; i<count; ++i) {
-        add(Point(xy.x+int(r*xscale),xy.y-int(f(r)*yscale)));
-        r += dist;
+    hh *= hs;
+    if(!is_column_chart(w, hh))
+        error("add(): Invalid column_chart");
+
+    Shape::add(xy); // Начало координат
+    Shape::add(Point{point(0).x, point(0).y - hh}); // Верхняя левая точка
+                                                    // первого столбца
+    vh.push_back(hh);
+}
+
+//-----------------------------------------------------------------------------
+
+void Column_chart::add(double height)
+{
+    height *= hs;
+    if(!is_column_chart(w, height))
+        error("add(): Invalid column_chart");
+
+    Shape::add(Point{point(number_of_points()-1).x + w,
+                     point(0).y - height});
+    vh.push_back(height);
+
+}
+
+//-----------------------------------------------------------------------------
+
+void Column_chart::draw_lines() const
+{
+    int np = number_of_points();
+    if (fill_color().visibility()) {	// fill
+        fl_color(fill_color().as_int());
+        for (int i=1; i < np; ++i)
+            fl_rectf(point(i).x, point(i).y,w,vh[i-1]);
+        fl_color(color().as_int());	// reset color
     }
-}*/
+
+    if (color().visibility()) {	// edge on top of fill
+        fl_color(color().as_int());
+        for (int i=1; i < np; ++i)
+            fl_rect(point(i).x, point(i).y,w,vh[i-1]);
+    }
+}
+
+//-----------------------------------------------------------------------------
+
+void Marked_column_chart::draw_lines() const
+{
+    Column_chart::draw_lines();
+    for (int i = 0; i < marks.size(); ++i)
+        marks[i].draw();
+}
+
+//-----------------------------------------------------------------------------
+
+void Marked_column_chart::move(int dx, int dy)
+{
+    Column_chart::move(dx, dy);
+    for (int i = 0; i < marks.size(); ++i) marks[i].move(dx, dy);
+}
+
+//-----------------------------------------------------------------------------
+
+void Marked_column_chart::set_color(Color col)
+{
+    Column_chart::set_color(col);
+    for (int i = 0; i < marks.size(); ++i) marks[i].set_color(col);
+}
+
+//-----------------------------------------------------------------------------
 
 void Rectangle::draw_lines() const
 {
