@@ -217,7 +217,7 @@ void exercise15_8_9()
         if (i == 0) mark += l.marks[i];
         else        mark += space + l.marks[i];
 
-    Simple_window win{Point{100, 100}, xmax, ymax, "exercise15_8"};
+    Simple_window win{Point{100, 100}, xmax, ymax, "exercise15_8_9"};
 
     Axis x{Axis::x, Point{xoffset, ymax-yoffset}, xlenght,
            (end_growth-base_growth)/h_growth, mark};
