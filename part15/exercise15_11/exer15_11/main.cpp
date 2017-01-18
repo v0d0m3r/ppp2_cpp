@@ -9,14 +9,7 @@
 //-----------------------------------------------------------------------------
 
 struct Distribution {
-    int month, london, paris, dubai;
-};
-
-//-----------------------------------------------------------------------------
-
-vector<string> month_tb = {
-    "", "jan", "feb", "mar", "apr", "may", "jun",
-    "jul", "aug", "sep", "oct", "nov", "dec"
+    int month, london, barcelona, dubai;
 };
 
 //-----------------------------------------------------------------------------
@@ -30,7 +23,7 @@ istream& operator>>(istream& is, Distribution& d)
     Distribution dd;
 
     if (is >> ch1 >> dd.month
-           >> ch2 >> dd.london >> dd.paris >> dd.dubai
+           >> ch2 >> dd.london >> dd.barcelona >> dd.dubai
            >> ch3) {
         if (ch1!='(' || ch2!=':' || ch3!=')') {
             is.clear(ios_base::failbit);
@@ -72,10 +65,12 @@ private:
     double scale;
 };
 
-void grafical_present_data15_6()
+//-----------------------------------------------------------------------------
+
+void exercise15_11()
 {
-    constexpr int xmax = 600;       // Размер окна
-    constexpr int ymax = 400;
+    constexpr int xmax = 800;       // Размер окна
+    constexpr int ymax = 700;
                                     // Расстояния:
     constexpr int xoffset = 100;    //  от левого края до оси у
     constexpr int yoffset = 60;     //  от нижнего края до оси х
@@ -90,56 +85,59 @@ void grafical_present_data15_6()
     constexpr int end_month = 12;
 
     constexpr double xscale = double(xlenght) / (end_month-base_month);
-    constexpr double yscale = double(ylenght) / 100;
+    constexpr double yscale = double(ylenght) / 40;
 
     Scale xs{xoffset, base_month, xscale};
     Scale ys{ymax-yoffset, 0, -yscale};
 
-    Simple_window win{Point{100, 100}, xmax, ymax, "Aging Japan"};
+    Simple_window win{Point{100, 100}, xmax, ymax, "Weather of year"};
 
     Axis x{Axis::x, Point{xoffset, ymax-yoffset}, xlenght,
-           (end_month-base_month)/10,
-           "month  "
-           "1960      1970      1980      1990      "
-           "2000      2010      2020      2030      2040"};
-    x.label.move(-90, 0);
+           (end_month-base_month),
+           "month   "
+           "jan          feb          mar         apr         "
+           "may          jun          jul           aug         "
+           "sep         oct          nov         dec"};
 
-    Axis y{Axis::y, Point{xoffset, ymax-yoffset}, ylenght, 10,
-           "C"};
+    x.label.move(-180, 0);
 
-    Open_polyline children;
-    Open_polyline adults;
-    Open_polyline aged;
+    Axis y{Axis::y, Point{xoffset, ymax-yoffset}, ylenght, 4,
+           "C, weather of year"};
+    y.label.move(8, 0);
+
+    Open_polyline london;
+    Open_polyline barcelona;
+    Open_polyline dubai;
 
     vector<Distribution> dv;
     fill_from_file(dv, base_month, end_month);
 
     for (int i=0; i < dv.size(); ++i) {
         const int x = xs(dv[i].month);
-        children.add(Point{x, ys(dv[i].london)});
-        adults.add(Point{x, ys(dv[i].paris)});
-        aged.add(Point{x, ys(dv[i].dubai)});
+        london.add(Point{x, ys(dv[i].london)});
+        barcelona.add(Point{x, ys(dv[i].barcelona)});
+        dubai.add(Point{x, ys(dv[i].dubai)});
     }
 
-    Text children_label{Point{20, children.point(0).y}, "age 0-14"};
-    children.set_color(Color::red);
-    children_label.set_color(Color::red);
+    Text london_label{Point{20, london.point(0).y}, "London"};
+    london.set_color(Color::red);
+    london_label.set_color(Color::red);
 
-    Text adults_label{Point{20, adults.point(0).y}, "age 15-64"};
-    adults.set_color(Color::blue);
-    adults_label.set_color(Color::blue);
+    Text barcelona_label{Point{20, barcelona.point(0).y}, "Barcelona"};
+    barcelona.set_color(Color::blue);
+    barcelona_label.set_color(Color::blue);
 
-    Text aged_label{Point{20, aged.point(0).y}, "age 65+"};
-    aged.set_color(Color::dark_green);
-    aged_label.set_color(Color::dark_green);
+    Text dubai_label{Point{20, dubai.point(0).y}, "Dubai"};
+    dubai.set_color(Color::dark_green);
+    dubai_label.set_color(Color::dark_green);
 
-    win.attach(children);
-    win.attach(adults);
-    win.attach(aged);
+    win.attach(london);
+    win.attach(barcelona);
+    win.attach(dubai);
 
-    win.attach(children_label);
-    win.attach(adults_label);
-    win.attach(aged_label);
+    win.attach(london_label);
+    win.attach(barcelona_label);
+    win.attach(dubai_label);
 
     win.attach(x);
     win.attach(y);
@@ -153,7 +151,7 @@ void grafical_present_data15_6()
 int main()
 try {
 
-    grafical_present_data15_6();
+    exercise15_11();
 
     keep_window_open("~~");
     return 0;

@@ -9,27 +9,12 @@ using namespace Graph_lib;
 struct Simple_window : Graph_lib::Window {
 	Simple_window(Point xy, int w, int h, const string& title );
 
-	bool wait_for_button();
-	// modified event loop
-	// handle all events (as per default), but quit when button_pushed becomes true
-	// this allows graphics without control inversion
-	//{
-	//	while (!button_pushed) Fl::wait();
-	//	button_pushed = false;
-	//	Fl::redraw();
-	//}
-	//bool wait_for_button();
-
-	Button next_button;
+    void wait_for_button(); // Простой цикл событий
 private:
-	bool button_pushed;
-
-	static void cb_next(Address, Address addr); // callback for next_button
-	//	{ reference_to<Simple_window>(addr).next(); }
-	//{
-		//static_cast<Simple_window*>(addr)->next();
-	//}
-
-	void next();// { button_pushed = true; }
+    Button next_button;     // Кнопка next
+    bool button_pushed;     // Деталь реализации
+    static void cb_next(Address, Address); // Обратный вызов
+                                           // для кнопки next_button
+    void next();            // Ф-ция обратного вызова
 
 };

@@ -28,8 +28,7 @@ void ignore_symb(istream& is, char ignore)
 }
 
 //-----------------------------------------------------------------------------
-// get_distribution() подерживает формат
-// : рост количество_людей )
+
 istream& get_distribution(istream& is, Distribution& d)
 {
     char ch1 = 0;
@@ -51,8 +50,7 @@ istream& get_distribution(istream& is, Distribution& d)
 }
 
 //-----------------------------------------------------------------------------
-// Формат: ( d:
-// ( l:
+// Формат: ( d: : рост количество_людей )
 istream& operator>>(istream& is, Distribution& d)
 {
     char ch1 = 0;
@@ -81,7 +79,7 @@ istream& operator>>(istream& is, Distribution& d)
 }
 
 //-----------------------------------------------------------------------------
-// : str1 str2 ... str# )
+
 istream& get_label(istream& is, Label& l)
 {
     char ch = ')';
@@ -109,8 +107,8 @@ istream& get_label(istream& is, Label& l)
 }
 
 //-----------------------------------------------------------------------------
-// Формат: ( d
-// ( l
+// Формат:
+// ( l : str1 str2 ... str# )
 istream& operator>>(istream& is, Label& l)
 {
     char ch1 = 0;
