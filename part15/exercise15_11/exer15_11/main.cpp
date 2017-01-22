@@ -151,14 +151,12 @@ void exercise15_11()
 int main()
 try {
 
-    exercise15_11();
-
-    keep_window_open("~~");
+    exercise15_11();    
     return 0;
 }
 catch(exception& e) {
     cerr << e.what() << '\n';
-    keep_window_open("~~");
+    keep_window_open("~");
     return -1;
 }
 catch (...) {

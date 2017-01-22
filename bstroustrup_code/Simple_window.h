@@ -13,8 +13,8 @@ struct Simple_window : Graph_lib::Window {
 private:
     Button next_button;     // Кнопка next
     bool button_pushed;     // Деталь реализации
-    static void cb_next(Address, Address); // Обратный вызов
-                                           // для кнопки next_button
-    void next();            // Ф-ция обратного вызова
-
+    //static void cb_next(Address, Address); // Обратный вызов
+                                             // для кнопки next_button
+    void next();            // Действи выполняемое после
+                            // щелчка на кнопке next_button
 };

@@ -1,18 +1,22 @@
 //-----------------------------------------------------------------------------
 
 #include "../../../bstroustrup_code/std_lib_facilities.h"
-#include "../../../bstroustrup_code/Simple_window.h"
-#include "../../../bstroustrup_code/Graph.h"
-#include "FL/fl_utf8.h"
-#include <locale.h>
+#include "Lines_window.h"
 
 //-----------------------------------------------------------------------------
 
 int main()
-{
-
-
-    return 0;
+try {
+    Lines_window win{Point{100, 100}, 600, 400, "lines"};
+    return gui_main();
+}
+catch(exception& e) {
+    cerr << e.what() << '\n';
+    return -1;
+}
+catch (...) {
+    cerr << "exiting\n";
+    return -2;
 }
 
 //-----------------------------------------------------------------------------
