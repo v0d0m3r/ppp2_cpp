@@ -3,7 +3,7 @@ QT -= gui
 
 CONFIG += c++11
 
-TARGET = exer16_1
+TARGET = exer16_2
 CONFIG += console
 CONFIG -= app_bundle
 
@@ -20,7 +20,8 @@ SOURCES += main.cpp \
     ../../../bstroustrup_code/GUI.cpp \
     ../../../bstroustrup_code/Simple_window.cpp \
     ../../../bstroustrup_code/Graph.cpp \
-    my_window.cpp
+    ../../exercise16_1/exer16_1/my_window.cpp \
+    chess_window.cpp
 
 HEADERS += \
     ../../../bstroustrup_code/Point.h \
@@ -31,4 +32,5 @@ HEADERS += \
     ../../../bstroustrup_code/GUI.h \
     ../../../bstroustrup_code/std_lib_facilities.h \
     ../../../bstroustrup_code/Graph.h \
-    my_window.h
+    ../../exercise16_1/exer16_1/my_window.h \
+    chess_window.h
