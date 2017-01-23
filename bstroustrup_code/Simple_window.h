@@ -15,6 +15,6 @@ private:
     bool button_pushed;     // Деталь реализации
     //static void cb_next(Address, Address); // Обратный вызов
                                              // для кнопки next_button
-    void next();            // Действи выполняемое после
+    void next();            // Действие выполняемое после
                             // щелчка на кнопке next_button
 };

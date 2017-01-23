@@ -3,7 +3,7 @@ QT -= gui
 
 CONFIG += c++11
 
-TARGET = exam
+TARGET = exer16_1
 CONFIG += console
 CONFIG -= app_bundle
 
@@ -20,7 +20,7 @@ SOURCES += main.cpp \
     ../../../bstroustrup_code/GUI.cpp \
     ../../../bstroustrup_code/Simple_window.cpp \
     ../../../bstroustrup_code/Graph.cpp \
-    Lines_window.cpp
+    my_window.cpp
 
 HEADERS += \
     ../../../bstroustrup_code/Point.h \
@@ -31,4 +31,4 @@ HEADERS += \
     ../../../bstroustrup_code/GUI.h \
     ../../../bstroustrup_code/std_lib_facilities.h \
     ../../../bstroustrup_code/Graph.h \
-    Lines_window.h
+    my_window.h

@@ -11,8 +11,12 @@ Lines_window::Lines_window(Point xy, int w, int h, const string &title)
       xy_out{Point{100, 0}, 100, 20, "current (x, y):"},
       color_menu{Point{x_max()-70, 40}, 70, 20,
                  Menu::vertical, "color"},
-      menu_button{Point{x_max()-80, 30}, 80, 20,
-                  "color_menu", cb_menu}
+      c_menu_button{Point{x_max()-80, 30}, 80, 20,
+                    "color_menu", cb_c_menu},
+      line_style_menu{Point{x_max()-160, 40}, 70, 20,
+                      Menu::vertical, "style"},
+      ls_menu_button{Point{x_max()-170, 30}, 80, 20,
+                     "style_menu", cb_ls_menu}
 {
     attach(next_button);
     attach(quit_button);
@@ -28,7 +32,17 @@ Lines_window::Lines_window(Point xy, int w, int h, const string &title)
                                  "black", cb_black});
     attach(color_menu);
     color_menu.hide();
-    attach(menu_button);
+    attach(c_menu_button);
+
+    line_style_menu.attach(new Button{Point{0, 0}, 0, 0,
+                                      "solid", cb_solid});
+    line_style_menu.attach(new Button{Point{0, 0}, 0, 0,
+                                      "dot", cb_dot});
+    line_style_menu.attach(new Button{Point{0, 0}, 0, 0,
+                                      "dash", cb_dash});
+    attach(line_style_menu);
+    line_style_menu.hide();
+    attach(ls_menu_button);
     attach(lines);
 }
 
@@ -71,9 +85,37 @@ void Lines_window::cb_black(Address, Address pw)
 
 //-----------------------------------------------------------------------------
 
-void Lines_window::cb_menu(Address, Address pw)
+void Lines_window::cb_c_menu(Address, Address pw)
 {
-    reference_to<Lines_window>(pw).menu_pressed();
+    reference_to<Lines_window>(pw).c_menu_pressed();
+}
+
+//-----------------------------------------------------------------------------
+
+void Lines_window::cb_solid(Address, Address pw)
+{
+    reference_to<Lines_window>(pw).solid_pressed();
+}
+
+//-----------------------------------------------------------------------------
+
+void Lines_window::cb_dot(Address, Address pw)
+{
+    reference_to<Lines_window>(pw).dot_pressed();
+}
+
+//-----------------------------------------------------------------------------
+
+void Lines_window::cb_dash(Address, Address pw)
+{
+    reference_to<Lines_window>(pw).dash_pressed();
+}
+
+//-----------------------------------------------------------------------------
+
+void Lines_window::cb_ls_menu(Address, Address pw)
+{
+    reference_to<Lines_window>(pw).ls_menu_pressed();
 }
 
 //-----------------------------------------------------------------------------
@@ -92,6 +134,32 @@ void Lines_window::cb_quit(Address, Address pw)
 
 //-----------------------------------------------------------------------------
 
+void Lines_window::solid_pressed()
+{
+    change_ls(Line_style(Line_style::solid, 1));
+    hide_ls_menu();
+    redraw();
+}
+
+//-----------------------------------------------------------------------------
+
+void Lines_window::dot_pressed()
+{
+    change_ls(Line_style(Line_style::dot,2));
+    hide_ls_menu();
+    redraw();
+}
+
+//-----------------------------------------------------------------------------
+
+void Lines_window::dash_pressed()
+{
+    change_ls(Line_style(Line_style::dash,2));
+    hide_ls_menu();
+    redraw();
+}
+
+//-----------------------------------------------------------------------------
 
 
 
