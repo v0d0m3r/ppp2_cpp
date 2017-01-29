@@ -8,7 +8,6 @@ using namespace Graph_lib;
 void Button::attach(Window& win)
 	{
 		pw = new Fl_Button(loc.x, loc.y, width, height, label.c_str());
-        if (do_it != nullptr)
 		pw->callback(reinterpret_cast<Fl_Callback*>(do_it), &win); // pass the window
 		own = &win;
 	}

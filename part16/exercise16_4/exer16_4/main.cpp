@@ -1,13 +1,13 @@
 //-----------------------------------------------------------------------------
 
 #include "../../../bstroustrup_code/std_lib_facilities.h"
-#include "chess_window.h"
+#include "figures_window.h"
 
 //-----------------------------------------------------------------------------
 
 int main()
 try {
-    Chess_window win{Point{100, 100}, 600, 400, "Chess"};
+    Figures_window win{Point{100, 100}, 1024, 800, "Figure"};
     return gui_main();
 }
 catch(exception& e) {

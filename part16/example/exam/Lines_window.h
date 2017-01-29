@@ -9,7 +9,7 @@ using namespace Graph_lib;
 
 //-----------------------------------------------------------------------------
 
-class Lines_window : Graph_lib::Window
+class Lines_window : public Graph_lib::Window
 {
 public:
     Lines_window(Point xy, int w, int h,

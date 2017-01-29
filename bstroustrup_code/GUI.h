@@ -17,7 +17,6 @@ namespace Graph_lib {
 typedef void* Address;    // Address is a synonym for void*
 typedef void(*Callback)(Address, Address);    // FLTK's required function
                                               // type for all callbacks
-typedef function<void(Address, Address)> (*Callback_capture) ;
 
 //------------------------------------------------------------------------------
 
@@ -35,10 +34,7 @@ class Widget {
 public:
     Widget(Point xy, int w, int h, const string& s, Callback cb)
         : loc(xy), width(w), height(h), label(s), do_it(cb)
-    {}
-    Widget(Point xy, int w, int h, const string& s, Callback_capture cb)
-        : loc(xy), width(w), height(h), label(s), do_it_capture(cb)
-    {}
+    {}   
 
     virtual void move(int dx,int dy) { hide(); pw->position(loc.x+=dx, loc.y+=dy); show(); }
     virtual void hide() { pw->hide(); }
@@ -50,7 +46,6 @@ public:
     int height;
     string label;
     Callback do_it;
-    Callback_capture do_it_capture;
 
     virtual ~Widget() { }
 protected:
@@ -67,9 +62,6 @@ struct Button : Widget {
     Button(Point xy, int w, int h, const string& label, Callback cb)
         : Widget(xy,w,h,label,cb)
     {}
-    Button(Point xy, int w, int h, const string& label, Callback_capture cb)
-        : Widget(xy,w,h,label,Callback_capture(cb))
-    {}
     void attach(Window&);
 };
 
@@ -77,7 +69,7 @@ struct Button : Widget {
 
 struct In_box : Widget {
     In_box(Point xy, int w, int h, const string& s)
-        :Widget(xy,w,h,s, Callback(0)) { }
+        :Widget(xy,w,h,s,0) { }
     int get_int();
     string get_string();
 
@@ -89,7 +81,7 @@ struct In_box : Widget {
 
 struct Out_box : Widget {
     Out_box(Point xy, int w, int h, const string& s)
-        :Widget(xy,w,h,s,Callback(0)) { }
+        :Widget(xy,w,h,s,0) { }
     void put(int);
     void put(const string&);
     void attach(Window& win);
@@ -100,7 +92,7 @@ struct Out_box : Widget {
 struct Menu : Widget {
     enum Kind { horizontal, vertical };
     Menu(Point xy, int w, int h, Kind kk, const string& label)
-        : Widget(xy,w,h,label,Callback(0)), k(kk), offset(0)
+        : Widget(xy,w,h,label,0), k(kk), offset(0)
     {}
 
     Vector_ref<Button> selection;
