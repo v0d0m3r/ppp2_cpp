@@ -5,7 +5,7 @@
 Simple_figures_window::Simple_figures_window(Point xy, int w, int h,
                                              const string &title)
     : Figures_window(xy, w, h, title),
-      next_button{Point(x_max()-70,0), 70, 20, "Next",
+      next_button{Point{x_max()-150, 0}, 70, 20, "Next",
                   [] (Address, Address pw)
                      {
                           reference_to<Simple_figures_window>(pw).next();
@@ -63,8 +63,14 @@ int get_int(int low, int high,
 
 void Simple_figures_window::next()
 {
-
-
+    int x_coord = get_int(0, x_max(),
+                          "Введите значение координаты х",
+                          "Вне диапазона, повторите еще");
+    int y_coord = get_int(0, x_max(),
+                          "Введите значение координаты y",
+                          "Вне диапазона, повторите еще");
+    current_shape().move(x_coord, y_coord);
+    redraw();
 }
 
 //-----------------------------------------------------------------------------

@@ -1,14 +1,14 @@
 //-----------------------------------------------------------------------------
 
 #include "../../../bstroustrup_code/std_lib_facilities.h"
-
+#include "simple_figures_window.h"
 
 //-----------------------------------------------------------------------------
 
 int main()
 try {
-    //Figures_window win{Point{100, 100}, 1024, 800, "exercise_16_5"};
-    return 0;//gui_main();
+    Simple_figures_window win{Point{100, 100}, 1024, 800, "exercise_16_5"};
+    return gui_main();
 }
 catch(exception& e) {
     cerr << e.what() << '\n';
