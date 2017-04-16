@@ -27,8 +27,6 @@
 *.exe
 *.out
 *.app
-part13/**/*.user
+# Qt project user settings
+*.user
 build/
-part14/**/*.user
-part15/**/*.user
-part16/**/*.user
