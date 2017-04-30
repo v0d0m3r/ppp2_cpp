@@ -29,4 +29,7 @@
 *.app
 # Qt project user settings
 *.user
-build/
+
+# Binary files
+build*
+*Makefile
