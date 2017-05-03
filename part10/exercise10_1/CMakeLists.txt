@@ -9,9 +9,9 @@ if (NOT UNIX)
     message(FATAL_ERROR "Not Unix!")
 endif ()
 
-include(task10_1.cmake)
+include(exercise10_1.cmake)
 
-set(PROJECT task10_1)
+set(PROJECT exercise10_1)
 set(LIBRARIES)
 
 foreach (LIBRARY ${LIBRARIES})

@@ -1,4 +1,4 @@
-#include "point.h"
+#include "point.hpp"
 
 //------------------------------------------------------------------------------
 
@@ -9,7 +9,7 @@ Point::Point():x{0.00}, y{0.00}
 
 //------------------------------------------------------------------------------
 
-std::istream& operator>> (std::istream& is, Point& p)
+istream& operator>> (istream& is, Point& p)
 {
     double x,y;
     is >> x >> y;
@@ -21,7 +21,7 @@ std::istream& operator>> (std::istream& is, Point& p)
 
 //------------------------------------------------------------------------------
 
-std::ostream& operator<<(std::ostream& os, const Point& p)
+ostream& operator<<(ostream& os, const Point& p)
 {
     return os << "x = " << p.x << '\t'
               << "y = " << p.y << '\n';
@@ -29,7 +29,7 @@ std::ostream& operator<<(std::ostream& os, const Point& p)
 
 //------------------------------------------------------------------------------
 
-std::ifstream& operator>>(std::ifstream& ist, Point& p)
+ifstream& operator>>(ifstream& ist, Point& p)
 {
     double x, y;
     ist >> x >> y;
@@ -42,7 +42,7 @@ std::ifstream& operator>>(std::ifstream& ist, Point& p)
 
 //------------------------------------------------------------------------------
 
-std::ofstream& operator<<(std::ofstream& ost, const Point& p)
+ofstream& operator<<(ofstream& ost, const Point& p)
 {
     ost << p.x << ' ' << p.y << '\n';
     return ost;

@@ -1,36 +1,16 @@
-#include "point.h"
+#include "point.hpp"
 
 //------------------------------------------------------------------------------
 
-using namespace std;
-
-//------------------------------------------------------------------------------
-
-const string ipath = "/home/lost/project/princip_straustrup/part10/task10_1/";
-const string opath = "/home/lost/project/princip_straustrup/part10/task10_1/";
-
-//------------------------------------------------------------------------------
-
-void error(string from_err, string err)
-{
-  throw runtime_error(from_err+": "+ err);
-}
-
-//------------------------------------------------------------------------------
-
-inline void keep_window_open(string str1)
-{
-  cout << "Чтобы выйти, введите " << str1 << '\n';
-  for (string str2; cin>>str2;)
-     if (str1 == str2)  { break; }
-}
+const string ipath = "./";
+const string opath = "./";
 
 //------------------------------------------------------------------------------
 // Ввод из файла
 void fill_from_file(vector<Point>& points, string& name)
 {
     ifstream ist {name};    // Поток для чтения из файла
-    if (!ist) error("невозможно открыть файл:", name);
+    if (!ist) error("невозможно открыть файл: ", name);
     for (Point p; ist >> p; )
         points.push_back(p);
 }
@@ -50,10 +30,10 @@ void fill_on_file(const vector<Point>& points, string& name)
 void fill_from_console(vector<Point>& points, const string& invitation_inp)
 {
     cout << invitation_inp;
-    for (int i=0; i<points.size(); ++i) {
+    for (size_t i=0; i<points.size(); ++i) {
         cin >> points[i];
         if (!cin)
-            error("fill_from_console", "Не вверный ввод из консоли!");
+            error("fill_from_console: ", "Некорректный ввод из консоли!");
     }
 }
 
@@ -70,10 +50,10 @@ void print_point_tb(const vector<Point>& points)
 void compare_point_tb(const vector<Point>& a, const vector<Point>& b)
 {
     if (a.size() != b.size())
-        error("compare_point_tb", "Что-то не так!");
-    for (int i=0; i<a.size(); ++i)
+        error("compare_point_tb: ", "Что-то не так!");
+    for (size_t i=0; i<a.size(); ++i)
         if (a[i] != b[i])
-            error("compare_point_tb", "Что-то не так!");
+            error("compare_point_tb: ", "Что-то не так!");
 }
 
 //------------------------------------------------------------------------------
