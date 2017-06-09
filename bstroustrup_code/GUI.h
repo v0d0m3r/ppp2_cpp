@@ -9,6 +9,7 @@
 
 #include "Window.h"
 #include "Graph.h"
+#include "Time.hpp"
 
 namespace Graph_lib {
 
@@ -17,6 +18,7 @@ namespace Graph_lib {
 typedef void* Address;    // Address is a synonym for void*
 typedef void(*Callback)(Address, Address);    // FLTK's required function
                                               // type for all callbacks
+typedef void(*Callback_one)(Address);
 
 //------------------------------------------------------------------------------
 
@@ -55,6 +57,27 @@ private:
         Widget& operator=(const Widget&); // don't copy Widgets
         Widget(const Widget&);
     };
+
+//------------------------------------------------------------------------------
+
+struct Analog_clock : Widget {
+    Analog_clock(Point xy, int rr);
+
+    void update();  // Перерисовываем виджет соответственно
+                    // текущему времени
+
+    void attach(Window&) override;
+
+private:
+    Circle dial;    // Циферблат
+
+    // Часовые стрелки
+    Mutable_line h;
+    Mutable_line m;
+    Mutable_line s;
+
+    Current_time ct;
+};
 
 //------------------------------------------------------------------------------
 
@@ -127,7 +150,27 @@ struct Menu : Widget {
 
 //------------------------------------------------------------------------------
 
+inline void repeat_timeout(double t, Callback_one do_it, Address p)
+{
+    Fl::repeat_timeout(t, do_it, p);
+}
+
+//------------------------------------------------------------------------------
+
+inline void add_timeout(double t, Callback_one do_it, Address p)
+{
+    Fl::add_timeout(t, do_it, p);
+}
+
+//------------------------------------------------------------------------------
+
+inline void remove_timeout(Callback_one do_it)
+{
+    Fl::remove_timeout(do_it);
+}
+
+//------------------------------------------------------------------------------
+
 } // of namespace Graph_lib
 
 #endif // GUI_GUARD
-

@@ -322,6 +322,18 @@ struct Line : Shape {
     Line(Point p1, Point p2) { add(p1); add(p2); }
 };
 
+//-----------------------------------------------------------------------------
+
+struct Mutable_line : Line {
+    Mutable_line(Point p1, Point p2) : Line(p1, p2) {}
+    Mutable_line() : Line(Point{0 , 0}, Point{0 , 0}) {}
+
+    void set_point(Point p1, Point p2)
+    { Shape::set_point(0, p1);  Shape::set_point(1, p2);}
+};
+
+//-----------------------------------------------------------------------------
+
 struct Rectangle : Shape {
 
     Rectangle(Point xy, int ww, int hh) :w{ ww }, h{ hh }
