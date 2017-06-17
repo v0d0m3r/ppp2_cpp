@@ -1,19 +1,31 @@
 //-----------------------------------------------------------------------------
 
-#include "Analog_clock_window.hpp"
+#include "Converter_window.hpp"
 
 //-----------------------------------------------------------------------------
 
-using namespace std;
 using namespace Graph_lib;
 
 //-----------------------------------------------------------------------------
 
 int main()
-{
-    Analog_clock_window win{Point{100, 100}, 600, 400, "Clock"};
+try {
+    Exchange e;
+
+    ifstream is{"./echange.txt"};
+    if (!is) error("Ошибка открытия файла");
+    is >> e;
+
+    Converter_window cw{Point{100, 100}, 1024, 800, "Converter", e};
     return gui_main();
-    return 0;
+}
+catch(exception& e) {
+    cerr << e.what() << '\n';
+    return -1;
+}
+catch (...) {
+    cerr << "exiting\n";
+    return -2;
 }
 
 //-----------------------------------------------------------------------------

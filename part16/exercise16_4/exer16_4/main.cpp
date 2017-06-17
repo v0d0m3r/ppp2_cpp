@@ -7,7 +7,7 @@
 
 int main()
 try {
-    Figures_window win{Point{100, 100}, 1024, 800, "Figure"};
+    Figures_window win{Point{100, 100}, 1024, 700, "Figure"};
     return gui_main();
 }
 catch(exception& e) {

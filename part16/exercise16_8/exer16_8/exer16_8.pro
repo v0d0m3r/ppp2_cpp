@@ -3,14 +3,14 @@ QT -= gui
 
 CONFIG += c++14
 
-TARGET = exer16_6
+TARGET = exer16_8
 CONFIG += console
 CONFIG -= app_bundle
 
-LIBS	+= -lXfixes -lpthread -ldl -lfltk_images -lfltk_jpeg -lfltk -lX11 -lXext
+#LIBS	+= -lXfixes -lpthread -ldl -lfltk_images -lfltk_jpeg -lfltk -lX11 -lXext
 
-#LIBS	+= -lXfixes -lpthread -ldl -lfltk -lfltk_images -lXinerama
-#LIBS    += -lpng -ljpeg -lX11 -lXext -lz -lm -lXcursor -lXrender -lfontconfig -lXft
+LIBS	+= -lXfixes -lpthread -ldl -lfltk -lfltk_images -lXinerama
+LIBS    += -lpng -ljpeg -lX11 -lXext -lz -lm -lXcursor -lXrender -lfontconfig -lXft
 INCLUDEPATH += /usr/local/include/
 
 TEMPLATE = app
@@ -21,8 +21,8 @@ SOURCES += main.cpp \
     ../../../bstroustrup_code/Simple_window.cpp \
     ../../../bstroustrup_code/Graph.cpp \
     ../../../bstroustrup_code/Time.cpp \
-    ../../../bstroustrup_code/Common_window.cpp \
-    Analog_clock_window.cpp
+    Converter_window.cpp \
+    Money.cpp
 
 HEADERS += \
     ../../../bstroustrup_code/Point.h \
@@ -34,6 +34,5 @@ HEADERS += \
     ../../../bstroustrup_code/std_lib_facilities.h \
     ../../../bstroustrup_code/Graph.h \
     ../../../bstroustrup_code/Time.hpp \
-    ../../../bstroustrup_code/Common_window.hpp \
-    Analog_clock_window.hpp
-
+    Converter_window.hpp \
+    Money.hpp

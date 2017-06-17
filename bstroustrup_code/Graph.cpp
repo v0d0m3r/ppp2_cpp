@@ -1604,4 +1604,74 @@ void Image::draw_lines() const
 		p->draw(point(0).x,point(0).y);
 }
 
+//-----------------------------------------------------------------------------
+
+Analog_clock::Analog_clock(Point xy, int rr)
+    : dial{xy, rr}
+{
+    vr.push_back(new Mutable_line());
+    vr.push_back(new Mutable_line());
+    vr.push_back(new Mutable_line());
+
+    vr[Clock_hand::h].set_style(Line_style{Line_style::solid, 3});
+    vr[Clock_hand::m].set_style(Line_style{Line_style::solid, 3});
+    update();
+}
+
+//-----------------------------------------------------------------------------
+// Получаем точку соответствующую
+// текущему виду часовой стрелки и ее времени
+inline Point get_clock_hand_end(Point o, int r, int common, int current)
+{
+    double alpha{90 - 360.0 / common * current};
+    return Point{static_cast<int>(o.x + r * std::cos(alpha * M_PI / 180.0)),
+                 static_cast<int>(o.y - r * std::sin(alpha * M_PI / 180.0))};
+}
+
+//-----------------------------------------------------------------------------
+// Пересчет координат часовых стрелок
+void Analog_clock::update()
+{
+    constexpr int hours{12};
+    constexpr int min_or_sec{60};
+
+    int r{dial.radius()};
+    Point o{dial.center()};
+
+    ct.update();    // Обновляем текущее время
+
+    vr[Clock_hand::h].set_point(o, get_clock_hand_end(o, r-30,
+                                                      hours, ct.hour()));
+    vr[Clock_hand::m].set_point(o, get_clock_hand_end(o, r-10,
+                                                      min_or_sec, ct.minute()));
+    vr[Clock_hand::s].set_point(o, get_clock_hand_end(o, r-5,
+                                                      min_or_sec, ct.second()));
+}
+
+//-----------------------------------------------------------------------------
+
+void Analog_clock::set_color(Color c)
+{
+    dial.set_color(c);
+    for (int i=0; i < vr.size(); ++i) vr[i].set_color(c);
+}
+
+//-----------------------------------------------------------------------------
+
+void Analog_clock::move(int dx, int dy)
+{
+    dial.move(dx, dy);
+    for (int i=0; i < vr.size(); ++i) vr[i].move(dx, dy);
+}
+
+//-----------------------------------------------------------------------------
+
+void Analog_clock::draw_lines() const
+{
+    dial.draw_lines();
+    for (int i=0; i < vr.size(); ++i) vr[i].draw_lines();
+}
+
+//-----------------------------------------------------------------------------
+
 } // Graph

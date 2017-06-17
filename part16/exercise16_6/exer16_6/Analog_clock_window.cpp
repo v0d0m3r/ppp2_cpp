@@ -2,18 +2,17 @@
 
 #include "Analog_clock_window.hpp"
 
-//-----------------------------------------------------------------------------
-
-using namespace std;
 using namespace Graph_lib;
 
 //-----------------------------------------------------------------------------
 
-int main()
+Analog_clock_window::Analog_clock_window(Point xy, int w, int h,
+                                         const string& title)
+    : Action_window(xy, w, h, title),
+      aclock{Point{x_max()/2, y_max()/2}, 100}
+
 {
-    Analog_clock_window win{Point{100, 100}, 600, 400, "Clock"};
-    return gui_main();
-    return 0;
+    attach(aclock);   
 }
 
 //-----------------------------------------------------------------------------

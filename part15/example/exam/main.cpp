@@ -286,11 +286,11 @@ void grafical_present_data15_6()
     vector<Distribution> dv;
     fill_from_file(dv, base_year, end_year);
 
-    for (int i=0; i < dv.size(); ++i) {
-        const int x = xs(dv[i].year);
-        children.add(Point{x, ys(dv[i].young)});
-        adults.add(Point{x, ys(dv[i].middle)});
-        aged.add(Point{x, ys(dv[i].old)});
+    for (const auto& d : dv) {
+        const int x = xs(d.year);
+        children.add(Point{x, ys(d.young)});
+        adults.add(Point{x, ys(d.middle)});
+        aged.add(Point{x, ys(d.old)});
     }
 
     Text children_label{Point{20, children.point(0).y}, "age 0-14"};

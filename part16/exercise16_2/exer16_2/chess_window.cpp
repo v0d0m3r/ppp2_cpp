@@ -28,25 +28,32 @@ Chess_window::Chess_window(Point xy, int w, int h, const string &title)
             ++counter;
         }
     }
-    clear();
+    init();
 }
 
 //-----------------------------------------------------------------------------
 
 void Chess_window::change(int i)
 {
-    clear();
-    vr[i].set_fill_color(Color::red);
+    // Возвращаем цвет по умолчанию
+    if (cur_rect) cur_rect->set_fill_color(prev_col);
+
+    // Запоминаем объект и его предыдущий цвет
+    cur_rect = &vr[i];
+    prev_col = vr[i].fill_color();
+
+    cur_rect->set_fill_color(Color::red);    // Делаем объект "активным"
+
     redraw();
 }
 
 //-----------------------------------------------------------------------------
-// clear() приводит доску в начльное состояние
-void Chess_window::clear()
-{    
+// init() заполняет доску
+void Chess_window::init()
+{
     int parity = 0;
     int counter = 0;
-    for (int i=0; i < vr.size(); ++i) { // Возвращаем цвета по умолчанию
+    for (int i=0; i < vr.size(); ++i) {
         if (item_on_line%2==0 && counter%item_on_line==0)
             ++parity;
 

@@ -13,14 +13,17 @@ public:
     Chess_window(Point xy, int w, int h, const string& title);
 
 private:
-    int item_on_line = 4;       // Количество кнопок в строке
-    Vector_ref<Rectangle> vr;   // Каждой кнопки соответсвует
-                                // свой прямоугольник
+    int item_on_line = 4;           // Количество кнопок в строке
+    Vector_ref<Rectangle> vr;       // Каждой кнопки соответсвует
+                                    // свой прямоугольник
     Vector_ref<Button> vb;
-    void clear();
-    void change(int i);         // Изменение цвета прямоугольника
-    // Вектор функций обратного вызова
-    vector<Callback> vc {
+    Rectangle* cur_rect{nullptr};   // Активный прямоугольник
+    Color prev_col{Color::black};   // Предыдущий цвет прямоугольника
+
+    void init();
+    void change(int i);             // Изменение цвета прямоугольника
+
+    vector<Callback> vc {           // Вектор функций обратного вызова
         [] (Address, Address pw) { reference_to<Chess_window>(pw).change(0);},
         [] (Address, Address pw) { reference_to<Chess_window>(pw).change(1);},
         [] (Address, Address pw) { reference_to<Chess_window>(pw).change(2);},

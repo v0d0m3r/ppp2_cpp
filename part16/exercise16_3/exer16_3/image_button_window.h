@@ -18,7 +18,8 @@ public:
         img.set_mask(Point{0, 0}, w, h);
     }
 
-    Image& image() { return img; }
+    void attach(Graph_lib::Window& w) override
+    { Button::attach(w); w.attach(img); }
 
     void move(int dx,int dy) override
     { Button::move(dx, dy); img.move(dx, dy); }
@@ -37,9 +38,6 @@ public:
 
     static constexpr double percent{0.2}; // Процентный множитель
                                           // для построения кнопки
-    void attach(Image_button& ib);        // Связываем кнопку с окном
-    void detach(Image_button& ib);        // Прерываем связь окна и кнопки
-
 private:
     // Диапазон случайных чисел [r1, r2]
     int r1;

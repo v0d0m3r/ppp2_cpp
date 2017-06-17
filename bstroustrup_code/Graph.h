@@ -9,6 +9,7 @@
 #include "std_lib_facilities.h"
 
 #include <functional>
+#include "Time.hpp"
 
 namespace Graph_lib {
 // defense against ill-behaved Linux macros:
@@ -327,6 +328,8 @@ struct Line : Shape {
 struct Mutable_line : Line {
     Mutable_line(Point p1, Point p2) : Line(p1, p2) {}
     Mutable_line() : Line(Point{0 , 0}, Point{0 , 0}) {}
+
+    void draw_lines() const { Shape::draw_lines(); }
 
     void set_point(Point p1, Point p2)
     { Shape::set_point(0, p1);  Shape::set_point(1, p2);}
@@ -851,6 +854,24 @@ private:
     int w,h,cx,cy; // define "masking box" within image relative to position (cx,cy)
     Fl_Image* p;
     Text fn;
+};
+
+//------------------------------------------------------------------------------
+// По текущему времени отображает стрелки часов
+struct Analog_clock : Shape {
+    enum Clock_hand { h, m, s };
+    Analog_clock(Point xy, int rr);
+
+    void draw_lines() const override;
+    void move(int dx, int dy) override;
+    void set_color(Color c);
+
+    void update();  // Перерисовываем фигуру соответственно
+                    // текущему времени
+private:
+    Circle dial;    // Циферблат
+    Vector_ref<Mutable_line> vr; // Часовые стрелки
+    Current_time ct;
 };
 
 //-----------------------------------------------------------------------------

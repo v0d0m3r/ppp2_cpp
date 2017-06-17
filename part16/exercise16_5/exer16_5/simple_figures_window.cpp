@@ -66,7 +66,7 @@ void Simple_figures_window::next()
     int x_coord = get_int(0, x_max(),
                           "Введите значение координаты х",
                           "Вне диапазона, повторите еще");
-    int y_coord = get_int(0, x_max(),
+    int y_coord = get_int(0, y_max(),
                           "Введите значение координаты y",
                           "Вне диапазона, повторите еще");
     current_shape().move(x_coord, y_coord);

@@ -7,7 +7,8 @@ Image_button_window::Image_button_window(Point xy, int w, int h,
                                          const string &file_name,
                                          int r_min, int r_max)
     : My_window(xy, w, h, title),r1{r_min}, r2{r_max},
-      ib{Point{w/2,h/2}, w*percent, h*percent, "",
+      ib{Point{w/2,h/2}, static_cast<int>(w*percent),
+         static_cast<int>(h*percent), "",
          [] (Address, Address pw)
             {
                  reference_to<Image_button_window>(pw).rand_move();
@@ -15,22 +16,6 @@ Image_button_window::Image_button_window(Point xy, int w, int h,
          file_name}
 {
     attach(ib);
-}
-
-//-----------------------------------------------------------------------------
-
-void Image_button_window::attach(Image_button &ib)
-{
-    My_window::attach(ib);
-    My_window::attach(ib.image());
-}
-
-//-----------------------------------------------------------------------------
-
-void Image_button_window::detach(Image_button &ib)
-{
-    My_window::detach(ib);
-    My_window::detach(ib.image());
 }
 
 //-----------------------------------------------------------------------------

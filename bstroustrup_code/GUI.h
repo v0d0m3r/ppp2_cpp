@@ -9,7 +9,6 @@
 
 #include "Window.h"
 #include "Graph.h"
-#include "Time.hpp"
 
 namespace Graph_lib {
 
@@ -57,27 +56,6 @@ private:
         Widget& operator=(const Widget&); // don't copy Widgets
         Widget(const Widget&);
     };
-
-//------------------------------------------------------------------------------
-
-struct Analog_clock : Widget {
-    Analog_clock(Point xy, int rr);
-
-    void update();  // Перерисовываем виджет соответственно
-                    // текущему времени
-
-    void attach(Window&) override;
-
-private:
-    Circle dial;    // Циферблат
-
-    // Часовые стрелки
-    Mutable_line h;
-    Mutable_line m;
-    Mutable_line s;
-
-    Current_time ct;
-};
 
 //------------------------------------------------------------------------------
 
