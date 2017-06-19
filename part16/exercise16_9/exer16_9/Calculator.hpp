@@ -2,6 +2,7 @@
 #define CALCULATOR_HPP
 
 //------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 #include "../../bstroustrup_code/std_lib_facilities.h"
 
@@ -110,19 +111,20 @@ public:
     Token_stream(istream& is)
         : source{is} {}
 
-    Token get();                    // Получает объект Token из потока
-    void putback(const Token& t);   // Возвращает Token обратно в поток
-    void ignore(char c);            // Отбрасывает символы до
-                                    // символа *c* включительно
+    Token get();                  // Получает объект Token из потока
+    void putback(const Token& t); // Возвращает Token обратно в поток
+    void ignore(char c);          // Отбрасывает символы до
+                                  // символа *c* включительно
 
-    static constexpr int max{2}; // Максимальный размер лексем
-                                 // в буфере
+    static constexpr int max{2};  // Максимальный размер лексем
+                                  // в буфере
     operator bool();
+
 private:
     istream& source;
-    bool full{false};              // true, если буфер занят
-    vector<Token> buffer;   // Здесь хранится лексема после
-                            // вызова putback()
+    bool full{false};             // true, если буфер занят
+    vector<Token> buffer;         // Здесь хранится лексема после
+                                  // вызова putback()
     Recognize recognize;
 
     Token get_from_buffer();

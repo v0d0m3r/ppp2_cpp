@@ -7,22 +7,34 @@ TARGET = exer16_9
 CONFIG += console
 CONFIG -= app_bundle
 
+LIBS	+= -lXfixes -lpthread -ldl -lfltk_images -lfltk_jpeg -lfltk -lX11 -lXext
+
+#LIBS	+= -lXfixes -lpthread -ldl -lfltk -lfltk_images -lXinerama
+#LIBS    += -lpng -ljpeg -lX11 -lXext -lz -lm -lXcursor -lXrender -lfontconfig -lXft
+INCLUDEPATH += /usr/local/include/
+
 TEMPLATE = app
 
 SOURCES += main.cpp \
-#    calculator09.cpp \
-    Calculator.cpp
-
-# The following define makes your compiler emit warnings if you use
-# any feature of Qt which as been marked deprecated (the exact warnings
-# depend on your compiler). Please consult the documentation of the
-# deprecated API in order to know how to port your code away from it.
-DEFINES += QT_DEPRECATED_WARNINGS
-
-# You can also make your code fail to compile if you use deprecated APIs.
-# In order to do so, uncomment the following line.
-# You can also select to disable deprecated APIs only up to a certain version of Qt.
-#DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
+    ../../../bstroustrup_code/Window.cpp \
+    ../../../bstroustrup_code/GUI.cpp \
+    ../../../bstroustrup_code/Simple_window.cpp \
+    ../../../bstroustrup_code/Graph.cpp \
+    ../../../bstroustrup_code/Time.cpp \
+    Calculator.cpp \
+    Calculator_window.cpp \
+    ../../../part11/example/src/punctstream.cpp
 
 HEADERS += \
-    Calculator.hpp
+    ../../../bstroustrup_code/Point.h \
+    ../../../bstroustrup_code/Simple_window.h \
+    ../../../bstroustrup_code/fltk.h \
+    ../../../bstroustrup_code/Window.h \
+    ../../../bstroustrup_code/Gui.h \
+    ../../../bstroustrup_code/GUI.h \
+    ../../../bstroustrup_code/std_lib_facilities.h \
+    ../../../bstroustrup_code/Graph.h \
+    ../../../bstroustrup_code/Time.hpp \
+    Calculator.hpp \
+    Calculator_window.hpp \
+    ../../../part11/example/src/punctstream.hpp

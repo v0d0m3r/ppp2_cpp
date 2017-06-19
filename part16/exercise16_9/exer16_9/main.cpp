@@ -1,15 +1,16 @@
 //------------------------------------------------------------------------------
 
-#include "Calculator.hpp"
+#include "Calculator_window.hpp"
 
 //------------------------------------------------------------------------------
 
 int main()
 {
-    istringstream is{"2+2; 2*3"};
+    Calculator_window cw{Graph_lib::Point{100, 100}, 600, 400, "Calculator"};
+    return Graph_lib::gui_main();
 
-    Calc_lib::Calculator calc(cin, cout);
-    calc.calculate();
+    /*Calc_lib::Calculator c{cin, cout};
+    c.calculate();*/
 
     return 0;
 }
