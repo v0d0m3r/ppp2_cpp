@@ -1,9 +1,17 @@
-#include <QCoreApplication>
+//------------------------------------------------------------------------------
+
 #include "Calculator.hpp"
 
-int main(int argc, char *argv[])
-{
-    QCoreApplication a(argc, argv);
+//------------------------------------------------------------------------------
 
-    return a.exec();
+int main()
+{
+    istringstream is{"2+2; 2*3"};
+
+    Calc_lib::Calculator calc(cin, cout);
+    calc.calculate();
+
+    return 0;
 }
+
+//------------------------------------------------------------------------------

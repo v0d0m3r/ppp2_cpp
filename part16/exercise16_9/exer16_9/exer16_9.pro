@@ -10,7 +10,7 @@ CONFIG -= app_bundle
 TEMPLATE = app
 
 SOURCES += main.cpp \
-    calculator09.cpp \
+#    calculator09.cpp \
     Calculator.cpp
 
 # The following define makes your compiler emit warnings if you use

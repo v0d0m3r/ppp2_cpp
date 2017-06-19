@@ -55,10 +55,10 @@ struct Token {
         constante = 'C',  // Константа
         help      = 'h',  // Подсказка
         ln        = 'l',  // Натуральный логарифм
-        none      = -777
+        none      = 'n'
     };
     // Формирует лексему: парой "8" и число
-    Token(Token_kind kk, double vv)
+    Token(Token_kind kk, double vv = 0)
         : k{narrow_cast<char>(kk)}, v{vv} { }
     // Формирует лексему kind и имя переменной
     Token(Token_kind kk, const string& nn)
@@ -108,7 +108,7 @@ private:
 class Token_stream {
 public:
     Token_stream(istream& is)
-        : source{is}, full{false} {}
+        : source{is} {}
 
     Token get();                    // Получает объект Token из потока
     void putback(const Token& t);   // Возвращает Token обратно в поток
@@ -117,11 +117,16 @@ public:
 
     static constexpr int max{2}; // Максимальный размер лексем
                                  // в буфере
+    operator bool();
 private:
     istream& source;
-    bool full;              // true, если буфер занят
+    bool full{false};              // true, если буфер занят
     vector<Token> buffer;   // Здесь хранится лексема после
                             // вызова putback()
+    Recognize recognize;
+
+    Token get_from_buffer();
+
 };
 
 //------------------------------------------------------------------------------
@@ -129,7 +134,25 @@ private:
 class Calculator
 {
 public:
-    Calculator();
+    enum Facilities { promt = '>', result = '=' };
+
+    Calculator(istream& is, ostream& ost);
+
+    void calculate();
+
+private:
+    Token_stream ts;
+    ostream& os;
+    Symbol_table st;
+
+    double expression();
+    double primary();
+    double term();
+    double nature_logarifm();
+    double declaration();
+    double assignment(const Token& t);
+    double statement();
+    void clean_up_mess();
 };
 
 //------------------------------------------------------------------------------
