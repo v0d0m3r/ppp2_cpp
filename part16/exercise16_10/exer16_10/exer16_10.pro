@@ -3,7 +3,7 @@ QT -= gui
 
 CONFIG += c++14
 
-TARGET = exer16_9
+TARGET = exer16_10
 CONFIG += console
 CONFIG -= app_bundle
 
@@ -21,9 +21,7 @@ SOURCES += main.cpp \
     ../../../bstroustrup_code/Simple_window.cpp \
     ../../../bstroustrup_code/Graph.cpp \
     ../../../bstroustrup_code/Time.cpp \
-    Calculator.cpp \
-    Calculator_window.cpp \
-    ../../../part11/example/src/punctstream.cpp
+    Func_window.cpp
 
 HEADERS += \
     ../../../bstroustrup_code/Point.h \
@@ -35,6 +33,5 @@ HEADERS += \
     ../../../bstroustrup_code/std_lib_facilities.h \
     ../../../bstroustrup_code/Graph.h \
     ../../../bstroustrup_code/Time.hpp \
-    Calculator.hpp \
-    Calculator_window.hpp \
-    ../../../part11/example/src/punctstream.hpp
+    Func_window.hpp
+

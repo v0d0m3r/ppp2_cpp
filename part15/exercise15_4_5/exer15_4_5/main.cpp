@@ -72,11 +72,11 @@ void exercise15_4()
 
     win.wait_for_button();
 
-    Funct f{sin, r_min, r_max, orig, n_points,
-             x_scale, y_scale, precision};
+    Funct_precision f{sin, r_min, r_max, orig, n_points,
+                x_scale, y_scale, precision};
     f.set_color(Color::blue);
-    Funct f2{cos, r_min, r_max, orig, n_points,
-             x_scale, y_scale, precision};
+    Funct_precision f2{cos, r_min, r_max, orig, n_points,
+                x_scale, y_scale, precision};
     f2.set_color(Color::dark_green);
     win.attach(f);
     win.attach(f2);
@@ -86,12 +86,12 @@ void exercise15_4()
     win.attach(ts);
     win.attach(ts2);
 
-    Funct f3{Fct_capture([](double x) { return sin(x) + cos(x); }),
-             r_min, r_max, orig, n_points, x_scale, y_scale, precision};
+    Funct_precision f3{Fct_capture([](double x) { return sin(x) + cos(x); }),
+                r_min, r_max, orig, n_points, x_scale, y_scale, precision};
     f3.set_color(Color::yellow);
 
-    Funct f4{Fct_capture([](double x) { return sin(x)*sin(x) + cos(x)*cos(x); }),
-             r_min, r_max, orig, n_points, x_scale, y_scale, precision};
+    Funct_precision f4{Fct_capture([](double x) { return sin(x)*sin(x) + cos(x)*cos(x); }),
+                r_min, r_max, orig, n_points, x_scale, y_scale, precision};
     f4.set_color(Color::dark_magenta);
 
     win.attach(f3);
@@ -109,8 +109,8 @@ void exercise15_4()
 
 int main()
 try {
-    //exercise15_4();
-    execise15_5();
+    exercise15_4();
+    //execise15_5();
     keep_window_open("~~");
     return 0;
 }
