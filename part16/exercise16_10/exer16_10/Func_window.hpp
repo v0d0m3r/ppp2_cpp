@@ -11,11 +11,6 @@
 class Func_window : public Graph_lib::Window
 {
 public:
-    enum Input {
-        r_min, r_max, count,
-        xscale, yscale
-    };
-
     Func_window(Graph_lib::Point xy, int w, int h,
                 const string& title, Graph_lib::Funct& ff);
 
@@ -24,13 +19,19 @@ private:
     Graph_lib::Funct& f;
 
     // Виджеты
-    Graph_lib::Vector_ref<Graph_lib::In_box> inboxs;
     Graph_lib::Button quit_button;
+
+    Graph_lib::In_box r_min_in_box;
+    Graph_lib::In_box r_max_in_box;
+    Graph_lib::In_box count_in_box;
+    Graph_lib::In_box xscale_in_box;
+    Graph_lib::In_box yscale_in_box;
+
     Graph_lib::Menu func_menu;
     Graph_lib::Button menu_button;
 
-    void recalculate(Graph_lib::Fct f);
-    void load_func_inbox();
+    void recalculate(Graph_lib::Fct ff);
+    void load_func_menu();
 
     void hide_menu() { func_menu.hide(); menu_button.show(); }
 
@@ -49,17 +50,6 @@ private:
     static void cb_quit(Graph_lib::Address, Graph_lib::Address);
 
 };
-
-//------------------------------------------------------------------------------
-
-inline const string& get_name_in_box(Func_window::Input in)
-{
-    static const vector<string> names{
-        "r_min", "r_min", "r_max", "orig_x",
-        "orig_y", "count", "xscale", "yscale"
-    };
-    return names[in];
-}
 
 //------------------------------------------------------------------------------
 
