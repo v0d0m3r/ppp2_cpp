@@ -60,7 +60,7 @@ void sizes(char ch, int i, int* pi, double d, double* pd,
 void example17_3()
 {
     int x{17};
-    const int* pi{&x};
+    int* pi{&x};
 
     double e{2.71828};
     double* pd{&e};
@@ -68,7 +68,7 @@ void example17_3()
     cout << "pi==" << pi << "; содержимое pi==" << *pi << '\n';
     cout << "pd==" << pd << "; содержимое pd==" << *pd << '\n';
 
-    int& rpi = *pi;
+
 
     char ch{'\n'};
     bool b{true};
@@ -77,7 +77,7 @@ void example17_3()
     vector<int> vi(1000);
     vector<int>* pvi{&vi};
 
-    //sizes(ch, x, pi, e, pd, b, pb, vi, pvi);
+    sizes(ch, x, pi, e, pd, b, pb, vi, pvi);
 }
 
 //------------------------------------------------------------------------------
@@ -93,6 +93,9 @@ void example17_5()
 
 void example17_9()
 {
+    Link* norse_gods{new Link{"Thor"}};
+    norse_gods = insert(norse_gods, new Link{"Odin"});
+    norse_gods = insert(norse_gods, new Link{"Freia"});
 
 }
 
