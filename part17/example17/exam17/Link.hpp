@@ -1,4 +1,4 @@
-#ifndef LINK_HPP
+/*#ifndef LINK_HPP
 #define LINK_HPP
 
 //------------------------------------------------------------------------------
@@ -7,27 +7,32 @@
 
 //------------------------------------------------------------------------------
 
-struct Link {
+class Link
+{
+public:
     string value;
-    Link* prev;
-    Link* succ;
     Link(const string& v, Link* p = nullptr, Link* s = nullptr)
         : value{v}, prev{p}, succ{s} {}
+
+    Link* insert(Link* n); // Вставка n перед данным объектом
+    Link* add(Link* n);    // Вставка n после данного объекта
+    Link* erase();         // Удаление данного объекта из списка
+    Link* find(const string& s);             // Поиск s в списке;
+    const Link* find(const string& s) const {} // Поиск в
+                                             // константном списке;
+    Link* advance(int n) const;  // Переход на n позиций в списке;
+
+    Link* next() const { return succ; }
+    Link* previous() const { return prev; }
+private:
+    Link* prev;
+    Link* succ;
 };
 
 //------------------------------------------------------------------------------
 
-Link* insert(Link* p, Link* n); // Вставка n перед p; Возврат n
-Link* add(Link* p, Link* n);    // Вставка n после p; Возврат n
-Link* erase(Link* p);           // Удаление p из списка
-                                // Возврат приемника p
-Link* find(Link* p,             // Поиск s в списке;
-          const string& s);     // возврат nullptr, если не найдена
-Link* advance(Link* p, int n);  // Переход на n позиций в списке;
-                                // возврат nullptr, если это не возможно
-                                // Положительное n - движение вперед;
-                                // Отрицательное - назад
+void print_all(Link *p);
 
 //------------------------------------------------------------------------------
 
-#endif // LINK_HPP
+#endif // LINK_HPP*/

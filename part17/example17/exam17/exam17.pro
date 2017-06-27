@@ -1,7 +1,7 @@
 QT += core
 QT -= gui
 
-CONFIG += c++11
+CONFIG += c++14
 
 TARGET = exam17
 CONFIG += console
@@ -11,6 +11,7 @@ TEMPLATE = app
 
 SOURCES += main.cpp \
     Vector_easy.cpp \
+    Link_first.cpp \
     Link.cpp
 
 # The following define makes your compiler emit warnings if you use
@@ -26,4 +27,5 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 HEADERS += \
     Vector_easy.hpp \
+    Link_first.hpp \
     Link.hpp

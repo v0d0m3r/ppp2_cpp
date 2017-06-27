@@ -1,71 +1,60 @@
-//------------------------------------------------------------------------------
-
-#include "Link.hpp"
+/*#include "Link.hpp"
 
 //------------------------------------------------------------------------------
 
-Link* insert(Link *p, Link *n)
+Link* Link::insert(Link *n)
 {
-    if (n == nullptr) return p;
-    if (p == nullptr) return n;
+    if (n == nullptr) return this;
+    if (this == nullptr) return n;
 
-    n->succ = p;            // p сдедует за n
-    if (p->prev)            // n следует после
-        p->prev->succ = n;  // предшественника p
+    n->succ = this;      // this сдедует за n
+    if (prev)            // n следует после
+        prev->succ = n;  // предшественника this
 
-    n->prev = p->prev;      // Предшественник p становится
-                            // предшественником n
-    p->prev = n;            // n становится предшественником p
+    n->prev = prev;      // Предшественник this становится
+                         // предшественником n
+    prev = n;            // n становится предшественником this
     return n;
 }
 
 //------------------------------------------------------------------------------
 
-Link* add(Link* p, Link* n)
+Link* Link::add(Link* n)
 {
 
 }
 
 //------------------------------------------------------------------------------
 
-Link* erase(Link* p)
+Link* Link::erase()
 {
-    if (p == nullptr) return nullptr;
-    if (p->succ) p->succ->prev = p->prev;
-    if (p->prev) p->prev->succ = p->succ;
-    return p->succ;
+
 }
 
 //------------------------------------------------------------------------------
 
-Link* find(Link* p, const string& s)
+Link* Link::find(const string& s)
 {
+
+}
+
+//------------------------------------------------------------------------------
+
+Link* Link::advance(int n)
+{
+
+}
+
+//------------------------------------------------------------------------------
+
+void print_all(Link *p)
+{
+    cout << "{ ";
     while (p) {
-        if (p->value == s) return p;
-        p = p->succ;
+        cout << p->value;
+        if (p = p->next()) cout << ", ";
     }
-    return p;
+    cout << " }";
 }
 
-//------------------------------------------------------------------------------
-
-Link* advance(Link* p, int n)
-{
-    if (p == nullptr) return nullptr;
-
-    if (0 < n) {
-        while (n--) {
-            if (p->succ == nullptr) return nullptr;
-            p = p->succ;
-        }
-    }
-    else if (n < 0) {
-        while (n++) {
-            if (p->prev == nullptr) return nullptr;
-            p = p->prev;
-        }
-    }
-    return p;
-}
-
-//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------*/
