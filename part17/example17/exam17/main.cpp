@@ -319,10 +319,69 @@ void tasks_part2()
 
 //------------------------------------------------------------------------------
 
+void to_lower(char* s)
+{
+    if (s == nullptr) return;
+
+    constexpr int base = 32;
+    for (int i=0; s[i] != '\0'; ++i)
+        if ('A' <= s[i] && s[i]<='Z')
+            s[i] += base;
+}
+
+//------------------------------------------------------------------------------
+
+void usage_tolower()
+{
+    char str[] = "My Dog Name!";
+    char* str_array {
+        new char[13] {
+            'H', 'e', 'l', 'l', 'o', ' ',
+            'w', 'o', 'r', 'l', 'd', '!'
+        }};
+
+    cout << "Строки до:\n" << str << '\n'
+         << str_array << '\n';
+
+    to_lower(str);
+    to_lower(str_array);
+
+    cout << "Строки после:\n" << str << '\n'
+         << str_array << '\n';
+
+    delete[] str_array;
+}
+
+//------------------------------------------------------------------------------
+
+char* mstrdup(const char* s)
+{
+    if (s == nullptr) return nullptr;
+
+    int n = 0;
+    while (s[n++] != '\0');
+
+    char* dstr = new char[n];
+    for (int i=0; i < n; ++i) dstr[i] = s[i];
+    return dstr;
+}
+
+//------------------------------------------------------------------------------
+
+void usage_mstrdup()
+{
+    char* str = mstrdup("Papa!");
+    cout << str << '\n';
+    delete [] str;
+}
+
+//------------------------------------------------------------------------------
+
 int main()
 try
 {
-    tasks_part2();
+    //usage_tolower();
+    usage_mstrdup();
     return 0;
 }
 catch(exception& e) {

@@ -1,11 +1,13 @@
 QT += core
 QT -= gui
 
-CONFIG += c++14
+#CONFIG += c++14
 
 TARGET = exam17
 CONFIG += console
 CONFIG -= app_bundle
+
+QMAKE_CXXFLAGS += -std=c++14 --pedantic -O2
 
 TEMPLATE = app
 
