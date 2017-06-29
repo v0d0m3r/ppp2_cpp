@@ -377,11 +377,119 @@ void usage_mstrdup()
 
 //------------------------------------------------------------------------------
 
+const char* findx(const char* s, const char* x)
+{
+    if (s==nullptr || x==nullptr) return nullptr;
+
+    constexpr char end = '\0';
+    const char* p = nullptr;
+    for (int i=0; s[i] != end; ++i)
+        if (s[i] == *x) {
+            p = &s[i];
+            for (int j = 1; x[j] != end; ++j) {
+                if (s[i+j] == end)      // Кончилась s
+                    return nullptr;
+                if (s[i+j] != x[j]) {   // x не входит в эту часть s
+                    p = nullptr;
+                    break;              // Ищем дальше
+                }
+            }
+            if (p) break;               // Нашли вхождение
+        }
+    return p;
+}
+
+//------------------------------------------------------------------------------
+
+void usage_findx()
+{
+    const char* s = "Hello my litlefrend, Sss!";
+    const char* x = "my";
+    const char* dest = findx(s, x);
+    if (dest) cout << "findx:  " << dest << '\n';
+
+    dest = strstr(s, x);
+    if (dest) cout << "strstr: " << dest << '\n';
+}
+
+//------------------------------------------------------------------------------
+
+void memory_exhaustion()
+{
+    long long numbers = 0;
+    for (;;) {
+        char* c{new char[1000]};
+        numbers+=1000;
+        cout << numbers << '\n';
+    }
+}
+
+//------------------------------------------------------------------------------
+// Exrcise 7
+void read_char_array()
+{
+    char ch{0};
+    char* array_ch{nullptr};
+    int sz{0};
+    while (cin>>ch && ch!='!') {
+        ++sz;
+        if (array_ch == nullptr) {
+            array_ch = new char(ch);
+            continue;
+        }
+        char* tmp = new char[sz];    // Временный массив
+        tmp[sz-1] = ch;
+        for (int j=0; j < sz-1; ++j) //
+            tmp[j] = array_ch[j];
+
+        array_ch = tmp;
+    }
+    if (array_ch)
+        for (int i=0; i < sz; ++i)
+            cout << array_ch[i] << '\n';
+}
+
+//------------------------------------------------------------------------------
+// Exercise 8
+void read_string()
+{
+    string str;
+    for (char ch; cin>>ch && ch!='!';) str.push_back(ch);
+    for (auto ch : str) cout << ch << '\n';
+}
+
+//------------------------------------------------------------------------------
+// Exercise 9
+void exercise9()
+{
+    int i{0};
+    int* pi{&i};
+
+    int i2{0};
+    int* pi2{&i2};
+
+    (pi2 > pi) ? cout << "Стэк растет вверх!\n":
+                 cout << "Стэк растет вниз!\n";
+
+    int* pi3{new int(0)};
+    int* pi4{new int(0)};
+    (pi4 > pi3) ? cout << "Адресация в куче растет вверх!\n":
+                  cout << "Адресация в куче растет вниз!\n";
+
+    delete pi3;
+    delete pi4;
+}
+
+//------------------------------------------------------------------------------
+
 int main()
 try
 {
-    //usage_tolower();
-    usage_mstrdup();
+    // usage_tolower();
+    // usage_mstrdup();
+    // usage_findx();
+    // read_char_array();
+    exercise9();
     return 0;
 }
 catch(exception& e) {
