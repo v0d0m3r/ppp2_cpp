@@ -1,4 +1,4 @@
-/*#ifndef LINK_HPP
+#ifndef LINK_HPP
 #define LINK_HPP
 
 //------------------------------------------------------------------------------
@@ -18,7 +18,7 @@ public:
     Link* add(Link* n);    // Вставка n после данного объекта
     Link* erase();         // Удаление данного объекта из списка
     Link* find(const string& s);             // Поиск s в списке;
-    const Link* find(const string& s) const {} // Поиск в
+    const Link* find(const string& s) const; // Поиск в
                                              // константном списке;
     Link* advance(int n) const;  // Переход на n позиций в списке;
 
@@ -35,4 +35,4 @@ void print_all(Link *p);
 
 //------------------------------------------------------------------------------
 
-#endif // LINK_HPP*/
+#endif // LINK_HPP
