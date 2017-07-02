@@ -8,7 +8,7 @@ void to_lower(char* s)
 {
     if (s == nullptr) return;
 
-    constexpr int base = 32;
+    constexpr int base = 'A' - 'a';
     for (int i=0; s[i] != '\0'; ++i)
         if ('A' <= s[i] && s[i]<='Z')
             s[i] += base;

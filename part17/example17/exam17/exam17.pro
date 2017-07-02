@@ -13,8 +13,7 @@ TEMPLATE = app
 
 SOURCES += main.cpp \
     Vector_easy.cpp \
-    Link_first.cpp \
-    Link.cpp
+    Link_first.cpp
 
 # The following define makes your compiler emit warnings if you use
 # any feature of Qt which as been marked deprecated (the exact warnings
@@ -29,5 +28,4 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 HEADERS += \
     Vector_easy.hpp \
-    Link_first.hpp \
-    Link.hpp
+    Link_first.hpp
