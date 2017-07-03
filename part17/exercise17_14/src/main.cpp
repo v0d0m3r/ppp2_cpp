@@ -7,7 +7,7 @@
 
 int main()
 try {
-    Link* norse_gods{new Link{"Thor"}};
+    /*Link* norse_gods{new Link{"Thor"}};
     norse_gods = norse_gods->insert(new Link{"Odin"});
     norse_gods = norse_gods->insert(new Link{"Zeus"});
     norse_gods = norse_gods->insert(new Link{"Freia"});
@@ -31,7 +31,7 @@ try {
     cout << '\n';
 
     print_all(greek_gods);
-    cout << '\n';
+    cout << '\n';*/
 
     return 0;
 }
