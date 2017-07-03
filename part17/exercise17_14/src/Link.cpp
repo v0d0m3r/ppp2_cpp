@@ -31,71 +31,83 @@ Link* Link::insert(List* h, Link *n)
 
 //------------------------------------------------------------------------------
 
-Link* Link::add(List* h, Link* n)
+Link* Link::add(Link* n)
 {
-    /*if (n==nullptr) return nullptr;
+    if (n==nullptr) return nullptr;
 
     n->succ = succ;      // Последующий this следует за n
-    if (succ)            // Предшественником последующего this
-        succ->prev = n;  // становится n
-
-    n->prev = this;      // this становится
-                         // предшественником n
     succ = n;            // n становится последующим this
-    return n;*/
+    return n;
 }
 
 //------------------------------------------------------------------------------
 
 Link* Link::erase(List* h)
-{   
-    /*if (succ) succ->prev = prev;
-    if (prev) prev->succ = succ;
-    return succ;*/
+{
+    if (h==nullptr || h->head==nullptr)
+        return succ;
+
+    Link* p{h->head};
+    while (p) {             // Поиск предшественника this
+        if (p->succ == this) {
+            p->succ = succ; // Последующий this становится
+                            // последующим предшественника this
+            break;
+        }
+        p = p->succ;
+    }
+    return succ;
 }
 
 //------------------------------------------------------------------------------
 
 Link* Link::find(List* h, const string& s)
 {
-    /*Link* p{this};
-    while (p) {
-        if (p->value == s) return p;
-        p = p->succ;
-    }
-    return p;*/
+    if (h==nullptr) return nullptr;
+
+    Link* p{h->head};
+    while (p && p->value != s) p = p->succ;
+    return p;
 }
 
 //------------------------------------------------------------------------------
 
 const Link* Link::find(List* h, const string& s) const
 {
-    const Link* p{this};
-    while (p) {
-        if (p->value == s) return p;
-        p = p->succ;
-    }
+    if (h==nullptr) return nullptr;
+
+    const Link* p{h->head};
+    while (p && p->value != s) p = p->succ;
     return p;
 }
 
 //------------------------------------------------------------------------------
 
 Link* Link::advance(List* h, int n) const
-{    
-    /* Link* p{this};
+{
+    if (h == nullptr) return nullptr;
+
+    const Link* p{nullptr};
     if (0 < n) {
+        p = this;
         while (n--) {
             if (p->succ == nullptr) return nullptr;
             p = p->succ;
         }
     }
-    else if (n < 0) {
-        while (n++) {
-            if (p->prev == nullptr) return nullptr;
-            p = p->prev;
+    else {
+        p = h->head;
+        int counter{0};
+        while (p && p->succ!=this) {
+            p = p->succ;
+            --counter;
         }
+        if (n < counter) return nullptr;
+
+        counter -= n;
+        while (counter++) p = p->succ;
     }
-    return const_cast<Link*>(p);*/
+    return const_cast<Link*>(p);
 }
 
 //------------------------------------------------------------------------------
@@ -110,6 +122,14 @@ void print_all(Link* p)
         if (p) cout << ", ";
     }
     cout << " }\n";
+}
+
+//------------------------------------------------------------------------------
+
+void print_all(List* h)
+{
+    if (h==nullptr) return;
+    print_all(h->head);
 }
 
 //------------------------------------------------------------------------------

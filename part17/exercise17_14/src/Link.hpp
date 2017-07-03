@@ -19,7 +19,7 @@ public:
         : value{v}, succ{s} {}
 
     Link* insert(List* h, Link* n); // Вставка n перед данным объектом
-    Link* add(List* h, Link* n);    // Вставка n после данного объекта
+    Link* add(Link* n);    // Вставка n после данного объекта
     Link* erase(List* h);         // Удаление данного объекта из списка
     Link* find(List* h, const string& s);             // Поиск s в списке;
     const Link* find(List* h, const string& s) const; // Поиск в
@@ -43,6 +43,7 @@ struct List {
 //------------------------------------------------------------------------------
 
 void print_all(Link *p);
+void print_all(List* h);
 
 //------------------------------------------------------------------------------
 
