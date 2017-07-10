@@ -16,7 +16,7 @@ endif()
 
 if (CMAKE_COMPILER_IS_GNUCXX)
     set(MY_CXX_FLAGS  "-Wall -std=c++14 --pedantic -fmessage-length=0 -v -L/usr/local/lib -L/usr/lib")
-    set(CMAKE_CXX_FLAGS "-O2 ${MY_CXX_FLAGS}")
+    set(CMAKE_CXX_FLAGS "-g -O1 ${MY_CXX_FLAGS}")
     # я отключил настройку разных флагов для релиза и отладки. Пока что не нужно.
     #set(CMAKE_CXX_FLAGS_DEBUG "-g -O0 -fno-reorder-blocks -fno-schedule-insns -fno-inline")
     #set(CMAKE_CXX_FLAGS_RELEASE "-O3 -DNDEBUG")

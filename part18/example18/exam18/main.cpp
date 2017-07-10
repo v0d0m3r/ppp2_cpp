@@ -37,10 +37,43 @@ void example18_4()
 
 //------------------------------------------------------------------------------
 
+int mystrlen(const char* p)
+{
+    int count = 0;
+    while(*p) { ++count; ++p; }
+    return count;
+}
+
+//------------------------------------------------------------------------------
+
+int mystrlen1(const char a[])
+{
+    int count = 0;
+    while(a[count]) { ++count; }
+    return count;
+}
+
+//------------------------------------------------------------------------------
+
+char lots[100000];
+
+//------------------------------------------------------------------------------
+
+void f()
+{
+    int nchar = mystrlen1(lots);
+    char ac[] = "Beorn";
+    cout << "sizeof(ac): " << sizeof(ac) << '\n';
+    cout << "strlen(ac): " << strlen(ac) << '\n';
+}
+
+//------------------------------------------------------------------------------
+
 bool is_palindrome(const string& s)
 {
     int first{0};               // Индекс первой буквы
-    int last{s.length() - 1};   // Индекс последней буквы
+                                // Индекс последней буквы
+    int last{static_cast<int>(s.length()) - 1};
     while (first < last) {      // Мы ещё не достигли середины слова
         if (s[first] != s[last]) return false;
         ++first;                // Переход вперед
@@ -51,9 +84,94 @@ bool is_palindrome(const string& s)
 
 //------------------------------------------------------------------------------
 
+void example18_7_1()
+{
+    for (string s; cin >> s; ) {
+        cout << s << " is";
+        if (!is_palindrome(s)) cout << " not";
+        cout << " a palindrome\n";
+    }
+}
+
+//------------------------------------------------------------------------------
+
+istream& read_word(istream& is, char* buffer, int max)
+{
+    is.width(max);  // При выполнении следующего оператора >>
+                    // будет считано не более max-1 символов
+    is >> buffer;   // Читаем слово, завершающееся пробельным
+                    // символом, добавляем в конец нулевой символ
+    return is;
+}
+
+//------------------------------------------------------------------------------
+
+bool is_palindrome(const char s[], int n)
+{
+    int first{0};               // Индекс первой буквы
+    int last{n - 1};            // Индекс последней буквы
+    while (first < last) {      // Мы ещё не достигли середины слова
+        if (s[first] != s[last]) return false;
+        ++first;                // Переход вперед
+        --last;                 // Переход назад
+    }
+    return true;
+}
+
+//------------------------------------------------------------------------------
+
+void example18_7_2()
+{
+    constexpr int max = 128;
+    for (char s[max]; read_word(cin, s, max); ) {
+        cout << s << " is";
+        if (!is_palindrome(s, strlen(s))) cout << " not";
+        cout << " a palindrome\n";
+    }
+}
+
+//------------------------------------------------------------------------------
+
+bool is_palindrome(const char* first, const char* last)
+{
+    while (first < last) {      // Мы ещё не достигли середины слова
+        if (*first != *last) return false;
+        ++first;                // Переход вперед
+        --last;                 // Переход назад
+    }
+    return true;
+}
+
+//------------------------------------------------------------------------------
+
+bool is_palindrome_recursive(const char *first, const char *last)
+{
+    while (first < last) {      // Мы ещё не достигли середины слова
+        if (*first != *last) return false;
+        return is_palindrome_recursive(first+1, last-1);
+    }
+    return true;
+}
+
+//------------------------------------------------------------------------------
+
+void example18_7_3()
+{
+    constexpr int max = 128;
+    for (char s[max]; read_word(cin, s, max); ) {
+        cout << s << " is";
+        if (!is_palindrome(&s[0], &s[strlen(s)-1]))
+            cout << " not";
+        cout << " a palindrome\n";
+    }
+}
+
+//------------------------------------------------------------------------------
+
 int main()
 try
 {   
+    example18_7_3();
     return 0;
 }
 catch(exception& e) {
