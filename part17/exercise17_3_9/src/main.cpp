@@ -67,6 +67,8 @@ const char* findx(const char* s, const char* x)
     if (s==nullptr || x==nullptr) return nullptr;
 
     constexpr char end = '\0';
+    if (x == end) return s;
+
     const char* p = nullptr;
     for (int i=0; s[i] != end; ++i)
         if (s[i] == *x) {
