@@ -26,14 +26,14 @@ char* mstrdup(const char* s)
 }
 
 //------------------------------------------------------------------------------
-
+// exercise 18_4
 char* mstrdup(const char* s, int n)
 {
     if (s == nullptr) return nullptr;
 
     int count{0};
     const char* ps = s;
-    while(*ps && n < count) { ++count; ++ps; }   // Узнаём размер строки
+    while(count < n && *ps) { ++count; ++ps; }   // Узнаём размер строки
     ps = s;
 
     char* res = new char[count+1];  // Выделяем память под строку
@@ -86,18 +86,18 @@ const char* findx(const char* s, const char* x)
 }
 
 //------------------------------------------------------------------------------
-
-const char* findx(const char* s, const char* x, int n)
+// exercise 18_4
+const char* findx(const char* s, const char* x, int ns, int nx)
 {
     if (s==nullptr || x==nullptr) return nullptr;
     if (*x == 0) return s;
     int count_s{0};
-    while (*s && count_s < n) {
+    while (count_s < ns && *s) {
         if (*s == *x) {
             bool is_find{true};
             const char* ps = s;
             int count_x{0};
-            for (const char* px = x; *px && count_x < n; ++px) {
+            for (const char* px = x; count_x<nx && *px; ++px) {
                 if (*ps == 0)           // Кончилась s (s < x)
                     return nullptr;
                 if (*ps != *px) {       // x не входит в эту часть s
@@ -112,7 +112,7 @@ const char* findx(const char* s, const char* x, int n)
         ++s;
         ++count_s;
     }
-    if (count_s == n) return nullptr;
+    if (count_s == ns) return nullptr;
     return (*s) ? s : nullptr;
 }
 
@@ -158,7 +158,7 @@ int mstrcmp(const char* s1, const char* s2)
 }
 
 //------------------------------------------------------------------------------
-
+// exercise 18_4
 int mstrcmp(const char* s1, const char* s2, int n)
 {
     constexpr int big = 1;
@@ -168,14 +168,14 @@ int mstrcmp(const char* s1, const char* s2, int n)
     if (s2==nullptr) return big;
 
     int counter = 0;
-    while(*s1 && *s2 && counter<n) {
+    while(counter<n && *s1 && *s2) {
         if (*s1 != *s2)
             return (*s1 > *s2) ? big : small;
         ++s1;
         ++s2;
         ++counter;
     }
-    if (counter == n) error("bad mstrcmp");
+    if (counter == n) { return 0; }
     if (*s1) return big;
     if (*s2) return small;
     return 0;
@@ -215,7 +215,22 @@ void bad_usage_mstrdup()
 }
 
 //------------------------------------------------------------------------------
+// exercise 18_4
+void bad_usage_mstrdup1()
+{
+    constexpr int n = 4;
+    char ca[n];
+    for (int i=0; i < n; ++i)
+        ca[i] = 'A' + i;
 
+    char* ns = mstrdup(ca, n);
+    cout << ns << '\n';
+
+    delete[] ns;
+}
+
+//------------------------------------------------------------------------------
+// exercise 18_4
 void bad_usage_findx()
 {
     char s[] = { 'H','e', 'l', 'l', 'o', ' ', 'm', 'y', ' ', 'l', 'i', 't', 'l',
@@ -230,7 +245,22 @@ void bad_usage_findx()
 }
 
 //------------------------------------------------------------------------------
+// exercise 18_4
+void bad_usage_findx1()
+{
+    char s[] = { 'H','e', 'l', 'l', 'o', ' ', 'm', 'y', ' ', 'l', 'i', 't', 'l',
+                 'e', '_', 'f', 'r', 'i', 'e', 'n', 'd', ',', ' ', 'S', 's', 's', '!'};
+    char x[] = {'m', 'y'};
 
+    const char* dest = findx(s, x, sizeof(s), sizeof(x));
+    if (dest) cout << "findx:  " << dest << '\n';
+
+    //dest = strstr(s, x);
+    //if (dest) cout << "strstr: " << dest << '\n';
+}
+
+//------------------------------------------------------------------------------
+// exercise 18_4
 void bad_usage_mstrcmp()
 {
     constexpr int n = 4;
@@ -252,11 +282,33 @@ void bad_usage_mstrcmp()
 
 //------------------------------------------------------------------------------
 // exercise 18_4
+void bad_usage_mstrcmp1()
+{
+    constexpr int n = 4;
+    char* s1 = new char[n+2];
+    for (int i=0; i < n; ++i)
+        s1[i] = 'A' + i;
+
+    char* s2 = new char[n];
+    for (int i=0; i < n; ++i)
+        s2[i] = 'A' + i;
+
+    cout << "mstrcmp: " << mstrcmp(s1, s2, sizeof(s2)) << '\n';
+
+    cout << "strcmp: " << strcmp(s1, s2) << '\n';
+
+    delete[] s1;
+    delete[] s2;
+}
+
+//------------------------------------------------------------------------------
+// exercise 18_4
 void bad_idea()
 {
-    //bad_usage_mstrdup();
-    //bad_usage_findx();
-    bad_usage_mstrcmp();
+    //bad_usage_mstrdup1();
+    //bad_usage_findx1();
+    //bad_usage_mstrcmp();
+    //bad_usage_mstrcmp1();
 
 }
 
