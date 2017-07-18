@@ -3,7 +3,7 @@
 #include "../../../bstroustrup_code/std_lib_facilities.h"
 
 //------------------------------------------------------------------------------
-
+// Чтение произвольного слова с проверкой на длину
 char* read_word(istream& is, int max)
 {
     int n{0};
@@ -13,6 +13,33 @@ char* read_word(istream& is, int max)
             delete[] buffer;
             error("Слишком длинная строка!");
         }
+        if (n == 0) buffer[n] = ch;
+        else {
+            char* pb = new char[n+2];
+            copy(buffer, buffer+n, pb);
+            delete[] buffer;
+
+            pb[n] = ch;
+            pb[n+1] = 0;
+            buffer = pb;
+        }
+        ++n;
+
+        if (is.get(ch)) {
+            is.putback(ch);
+            if (isspace(ch)) break;
+        }
+    }
+    return buffer;
+}
+
+//------------------------------------------------------------------------------
+// Чтение произвольного слова, опасно переполнением памяти
+char* read_word(istream& is)
+{
+    int n{0};
+    char* buffer{new char[n+2]{0, 0}};
+    for (char ch; is >> ch;) {
         if (n == 0) buffer[n] = ch;
         else {
             char* pb = new char[n+2];
