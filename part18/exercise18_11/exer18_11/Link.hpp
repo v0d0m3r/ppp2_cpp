@@ -14,13 +14,16 @@ struct List;
 class Link
 {
 public:
-    int key;
     string value;
-    Link() : key{0}, w{0}, succ{nullptr} {}
-    Link(int k, const string& v, int ww)
-        : key{k}, value{v}, w{ww}, succ{new Link*[w]{nullptr}} {}
+    int key;
+
+    explicit Link(int ll)
+        : key{0}, l{ll}, succ{new Link*[l]{nullptr}} {}
+    Link(const string& v, int k, int ll)
+        : value{v}, key{k}, l{ll}, succ{new Link*[l]{nullptr}} {}
     ~Link() { delete[] succ;}
-    int level() const { return w; }
+
+    int level() const { return l; }
     Link* next(int i) const { return succ[i]; }
     void set_next(int i, Link* s) { succ[i] = s; }
 private:
@@ -33,14 +36,17 @@ private:
 class Skip_list
 {
 public:
-    Skip_list();
+    Skip_list(int mm, Link* c = nullptr);
+
+    //Link* find(int key);
+    //void insert(Link* n);
 
 private:
-    Link* h;
-    Link* c;
-
     int m;    // Максимально возможное количество узлов
-    int l;    // Уровень списка - максимальный уровень узла
+    int l{0}; // Уровень списка - максимальный уровень узла
+
+    Link* head;
+    Link* curr;
 };
 
 //------------------------------------------------------------------------------
