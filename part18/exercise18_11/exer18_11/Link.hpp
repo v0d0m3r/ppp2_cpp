@@ -37,15 +37,25 @@ class Skip_list
 {
 public:
     Skip_list(int mm, Link* c = nullptr);
+    ~Skip_list() { delete[] h; }
 
     //Link* find(int key);
-    //void insert(Link* n);
+    Link* insert(Link* n);
+
+    int max_level() const { return m; }
+    int level()     const { return l; }
+    int count()     const { return cnt; }
+    Link* head()    const { return h; }
+    Link* current() const { return curr; }
+
+protected:
+    void set_level(int ll) { l = ll; }
 
 private:
     int m;    // Максимально возможное количество узлов
     int l{0}; // Уровень списка - максимальный уровень узла
-
-    Link* head;
+    int cnt{0};
+    Link* h;
     Link* curr;
 };
 
