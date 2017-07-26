@@ -212,6 +212,13 @@ template<class R, class A> R narrow_cast(const A& a)
 
 inline int randint(int min, int max) { static default_random_engine ran; return uniform_int_distribution<>{min, max}(ran); }
 
+inline double rand_double(double min, double max)
+{
+    static random_device rd;
+    static default_random_engine ran(rd());
+    return uniform_real_distribution<double>{min, max}(ran);;
+}
+
 inline int randint(int max) { return randint(0, max); }
 
 //inline double sqrt(int x) { return sqrt(double(x)); }	// to match C++0x

@@ -1,10 +1,13 @@
 TEMPLATE = app
-CONFIG += console -std=c++14 --pedantic -g -O0
+CONFIG += console
 CONFIG -= app_bundle
 CONFIG -= qt
 
+QMAKE_CXXFLAGS += -std=c++14 --pedantic -O0
+
 SOURCES += main.cpp \
-    Link.cpp
+    Skip_list.cpp
 
 HEADERS += \
-    Link.hpp
+    Skip_list.hpp
+

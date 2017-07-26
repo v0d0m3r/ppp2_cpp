@@ -22,9 +22,6 @@ public:
     { delete[] elem; }                            // Освобождаем память
     int size() const { return sz; }               // Текущий размер
 
-    double get(int n) const { return elem[n]; }   // Чтение
-    void set(int n, double v) { elem[n] = v; }    // Запись
-
     double& operator[](int n) { return elem[n]; } // Оператор индексирования
     double operator[](int n) const                // Оператор индексирования
     { return elem[n]; }                           // для константного вектора

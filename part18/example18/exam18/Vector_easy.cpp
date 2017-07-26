@@ -8,7 +8,6 @@ Vector_easy::Vector_easy(int s)
     : sz{s},
     elem{new double[s]} // Инициализация члена elem
 {
-
     for (int i=0; i < s; ++i) // Инициализация элементов
         elem[i] = 0;
 }
