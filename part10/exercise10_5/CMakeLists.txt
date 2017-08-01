@@ -9,10 +9,11 @@ if (NOT UNIX)
     message(FATAL_ERROR "Not Unix!")
 endif ()
 
-include(exercise10_5.cmake)
-
 set(PROJECT exercise10_5)
 set(LIBRARIES)
+
+project(${PROJECT})
+include(${PROJECT}.cmake)
 
 foreach (LIBRARY ${LIBRARIES})
     find_library("${LIBRARY}_FOUND" ${LIBRARY})
