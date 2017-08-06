@@ -82,12 +82,12 @@ template< class T> struct Vector : public std::vector<T> {
     using std::vector<T>::vector;	// inheriting constructor
 #endif
 
-    T& operator[](unsigned int i) // rather than return at(i);
+    T& operator[](size_type i) // rather than return at(i);
     {
         if (i<0||this->size()<=i) throw Range_error(i);
         return std::vector<T>::operator[](i);
     }
-    const T& operator[](unsigned int i) const
+    const T& operator[](size_type i) const
     {
         if (i<0||this->size()<=i) throw Range_error(i);
         return std::vector<T>::operator[](i);
