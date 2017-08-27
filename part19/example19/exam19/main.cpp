@@ -47,13 +47,14 @@ void suspicious(vector<int>& v, int s)
             delete[] q;
             throw;
         }
+        delete[] q;
     }
     catch (...) {
         delete[] p;
         throw;
     }
     delete[] p;
-    delete[] q;
+
 }
 
 //------------------------------------------------------------------------------

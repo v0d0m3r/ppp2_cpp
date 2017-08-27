@@ -67,7 +67,7 @@ struct Range_error : out_of_range {	// enhanced vector range error reporting
 
 
 // trivially range-checked vector (no iterator checking):
-template< class T> struct Vector : public std::vector<T> {
+template< class T> struct Rvector : public std::vector<T> {
     using size_type = typename std::vector<T>::size_type;
 
 #ifdef _MSC_VER
@@ -95,7 +95,7 @@ template< class T> struct Vector : public std::vector<T> {
 };
 
 // disgusting macro hack to get a range checked vector:
-#define vector Vector
+#define vector Rvector
 
 // trivially range-checked string (no iterator checking):
 struct String : std::string {
