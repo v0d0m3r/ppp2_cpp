@@ -11,13 +11,13 @@
 
 template<typename T>
 void counted_ptr_manager(T* val, int* counter)
-{
+{    
     if (val==nullptr || counter==nullptr) return;
     if (*counter)                   // Если старый счетчик не пуст,
         --*counter;                 // то уменьшаем его
-    else {                          // Иначе освобождаем старые ресурсы
+    else {                          // Иначе освобождаем старые ресурсы        
         delete counter;
-        delete[] val;
+        delete val;
     }
 }
 
@@ -29,8 +29,10 @@ class Counted_ptr
     T* val;
     int* counter;
 
-public:
-    explicit Counted_ptr(T* v) : val{v}, counter{new int{0}} {}
+public:    
+
+    explicit Counted_ptr(const T&  v)
+        : val{new T{v}}, counter{new int{0}} {}
 
     // Копирующие конструктор и присваивание
     Counted_ptr(const Counted_ptr& a);
@@ -42,18 +44,17 @@ public:
 
     ~Counted_ptr(); // Деструктор
 
-    T& operator[](int n) { return val[n]; }      // Доступ
-    const T& operator[](int n) const { return val[n]; }
-
     T* operator->() const { return val; }
 
     T& operator*() const { return *val; }
+
+    int count() const { return *counter; }
 };
 
 //------------------------------------------------------------------------------
 
 template<typename T>
-Counted_ptr::Counted_ptr(const Counted_ptr& a)
+Counted_ptr<T>::Counted_ptr(const Counted_ptr& a)
     : val{a.val}, counter{a.counter}
 {
     ++*counter;
@@ -62,16 +63,17 @@ Counted_ptr::Counted_ptr(const Counted_ptr& a)
 //------------------------------------------------------------------------------
 
 template<typename T>
-Counted_ptr::Counted_ptr(Counted_ptr&& a)
+Counted_ptr<T>::Counted_ptr(Counted_ptr&& a)
     : val{a.val}, counter{a.counter}
 {
-    a.val = a.counter = nullptr;
+    a.val = nullptr;
+    a.counter = nullptr;
 }
 
 //------------------------------------------------------------------------------
 
 template<typename T>
-Counted_ptr::~Counted_ptr()
+Counted_ptr<T>::~Counted_ptr()
 {
     counted_ptr_manager(val, counter);
 }
@@ -79,7 +81,7 @@ Counted_ptr::~Counted_ptr()
 //------------------------------------------------------------------------------
 
 template<typename T>
-Counted_ptr<T>& Counted_ptr::operator=(const Counted_ptr& a)
+Counted_ptr<T>& Counted_ptr<T>::operator=(const Counted_ptr& a)
 {
     if (this == &a) return *this;   // Самоприсваивание, ничего не делаем
 
@@ -95,7 +97,7 @@ Counted_ptr<T>& Counted_ptr::operator=(const Counted_ptr& a)
 //------------------------------------------------------------------------------
 
 template<typename T>
-Counted_ptr<T>& Counted_ptr::operator=(Counted_ptr&& a)
+Counted_ptr<T>& Counted_ptr<T>::operator=(Counted_ptr&& a)
 {
     counted_ptr_manager(val, counter);
 
