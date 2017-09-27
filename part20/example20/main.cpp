@@ -1,7 +1,8 @@
 //------------------------------------------------------------------------------
 
-#include "../../../bstroustrup_code/std_lib_facilities.h"
+#include "../../bstroustrup_code/std_lib_facilities.h"
 #include "Vector.hpp"
+#include "Document.hpp"
 
 //------------------------------------------------------------------------------
 
@@ -78,8 +79,7 @@ void fct1()
 
 double* high(double* first, double* last)
 {
-    if (first==nullptr || last==nullptr) return nullptr;
-    if (last < first) return nullptr;
+    if (first==nullptr || last==nullptr) return nullptr;   
     double h{-1};
     double* high{nullptr};
 

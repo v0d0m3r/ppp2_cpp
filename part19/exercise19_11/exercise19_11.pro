@@ -7,8 +7,9 @@ QMAKE_CXXFLAGS += -std=c++1z --pedantic -O0
 
 DESTDIR = ../bin
 
-SOURCES += main.cpp \
-    Test_facilities.cpp
+SOURCES += \
+    Test_facilities.cpp \
+    counted_ptr_test.cpp
 
 HEADERS += \
     Counted_ptr.hpp \
