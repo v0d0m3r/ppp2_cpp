@@ -18,11 +18,17 @@ class Text_iterator {   // Отслеживает строку и
     list<Line>::iterator ln;
     Line::iterator pos;
 public:
+    using difference_type = ptrdiff_t;
+    using value_type = char;
+    using pointer = char*;
+    using reference = char&;
+    using iterator_category = input_iterator_tag;
+
     // Устанавливает итератор на позицию pp в l1-й строке
     Text_iterator(list<Line>::iterator l1, Line::iterator pp)
         : ln{l1}, pos{pp} { }
 
-    char& operator*() { return *pos; }
+    reference operator*() { return *pos; }
     Text_iterator& operator++();
 
     bool operator==(const Text_iterator& other) const

@@ -13,18 +13,20 @@ template<typename T, typename A = Allocator<T>>
 class Vector : private Vector_base<T, A>
 {
 public:
+    using size_type = unsigned int;
+    using value_type = T;
+    using iterator = T*;
+    using const_iterator = const T*;
+
     Vector() : Vector_base<T, A>() {}
     explicit Vector(int s);
     Vector(initializer_list<T> lst);
-
     // Копирующие конструктор и присваивание
     Vector(const Vector& a);
     Vector& operator=(const Vector& a);
-
     // Перемещающие конструктор и присваивание
     Vector(Vector&& a) : Vector_base<T, A>{move(a)} {}
     Vector& operator=(Vector&& a);
-
     ~Vector();                  // Деструктор
                                 // Доступ с проверкой
     T& at(int n);
@@ -33,13 +35,24 @@ public:
     T& operator[](int n) { return this->elem[n]; }
     const T& operator[](int n) const { return this->elem[n]; }
 
-    int size() const { return this->sz; }   // Количество элементов
+    T& front() { return *this->elem; }
+    const T& front() const { return *this->elem; }
+    T& back()  { return this->elem[this->sz-1]; }
+    const T& back()  const { return this->elem[this->sz-1]; }
+    iterator begin() { return this->elem; }
+    const_iterator begin() const { return this->elem; }
+    iterator end() { return this->elem + this->sz; }
+    const_iterator end() const { return this->elem + this->sz; }
+
+    size_type size() const { return this->sz; }   // Количество элементов
     int capacity() const { return this->space; }
-                                            // Увеличение
+                                                  // Увеличение
     void resize(int newsize, const T& def = T{});
     void push_front(const T& e);
     void push_back(const T& e);
-    void reserve(int newalloc);    
+    void reserve(int newalloc);
+    Iterator<Vector<T, A> > insert(iterator p, const T& val);
+    Iterator<Vector<T, A> > erase(iterator p);
 };
 
 //------------------------------------------------------------------------------
@@ -208,20 +221,46 @@ void Vector<T, A>::push_front(const T& e)
 // Увеличивает размер вектора на единицу;
 // инициализирует новый элемент значением e
 {
-    if (this->space == 0) reserve(8);    // Начинаем с 8 элементов
-    else if (this->sz == this->space)
-        reserve(2*this->space);          // Выделяем больше памяти
+    insert(begin(), e);
+}
 
-    Vector_base<T, A> b{this->alloc,     // Выделение памяти для старых элементов
-                        this->sz, this->space};
+//------------------------------------------------------------------------------
 
-    uninitialized_copy(this->elem,       // Копируем старые элементы
-                       &this->elem[this->sz], b.elem + 1);
+template<typename T, typename A>
+// Требует Element<T>() и Allocator<A>()
+Iterator<Vector<T, A>> Vector<T, A>::erase(iterator p)
+{
+    if (p == end()) return p;
+    if (begin() == end()) return end();
+    for (auto pos{p+1}; pos != end(); ++p)
+        *(pos-1) = *p;          // Копируем элементы на
+                                // одну позицию влево
+    this->alloc.destroy(&*(end()-1)); // Уничтожаем лишнюю копию
+                                // последнего элемента
+    --this->sz;
+    return p;
+}
 
-    uninitialized_copy_n(&e, 1, b.elem); // Добавляем в начало значение val
+//------------------------------------------------------------------------------
 
-    swap<Vector_base<T, A>>(*this, b);   // Обмен представлений
-    ++this->sz;                          // Увеличиваем размер
+template<typename T, typename A>
+// Требует Element<T>() и Allocator<A>()
+Iterator<Vector<T, A>> Vector<T, A>::insert(iterator p, const T& val)
+{
+    int index{p - begin()};
+    if (size() == static_cast<size_type>(capacity()))   // Обеспечиваем
+        reserve(size()==0 ? 8 : 2 * size());            // достаточное место
+
+    // Сначала копируем последний элемент в
+    // неинициализированную память:
+    uninitialized_copy_n(&back(), 1, this->elem + this->sz);
+    ++this->sz;
+    iterator pp{begin() + index};   // Место для размещения val
+    for (auto pos{end()-1}; pos != pp; --pos)
+        *pos = *(pos-1);            // Копируем элементы на одну
+                                    // позицию вправо
+    *(begin()+index) = val;         // "Вставка" val
+    return pp;
 }
 
 //------------------------------------------------------------------------------

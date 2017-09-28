@@ -1,6 +1,5 @@
 //------------------------------------------------------------------------------
 
-#include "../../bstroustrup_code/std_lib_facilities.h"
 #include "Vector.hpp"
 #include "Document.hpp"
 
