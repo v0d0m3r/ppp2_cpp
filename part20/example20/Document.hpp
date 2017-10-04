@@ -24,9 +24,9 @@ public:
     using reference = char&;
     using iterator_category = input_iterator_tag;
 
-    // Устанавливает итератор на позицию pp в l1-й строке
-    Text_iterator(list<Line>::iterator l1, Line::iterator pp)
-        : ln{l1}, pos{pp} { }
+    // Устанавливает итератор на позицию pp в ll-й строке
+    Text_iterator(list<Line>::iterator ll, Line::iterator pp)
+        : ln{ll}, pos{pp} { }
 
     reference operator*() { return *pos; }
     Text_iterator& operator++();
@@ -128,6 +128,31 @@ Text_iterator find_txt(Text_iterator first,
         if (p==last || match(p, last, s)) return p;
         first = ++p;                // Ищем следующее вхождение символа
     }
+}
+
+//------------------------------------------------------------------------------
+
+Text_iterator replace_txt(Text_iterator first,
+                          Text_iterator last, const string& s)
+{
+    if (s.size() == 0) return last; // Нельзя заменять пустую строку
+
+    int sz{0};
+    while (first!=last && sz!) {
+        *first =
+    }
+
+}
+
+
+Text_iterator find_replace_txt(Text_iterator first, Text_iterator last,
+                               const string& f, const string& r)
+{
+    if (s.size()==0 || r.size()==0) return last; // Нельзя искать пустую строку
+    auto p{find_txt(first, last, f)};
+    if (p == last) return last;
+
+    *p =
 }
 
 //------------------------------------------------------------------------------

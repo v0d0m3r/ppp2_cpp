@@ -21,23 +21,24 @@ void end_of_loop(istream& is, char term, const string& message)
 
 //------------------------------------------------------------------------------
 
-template<typename C>
-    // Требует Container<C>()
-istream& operator>>(istream& is, C& c)
+template<class E, template<class, class...> class C, class... Args>
+    // Требует Element<E> и Container<C, Args>()
+istream& operator>>(istream& is, C<E, Args...>& c)
 {
-    C temp;
-    for (Value_type<C> var; is >> var;) temp.push_back(var);
+    C<E, Args...> temp;
+    for (Value_type<C<E, Args...>> var; is >> var;) temp.push_back(var);
     c = move(temp);
     return is;
 }
 
 //------------------------------------------------------------------------------
 
-template<typename C>
-    // Требует Container<C>()
-void print(C& c)
+template<class E, template<class, class...> class C, class... Args>
+    // Требует Element<E> и Container<C, Args>()
+ostream& operator <<(ostream& os, const C<E, Args...>& c)
 {
-    for (auto p : c) cout << p << ' ';
+    for (const auto& e : c) os << e << ' ';
+    return os;
 }
 
 //------------------------------------------------------------------------------
@@ -47,8 +48,8 @@ void exercise20_5()
     vector<double> vd(1000000);
     cin >> vd;
 
-    print(vd);
-    cout << '\n';
+    cout << '\n' << vd << '\n';
+
 }
 
 //------------------------------------------------------------------------------

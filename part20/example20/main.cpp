@@ -144,19 +144,19 @@ void test_copy()
 
 //------------------------------------------------------------------------------
 
-template<typename Iterator>
-Iterator get_right_elem(Iterator first, Iterator last, size_t counter)
+template<typename Iter>
+// Требует Bidirectional_iterator<Iter>
+Iter get_right_elem(Iter first, Iter last, size_t counter)
 // Возвращает Iterator, указывающий на counter-ый
-// элемент с конца или nullptr, в случае сбоя
+// элемент с конца
 {
-    if (first==nullptr || last==nullptr) return nullptr;
-    if (last < first) return nullptr;
-    while (counter && first!=last) {
-        --last;
+    auto p{last};
+    while (counter && first!=p) {
+        --p;
         --counter;
     }
-    if (counter) return nullptr;
-    return last;
+    if (counter) return last;
+    return p;
 }
 
 //------------------------------------------------------------------------------
@@ -165,8 +165,7 @@ template<typename Iterator>  // Требует Input_iterator<Iterator>
 Iterator high(Iterator first, Iterator last)
 // Возвращает итератор, указывающий на максимальный
 // элемент диапазона [first, last)
-{
-    if (first == last) error("contaner is empty!");
+{ 
     Iterator high{first};
     for (Iterator p{first}; p != last; ++p)
         if (*high < *p) high = p;
@@ -191,6 +190,8 @@ void fct_20_3_1()
              << "; Максимум Джека: " << *jack_high;
 }
 
+//------------------------------------------------------------------------------
+
 void fct_20_4_2()
 {
     list<int> lst;
@@ -205,21 +206,123 @@ void fct_20_4_2()
 
 //------------------------------------------------------------------------------
 
+void func_help_20_7(char* ac, size_t ac_sz, const vector<char>& vc,
+                    const list<char>& lc, const string& str)
+{
+    if (ac == nullptr) return;
+
+    const char* hello{"Hello"};
+    const char* howdy{"Howdy"};
+
+    cout << "ac size is: " << ac_sz << '\n';
+    bool is_equal{true};
+    for (size_t i{0}; i < ac_sz; ++i)
+        if (ac[i] != hello[i] || i >= strlen(hello)) {
+            is_equal = false;
+            break;
+        }
+    cout << "ac";
+    if (is_equal) cout << " == ";
+    else          cout << " != ";
+    cout << "hello\n";
+
+    is_equal = true;
+    for (size_t i{0}; i < ac_sz; ++i)
+        if (ac[i] != howdy[i]) {
+            is_equal = false;
+            break;
+        }
+    cout << "ac";
+    if (is_equal) cout << " == ";
+    else          cout << " != ";
+    cout << "howdy\n";
+
+    char ac_copy[ac_sz];
+    for (size_t i{0}; i < ac_sz; ++i)
+        ac_copy[i] = ac[i];
+
+    cout << "vc size is: " << vc.size() << '\n';
+    is_equal = true;
+    for (size_t i{0}; i < vc.size(); ++i)
+        if (vc[i] != hello[i] || i >= strlen(hello)) {
+            is_equal = false;
+            break;
+        }
+
+    cout << "vc";
+    if (is_equal) cout << " == ";
+    else          cout << " != ";
+    cout << "hello\n";
+
+    is_equal = true;
+    for (size_t i{0}; i < vc.size(); ++i)
+        if (vc[i] != howdy[i] || i >= strlen(howdy)) {
+            is_equal = false;
+            break;
+        }
+    cout << "vc";
+    if (is_equal) cout << " == ";
+    else          cout << " != ";
+    cout << "howdy\n";
+    vector<char> vc_copy{vc};
+
+    cout << "lc size is: " << lc.size() << '\n';
+    is_equal = true;
+    auto p{lc.begin()};
+    for (size_t i{0}; i < strlen(hello); ++i) {
+        if (p==lc.end() || *p != hello[i]) {
+            is_equal = false;
+            break;
+        }
+        ++p;
+    }
+
+    cout << "lc";
+    if (is_equal) cout << " == ";
+    else          cout << " != ";
+    cout << hello << '\n';
+
+    is_equal = true;
+    for (size_t i{0}; i < strlen(hello); ++i) {
+        if (p==lc.end() || *p != howdy[i]) {
+            is_equal = false;
+            break;
+        }
+        ++p;
+    }
+
+    cout << "lc";
+    if (is_equal) cout << " == ";
+    else          cout << " != ";
+    cout << howdy << '\n';
+    list<char> lc_copy{lc};
+
+    cout << "str size is: " << str.size() << '\n';
+    cout << "str";
+    if (str == hello) cout << " == ";
+    else              cout << " != ";
+    cout << hello << '\n';
+    string str_copy{str};
+}
+
+//------------------------------------------------------------------------------
+
+void fct_20_7()
+{
+    char ac[]{'H', 'e', 'l', 'l', 'o'};
+    vector<char> vc{'H', 'e', 'l', 'l', 'o'};
+    list<char> lc{'H', 'e', 'l', 'l', 'o'};
+    string str{'H', 'e', 'l', 'l', 'o'};
+
+    func_help_20_7(ac, sizeof(ac), vc, lc, str);
+}
+
+//------------------------------------------------------------------------------
+
 int main()
 try
 {
-    /*const char* pch{nullptr};
-    string str{pch};
-
-
-    test_copy();*/
-    Vector<string> str;
-    str.push_front("strrt");
-    str.push_front("12");
-    str.push_back("2222");
-
-    for (int i{0}; i < str.size(); ++i) cout << str[i] << '\n';
-
+    fct_20_7();
     return 0;
 }
 catch(exception& e) {
