@@ -32,7 +32,7 @@ public:
     Text_iterator& operator++();
 
     bool operator==(const Text_iterator& other) const
-        { return ln==other.ln; }
+        { return ln==other.ln && pos==other.pos; }
 
     bool operator!=(const Text_iterator& other) const
         { return !(*this==other); }
@@ -60,7 +60,11 @@ struct Document {
         { return Text_iterator{line.begin(), (*line.begin()).begin()}; }
 
     Text_iterator end()     // За последним символом элемента
-        { return Text_iterator{line.end(), (*line.end()).end()}; }
+    {
+        auto p{line.end()};
+        --p;
+        return Text_iterator{p, (*p).end()};
+    }
 };
 
 //------------------------------------------------------------------------------
@@ -86,9 +90,9 @@ void print(Document& d)
 
 //------------------------------------------------------------------------------
 
-void erase_line(Document& d, int n)
+void erase_line(Document& d, size_t n)
 {
-    if (n<0 || d.line.size()-1<=n) return;
+    if (d.line.size()-1<=n) return;
     auto p{d.line.begin()};
     advance(p, n);
     d.line.erase(p);
@@ -96,7 +100,8 @@ void erase_line(Document& d, int n)
 
 //------------------------------------------------------------------------------
 
-template<typename Iter>     // Требует Forward_iterator<Iter>
+template<typename Iter>
+    // Требует Bidirectional_iterator<Iter>
 void advance(Iter& p, int n)
 {
     if (0 < n) while (0 < n) { ++p; --n; }
