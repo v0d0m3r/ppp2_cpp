@@ -36,6 +36,18 @@ public:
 
     bool operator!=(const Text_iterator& other) const
         { return !(*this==other); }
+
+    list<Line>::iterator& current_line()
+        { return ln; }
+
+    const list<Line>::iterator& current_line() const
+        { return ln; }
+
+    Line::iterator& current_pos()
+        { return pos; }
+
+    const Line::iterator& current_pos() const
+        { return pos; }
 };
 
 //------------------------------------------------------------------------------
@@ -137,27 +149,61 @@ Text_iterator find_txt(Text_iterator first,
 
 //------------------------------------------------------------------------------
 
-Text_iterator replace_txt(Text_iterator first,
-                          Text_iterator last, const string& s)
+// Обработка особых случаев
+void proc_extra_case(Document& d, Text_iterator& p,
+                     char ch = '\0')
 {
-    if (s.size() == 0) return last; // Нельзя заменять пустую строку
-
-    int sz{0};
-    while (first!=last && sz!) {
-        *first =
+    static constexpr char extra{'\n'};
+    if (ch==extra && *p!=extra) { // Вставка символа '\n'
+                                  // вместо другого
+        auto l{d.line.insert(p.current_line(), Line{})};
+        auto pos{p.current_pos()};
+        ++pos;
+        while (pos != p.current_line()->end()) {
+            l->push_back(*pos);
+            p.current_line()->erase(pos);
+        }
     }
+    if (ch!=extra && *p==extra) { // Перезапись символа '\n'
+                                  // вместо другого
+        auto ln{p.current_line()};
+        ++ln;
 
+        auto pos{ln->begin()};
+        while (pos != ln->end()) {
+            p.current_line()->push_back(*pos);
+            ln->erase(pos);
+        }
+        d.line.erase(ln);
+    }
 }
 
+//------------------------------------------------------------------------------
 
-Text_iterator find_replace_txt(Text_iterator first, Text_iterator last,
-                               const string& f, const string& r)
+void find_replace_txt(Document& d,
+                      const string& fs, const string& rs)
 {
-    if (s.size()==0 || r.size()==0) return last; // Нельзя искать пустую строку
-    auto p{find_txt(first, last, f)};
-    if (p == last) return last;
+    auto p{find_txt(d.begin(), d.end(), fs)};
+    if (p == d.end()) return;
 
-    *p =
+    size_t sz{(fs.size() <= rs.size()) ? rs.size() : fs.size()};
+    size_t less{(fs.size() < rs.size()) ? fs.size() : rs.size()};
+    for (size_t i{0}; i < sz; ++i) {
+        if (i < less) {
+            proc_extra_case(d, p, rs[i]);
+            *p = rs[i];
+            ++p;
+        }
+        if (fs.size()<rs.size() && less < i) {
+            p.current_line()->insert(p.current_pos(), rs[i]);
+            proc_extra_case(d, p, rs[i]);
+            ++p;
+        }
+        if (fs.size()>rs.size() && less < i){
+                proc_extra_case(d, p);
+                p.current_line()->erase(p.current_pos());
+        }
+    }
 }
 
 //------------------------------------------------------------------------------
