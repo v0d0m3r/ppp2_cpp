@@ -149,39 +149,71 @@ Text_iterator find_txt(Text_iterator first,
 
 //------------------------------------------------------------------------------
 
-// Обработка особых случаев
+// Переводим итератор текущей строки на позицию n
+inline void do_actual_pos_index(Text_iterator& p, int n)
+{
+    auto pos{p.current_line()->begin()};
+    std::advance(pos, n);
+    p.current_pos() = pos;
+}
+
+//------------------------------------------------------------------------------
+
+// Переносим символы с позиции p
+// до конца ln1 в ln2
+template<typename Iter1, typename Iter2>
+void move_line(Iter1& src, Iter1& dest, Iter2& p)
+{
+    while (p != src->end()) {
+        dest->push_back(*p);
+        src->erase(p);
+    }
+}
+
+//------------------------------------------------------------------------------
+
+// Обработка случаев с добавлением/удалением строк
 void proc_extra_case(Document& d, Text_iterator& p,
                      char ch = '\0')
 {
     static constexpr char extra{'\n'};
     if (ch==extra && *p!=extra) { // Вставка символа '\n'
                                   // вместо другого
-        auto l{d.line.insert(p.current_line(), Line{})};
+        auto ln{p.current_line()};
+        ++ln;
+        ln = d.line.insert(ln, Line{});
         auto pos{p.current_pos()};
         ++pos;
-        while (pos != p.current_line()->end()) {
-            l->push_back(*pos);
-            p.current_line()->erase(pos);
-        }
+        move_line(p.current_line(), ln, pos);
     }
     if (ch!=extra && *p==extra) { // Перезапись символа '\n'
                                   // вместо другого
         auto ln{p.current_line()};
         ++ln;
-
+        size_t n{p.current_line()->size()-1};
         auto pos{ln->begin()};
-        while (pos != ln->end()) {
-            p.current_line()->push_back(*pos);
-            ln->erase(pos);
-        }
+
+        move_line(ln, p.current_line(), pos);
+
         d.line.erase(ln);
+        do_actual_pos_index(p, n);
     }
 }
 
 //------------------------------------------------------------------------------
 
-void find_replace_txt(Document& d,
-                      const string& fs, const string& rs)
+inline int get_pos_index(Text_iterator& p)
+{
+    int counter{0};
+    for (auto pos{p.current_line()->begin()};
+         pos != p.current_pos(); ++pos)
+        ++counter;
+    return counter;
+}
+
+//------------------------------------------------------------------------------
+
+void find_replace_txt(Document& d, const string& fs, const string& rs)
 {
     auto p{find_txt(d.begin(), d.end(), fs)};
     if (p == d.end()) return;
@@ -194,14 +226,17 @@ void find_replace_txt(Document& d,
             *p = rs[i];
             ++p;
         }
-        if (fs.size()<rs.size() && less < i) {
+        else if (fs.size() < rs.size()) {
+            int n{get_pos_index(p)};
             p.current_line()->insert(p.current_pos(), rs[i]);
+            do_actual_pos_index(p, n);
+
             proc_extra_case(d, p, rs[i]);
             ++p;
         }
-        if (fs.size()>rs.size() && less < i){
-                proc_extra_case(d, p);
-                p.current_line()->erase(p.current_pos());
+        else if (fs.size() > rs.size()) {
+            proc_extra_case(d, p);
+            p.current_line()->erase(p.current_pos());
         }
     }
 }

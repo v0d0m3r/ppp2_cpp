@@ -57,8 +57,6 @@ public:
         { return curr == b.curr; }
     bool operator!=(const iterator& b) const
         { return curr != b.curr; }
-
-
 };
 
 //------------------------------------------------------------------------------
@@ -81,8 +79,6 @@ public:
         { return curr == b.curr; }
     bool operator!=(const iterator& b) const
         { return curr != b.curr; }
-
-
 };
 
 //------------------------------------------------------------------------------
