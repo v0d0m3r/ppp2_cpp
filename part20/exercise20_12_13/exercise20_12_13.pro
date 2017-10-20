@@ -10,4 +10,5 @@ DESTDIR = ../bin
 SOURCES += main.cpp
 
 HEADERS += \
-    ../example20/List_easy.hpp
+    List.hpp \
+    List_base.hpp

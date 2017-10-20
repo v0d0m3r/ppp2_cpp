@@ -16,6 +16,8 @@ struct Link {
 
 template<typename Elem>
 class List_easy {
+    Link<Elem>* first{nullptr};
+    Link<Elem>* last{nullptr};
 public:
     class iterator;   // Тип-член класса: iterator
 
