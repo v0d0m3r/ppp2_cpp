@@ -14,6 +14,7 @@ https://habrahabr.ru/post/226229/
 int main()
 try
 {    
+    List<int> lst;
     return 0;
 }
 catch(const exception& e) {
