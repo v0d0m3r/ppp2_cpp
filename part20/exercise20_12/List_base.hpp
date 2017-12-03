@@ -110,7 +110,7 @@ List_base<T, A>::List_base(List_base&& a)
     : alloc{a.alloc},
       first{move(a.first)}, last{move(a.last)},
       sz{a.sz}
-{   
+{
     a.sz = 0;
 }
 
