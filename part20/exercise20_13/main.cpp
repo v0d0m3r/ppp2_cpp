@@ -46,6 +46,11 @@ ostream& operator <<(ostream& os, const C<E, Args...>& c)
 int main()
 try
 {
+    List<int> l{0, 2};
+    List<int> l2{l};
+    cout << l2 << '\n';
+    List<int> l3{32, 32 ,12 , 32};
+    l3 = l;
     return 0;
 }
 catch (const exception& e) {

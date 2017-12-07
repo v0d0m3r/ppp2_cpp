@@ -15,13 +15,15 @@ class List : private List_base<Elem, A>
     int sz;
 public:
     using size_type = size_t;
+    using value_type = Elem;
+
     List() : List_base<Elem, A>()  {}
     explicit List(size_type s);
     List(initializer_list<Elem> inlst);
     // Копирующие конструктор и присваивание
     List(const List& a);
     List& operator=(const List& a);
-    List(List&& a);
+    List(List&& a) : List_base<Elem, A>{move(a)} {}
     ~List();                  // Деструктор
 
     class iterator;   // Тип-член класса: iterator
@@ -46,7 +48,34 @@ public:
         { return this->first->val; }
     Elem& back()                    // Последний элемент
         { return this->last->prev; }
+
+    size_type size() const { return this->sz; }   // Количество элементов
     void reserve(const Elem& v = Elem{});
+
+    template<template<class, class...> class C, class... Args>
+    void init_from_contaner(const C<Elem, Args...>& c)
+    {
+        if (c.size() == 0) return;
+        // Инициализация элементов
+        Link<Elem>* curr{nullptr};
+        bool is_first{true};
+        for (const auto& v : c) {
+            Link<Elem> def{v, curr};
+            if (is_first) {
+                uninitialized_copy(&def, &def + 1, this->first);
+                curr = this->first;
+                is_first = false;
+                continue;
+            }
+
+            List_base<Elem, A> n{this->alloc};
+            uninitialized_copy(&def, &def + 1, n.first);
+
+            curr->succ = n.first;
+            curr = n.release();
+        }
+    }
+    void destroy();
 };
 
 //------------------------------------------------------------------------------
@@ -77,55 +106,16 @@ template<typename Elem, typename A>
 List<Elem, A>::List(initializer_list<Elem> inlst)
     : List_base<Elem, A>{A()}, sz{inlst.size()}
 {
-    if (inlst.size() == 0) return;
-    // Инициализация элементов    
-    Link<Elem>* curr{nullptr};
-    bool is_first{true};
-    for (const auto& v : inlst) {
-        Link<Elem> def{v, curr};
-        if (is_first) {
-            uninitialized_copy(&def, &def + 1, this->first);
-            curr = this->first;
-            is_first = false;
-            continue;
-        }
-
-        List_base<Elem, A> n{this->alloc};
-        uninitialized_copy(&def, &def + 1, n.first);
-
-        curr->succ = n.first;
-        curr = n.release();
-    }
+    init_from_contaner(inlst);
 }
 
 //------------------------------------------------------------------------------
 
 template<typename Elem, typename A>
 List<Elem, A>::List(const List<Elem, A>& a)
-    : List_base<Elem, A>{a}
+    : List_base<Elem, A>{a}, sz{a.sz}
 {
-    if (a.sz == 0) return;
-
-    uninitialized_copy(a.end().curr, a.end().curr + 1, this->last.get());
-
-    bool is_first{true};
-    Link<Elem>* curr{this->first.get()};
-    for (auto i{a.begin()}; i != a.end(); ++i) {
-        if (is_first) {
-            uninitialized_copy(i.curr, i.curr + 1, curr);
-            is_first = false;
-            continue;
-        }
-
-        Link_ptr<Elem, A> n{make_link_ptr<Elem, A>(&this->alloc)};
-        uninitialized_copy(i.curr, i.curr + 1, n.get());
-
-        n->prev = curr;
-        curr->succ = n.get();
-        curr = n.release();
-    }
-    curr->succ = this->last.get();
-    this->last->prev = curr;
+    init_from_contaner(a);
 }
 
 //------------------------------------------------------------------------------
@@ -134,79 +124,30 @@ template<typename Elem, typename A>
 List<Elem, A>& List<Elem, A>::operator=(const List& a)
 // Похож на конструктор копирования,
 // но мы должны разобраться со старыми элементами
+// Не эффективное копирование
 {
     if (this == &a) return *this;      // Самоприсваивание, ничего не делаем
-    if (a.sz == this->sz) {
-        // В инициализированной памяти
-        copy(a.begin(), a.end(), this->begin()); // Копируем value
-        return *this;                  // Возврат ссылки на себя
+    if (a.sz >= sz) {
+        auto p{a.begin()};
+        for (int i{0}; i < sz; ++i) {
+            copy(&(*p), &(*p)+1, begin());
+            ++p;
+        }
+        auto last{a.end()};
+        while (p != last) {
+            push_back(*p);
+            ++p;
+        }
     }
-    if (a.sz == 0) {    // Уничтожаем текущие элементы
-        Link<Elem>* p{nullptr};
-        Link<Elem>* curr{this->first ? this->first->succ : nullptr};
-        while (curr != this->last.get() && curr != nullptr) {
-            p = curr->succ;
-            this->alloc.destroy(curr);
-            deallocate_link<Elem, A>(curr);
-            curr = p;
+    else {
+        auto p{a.begin()};
+        for (int i{0}; i < sz; ++i) {
+            copy(&(*p), &(*p)+1, begin());
+            ++p;
         }
-        if (this->first && this->last) {
-            this->alloc.destroy(this->first.get());
-            this->alloc.destroy(this->last.get());
-        }
-        this->sz = 0;
-        return *this;
+
     }
-    if (this->sz == 0) {
-        uninitialized_copy(a.end().curr, a.end().curr + 1, this->last.get());
-
-        bool is_first{true};
-        Link<Elem>* curr{this->first.get()};
-        for (auto i{a.begin()}; i != a.end(); ++i) {
-            if (is_first) {
-                uninitialized_copy(i.curr, i.curr + 1, curr);
-                is_first = false;
-                continue;
-            }
-
-            Link_ptr<Elem, A> n{make_link_ptr<Elem, A>(&this->alloc)};
-            uninitialized_copy(i.curr, i.curr + 1, n.get());
-
-            n->prev = curr;
-            curr->succ = n.get();
-            curr = n.release();
-        }
-        curr->succ = this->last.get();
-        this->last->prev = curr;
-        this->sz = a.sz;
-        return *this;
-    }
-    if (a.sz > this->sz) {
-        auto ai{a.begin()};
-        auto anext{a.begin()};
-        ++anext;
-        for (auto i{begin()}; i != end(); ++i) {
-            copy(ai, anext, i); // Копируем value
-            ++ai;
-            ++anext;
-        }
-
-        Link<Elem>* curr{end().curr->prev};
-        while (ai != a.end()) {
-            Link_ptr<Elem, A> n{make_link_ptr<Elem, A>(&this->alloc)};
-            uninitialized_copy(ai.curr, ai.curr + 1, n.get());
-
-            n->prev = curr;
-            curr->succ = n.get();
-            curr = n.release();
-
-            ++ai;
-            ++anext;
-        }
-        curr->succ = this->last.get();
-        this->last->prev = curr;
-        this->sz = a.sz;
-    }
+    return *this;                                // Возврат ссылки на себя
 }
 
 //------------------------------------------------------------------------------
@@ -244,7 +185,7 @@ public:
 template<typename Elem, typename A>
 Iterator<List<Elem, A>> List<Elem, A>::begin()
 {
-    return iterator{this->first.get()};
+    return iterator{this->first};
 }
 
 //------------------------------------------------------------------------------
@@ -252,7 +193,7 @@ Iterator<List<Elem, A>> List<Elem, A>::begin()
 template<typename Elem, typename A>
 Iterator<List<Elem, A>> List<Elem, A>::end()
 {
-    return iterator{this->last.get()};
+    return iterator{nullptr};
 }
 
 //------------------------------------------------------------------------------
@@ -260,7 +201,7 @@ Iterator<List<Elem, A>> List<Elem, A>::end()
 template<typename Elem, typename A>
 Iterator<List<Elem, A>> List<Elem, A>::begin() const
 {
-    return iterator{this->first.get()};
+    return iterator{this->first};
 }
 
 //------------------------------------------------------------------------------
@@ -268,7 +209,7 @@ Iterator<List<Elem, A>> List<Elem, A>::begin() const
 template<typename Elem, typename A>
 Iterator<List<Elem, A>> List<Elem, A>::end() const
 {
-    return iterator{this->last.get()};
+    return iterator{nullptr};
 }
 
 //------------------------------------------------------------------------------
@@ -276,7 +217,7 @@ Iterator<List<Elem, A>> List<Elem, A>::end() const
 template<typename Elem, typename A>
 Iterator<List<Elem, A>> List<Elem, A>::insert(iterator p, const Elem &v)
 {
-    if (p == end() || p.curr == nullptr) return p;
+    /*if (p == end() || p.curr == nullptr) return p;
     if (this->sz == 0)  {   // Если лист пустой,
                             // то значение копируем в first узел
         ++this->sz;
@@ -299,7 +240,7 @@ Iterator<List<Elem, A>> List<Elem, A>::insert(iterator p, const Elem &v)
     n.release();
     ++p;
     ++this->sz;
-    return p;
+    return p;*/
 }
 
 //------------------------------------------------------------------------------
@@ -313,7 +254,7 @@ Iterator<List<Elem, A>> List<Elem, A>::erase(iterator p)
 // следующий за последним удаленным элементом,
 // или p
 {
-    if (p == end() || p.curr == nullptr) return p;
+    /*if (p == end() || p.curr == nullptr) return p;
     if (this->sz == 1) {                 // Очистка списка
         if (p.curr != this->first.get()) // Итератор не из
             return p;                    // этой последовательности
@@ -337,7 +278,7 @@ Iterator<List<Elem, A>> List<Elem, A>::erase(iterator p)
     iterator succ{l->succ};
     this->alloc.destroy(l.get());
     --this->sz;
-    return succ;
+    return succ;*/
 }
 
 //------------------------------------------------------------------------------
@@ -345,7 +286,7 @@ Iterator<List<Elem, A>> List<Elem, A>::erase(iterator p)
 template<typename Elem, typename A>
 void List<Elem, A>::push_back(const Elem& v)
 {
-    if (this->sz == 0) {
+    /*if (this->sz == 0) {
         ++this->sz;
         reserve(v);
         return;
@@ -363,7 +304,7 @@ void List<Elem, A>::push_back(const Elem& v)
                                           // становится предшественником n
     this->last->prev = n.get();           // n предшествует last
     n.release();
-    ++this->sz;
+    ++this->sz;*/
 }
 
 //------------------------------------------------------------------------------
@@ -371,7 +312,7 @@ void List<Elem, A>::push_back(const Elem& v)
 template<typename Elem, typename A>
 void List<Elem, A>::push_front(const Elem& v)
 {
-    if (this->sz == 0) {
+    /*if (this->sz == 0) {
         ++this->sz;
         reserve(v);
         return;
@@ -385,7 +326,7 @@ void List<Elem, A>::push_front(const Elem& v)
 
     swap(this->first, n);
     n.release();
-    ++this->sz;
+    ++this->sz;*/
 }
 
 //------------------------------------------------------------------------------
@@ -426,20 +367,25 @@ void List<Elem, A>::reserve(const Elem& v)
 //------------------------------------------------------------------------------
 
 template<typename Elem, typename A>
+void List<Elem, A>::destroy()
+{
+    auto p{begin()};
+    auto last{end()};
+    ++p;
+    while (p != last) {
+        List_base<Elem, A> b{p.curr};
+        ++p;
+        this->alloc.destroy(b.first);
+    }
+    this->alloc.destroy(this->first);
+}
+
+//------------------------------------------------------------------------------
+
+template<typename Elem, typename A>
 List<Elem, A>::~List()
 {
-    Link<Elem>* p{nullptr};
-    Link<Elem>* curr{this->first ? this->first->succ : nullptr};
-    while (curr != this->last.get() && curr != nullptr) {
-        p = curr->succ;
-        this->alloc.destroy(curr);
-        deallocate_link<Elem, A>(curr);
-        curr = p;
-    }
-    if (this->first && this->last) {
-        this->alloc.destroy(this->first.get());
-        this->alloc.destroy(this->last.get());
-    }
+    destroy();
 }
 
 //------------------------------------------------------------------------------

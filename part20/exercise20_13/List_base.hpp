@@ -27,7 +27,8 @@ struct List_base {
     Link<Elem>* first;
 
     List_base() : alloc{A{}}, first{nullptr} {}
-    List_base(const A& a) : alloc{a}, first{alloc->allocate(1)} {}
+    List_base(Link<Elem>* f) : alloc{A{}}, first{f} {}
+    List_base(const A& a) : alloc{a}, first{alloc.allocate(1)} {}
 
     // Копирующие конструктор и присваивание
     List_base(const List_base &a) : List_base{a.alloc} {}
