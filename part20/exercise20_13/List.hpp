@@ -124,30 +124,22 @@ template<typename Elem, typename A>
 List<Elem, A>& List<Elem, A>::operator=(const List& a)
 // Похож на конструктор копирования,
 // но мы должны разобраться со старыми элементами
-// Не эффективное копирование
 {
-    if (this == &a) return *this;      // Самоприсваивание, ничего не делаем
+    if (this == &a) return *this;         // Самоприсваивание,
+                                          // ничего не делаем
     if (a.sz >= sz) {
         auto p{a.begin()};
-        for (int i{0}; i < sz; ++i) {
-            copy(&(*p), &(*p)+1, begin());
-            ++p;
-        }
-        auto last{a.end()};
-        while (p != last) {
+        for (auto i{begin()}; i != end(); ++i, ++p)
+            copy(&*p, &*p+1, &*i);        // Копируем элементы
+                                          // в инциализированной памяти
+        for (; p != a.end(); ++p)         // Добавляем новые узлы
             push_back(*p);
-            ++p;
-        }
     }
-    else {
-        auto p{a.begin()};
-        for (int i{0}; i < sz; ++i) {
-            copy(&(*p), &(*p)+1, begin());
-            ++p;
-        }
-
+    else {        
+        auto p{copy(a.begin(), a.end(), begin())};
+        for (; p != end(); ++p) erase(p); // Удаляем новые узлы
     }
-    return *this;                                // Возврат ссылки на себя
+    return *this;                         // Возврат ссылки на себя
 }
 
 //------------------------------------------------------------------------------
@@ -217,30 +209,19 @@ Iterator<List<Elem, A>> List<Elem, A>::end() const
 template<typename Elem, typename A>
 Iterator<List<Elem, A>> List<Elem, A>::insert(iterator p, const Elem &v)
 {
-    /*if (p == end() || p.curr == nullptr) return p;
-    if (this->sz == 0)  {   // Если лист пустой,
-                            // то значение копируем в first узел
-        ++this->sz;
-        reserve(v);
-        return begin();
-    }
+    if (p == end() || p.curr == nullptr) return p;
 
-    Link_ptr<Elem, A> n{make_link_ptr<Elem, A>(&this->alloc)};
-    Link<Elem> lnk{Link<Elem>{v}};
+    Link<Elem> lnk{v, p.curr, p.curr->succ};
+    List_base<Elem, A> b{this->alloc};
+    uninitialized_copy(&lnk, &lnk + 1, b.first);
 
-    uninitialized_copy(&lnk, &lnk + 1, n.get());
+    if (p.curr->succ)                   // b предшествует
+        p.curr->succ->prev = b.first;   // последующему p
+    p.curr->succ = b.release();         // b следует за p
 
-    if (p.curr->succ)                   // n предшествует
-        p.curr->succ->prev = n.get();   // последующему p
-
-    n->succ = p.curr->succ;             // Последующий p становится
-                                        // последующим n
-    n->prev = p.curr;                   // p предшествееник n
-    p.curr->succ = n.get();             // n следует за p
-    n.release();
     ++p;
     ++this->sz;
-    return p;*/
+    return p;
 }
 
 //------------------------------------------------------------------------------
