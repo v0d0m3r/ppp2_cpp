@@ -12,7 +12,7 @@
 template<typename Elem>
 struct Link {
     Link(const Elem& v = Elem{}, Link* p = nullptr, Link* s = nullptr)
-        : val{v}, prev{p}, succ{s} {}
+        : prev{p},succ{s}, val{v}   {}
 
     Link* prev; // Предыдущий узел
     Link* succ; // Следующий узел

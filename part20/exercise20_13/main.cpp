@@ -85,6 +85,7 @@ void test_constructors()
     cout << l2 << '\n';
     List<int> l3{32, 32 ,12 , 32};
     l3 = l;
+    l3 = lst5;
 }
 
 //------------------------------------------------------------------------------
@@ -168,9 +169,9 @@ int main()
 try
 {
     test_constructors();
-    //test_erase();
-    //test_push_back();
-    //test_push_front();
+    test_erase();
+    test_push_back();
+    test_push_front();
     //test_case1();
     return 0;
 }
