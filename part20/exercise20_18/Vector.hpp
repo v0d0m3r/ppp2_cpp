@@ -171,8 +171,7 @@ public:
     // Вперед:
     iterator& operator++()
     {
-        if (curr == last)
-            throw Range_error(last - curr);
+        if (curr == last) throw Range_error(last - curr);
         ++curr;
         return *this;
     }
@@ -180,8 +179,7 @@ public:
     // Назад:
     iterator& operator--()
     {
-        if (curr == first)
-            throw Range_error(-1);
+        if (curr == first) throw Range_error(-1);
         --curr;
         return *this; }
 
@@ -192,7 +190,7 @@ public:
         return *this;
     }
 
-    iterator& operator-=(difference_type n) { return *this += n; }
+    iterator& operator-=(difference_type n) { return *this += -n; }
 
     iterator operator+(difference_type n)
     {
@@ -201,24 +199,31 @@ public:
     }
 
     iterator operator-(difference_type n)
-    {
-        iterator temp{*this};
-        return temp -= n;
-    }
+        { iterator temp{*this}; return temp -= n; }
 
-    difference_type operator-(const iterator& rhs)
+    difference_type operator-(const iterator& rhs) const
         { return curr - rhs.curr; }
 
     // Разыменование (получение значения):
     reference operator*() { return *curr; }
 
-    reference operator[](int n) { return *(*this + n); }
-    const reference operator[](int n) const { return *(*this + n); }
+    reference operator[](int n)
+        { return *(*this + n); }
+    const reference operator[](int n) const
+        { return *(*this + n); }
 
     bool operator==(const iterator& b) const
         { return curr == b.curr; }
     bool operator!=(const iterator& b) const
         { return curr != b.curr; }
+    bool operator<(const iterator& b) const
+        { return b - *this > 0; }
+    bool operator>(const iterator& b) const
+        { return b < *this; }
+    bool operator>=(const iterator& b) const
+        { return !(*this < b); }
+    bool operator<=(const iterator& b) const
+        { return !(*this > b); }
 };
 
 //------------------------------------------------------------------------------
@@ -227,8 +232,8 @@ template<typename T, typename A>
 Vector<T, A>::iterator::iterator(pointer c, pointer f, pointer l)
     : curr{c}, first{f}, last{l}
 {
-    if (c < f || c > last)
-        error("iterator not valid!");
+    if (distance(f, c)<0 || distance(c, l)<0)
+        error("iterator is not located between first and last");
 }
 
 //------------------------------------------------------------------------------

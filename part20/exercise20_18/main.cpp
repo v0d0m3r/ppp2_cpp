@@ -9,12 +9,16 @@ try
 {
     Vector<int> vi{0, 1, 2, 3, 4, 5 ,6};
 
-    auto p{vi.end()};
+    auto p{vi.begin()};
+    auto q{p};
     ++p;
     if (p != vi.end())
         cout << *p << "\n";
-    /*p+=2;
-    p[0];*/
+
+    if (q <= p) cout << "true;";
+    p+=2;
+    p[0];
+    p[20];
     return 0;
 }
 catch (const exception& e) {
