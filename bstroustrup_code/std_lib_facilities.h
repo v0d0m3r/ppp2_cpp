@@ -41,6 +41,7 @@
 #include <regex>
 #include <random>
 #include <stdexcept>
+#include <chrono>
 
 //------------------------------------------------------------------------------
 
