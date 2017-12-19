@@ -2,6 +2,7 @@
 
 #include "../../bstroustrup_code/std_lib_facilities.h"
 #include <unordered_map>
+#include <set>
 
 //------------------------------------------------------------------------------
 
@@ -384,6 +385,160 @@ void example21_6_3()
 
 //------------------------------------------------------------------------------
 
+void example21_6_4()
+{
+    unordered_map<string, double> dow_price { // Индекс Джоу-Джонса
+            // (аббревиатура, цена)
+        {"MMM", 81.86},
+        {"AA", 34.69},
+        {"MO", 54.45},
+        {"MS", 42.21},
+        {"FB", 23.23},
+        // ...
+    };
+
+    unordered_map<string, double> dow_weight { // (аббревиатура, вес)
+        {"MMM", 5.8549},
+        {"AA", 2.4808 },
+        {"MO", 3.8940},
+        {"MS", 4.2121},
+        {"FB", 3.2321},
+        // ...
+    };
+
+    unordered_map<string, string> dow_name {  // (аббревиатура, название)
+        {"MMM", "3M co."},
+        {"AA", "Alcoa Inc."},
+        {"MO", "Altria Group Inc."},
+        {"MS", "Microsoft Inc."},
+        {"FB", "Facebook Inc."},
+        // ...
+    };
+
+    double alcoa_price{dow_price["AA"]};  // Считываем значения
+                                          // из отображения
+    // Находим запись в отображении
+    if (dow_price.find("INTC") != dow_price.end())
+        cout << "Intel найден\n";
+
+    // Вывод цен акций каждой компании в индексе Доу-Джонса
+    for (const auto& p : dow_price) {
+        const string& symbol = p.first; // Аббревиатура
+        cout << symbol << '\t'
+             << p.second << '\t'
+             << dow_name[symbol] << '\n';
+    }
+
+    double dji_index {
+        std::inner_product(
+        dow_price.begin(), dow_price.end(), // Цены всех компаний
+        dow_weight.begin(),                 // Их веса
+        0.0,                                // Начальное значение
+        plus<double>(),                     // Обычное сложение
+        weighted_value)                     // Перемножение значений
+    };
+    cout << "dji_index == " << dji_index << '\n';
+}
+
+//------------------------------------------------------------------------------
+
+struct Fruit {
+    explicit Fruit(string nn = "", int cc = 0, double up = 0.00)
+        : name{nn}, count{cc}, unit_price{up} {}
+
+    string name;
+    int count;
+    double unit_price;
+};
+
+//------------------------------------------------------------------------------
+
+ostream& operator<<(ostream& os, const Fruit& f)
+{
+    return os << '(' << f.name
+              << ',' << f.count
+              << ',' << f.unit_price << ')';
+}
+
+//------------------------------------------------------------------------------
+
+struct Fruit_order {
+    bool operator() (const Fruit& a, const Fruit& b) const
+    {
+        return a.name<b.name;
+    }
+};
+
+//------------------------------------------------------------------------------
+
+void example21_6_5()
+{
+    set<Fruit, Fruit_order> inventory;
+    inventory.insert(Fruit{"kiwi", 100, 7.5});
+    inventory.insert(Fruit{"quince", 3, 3.2});
+    inventory.insert(Fruit{"plum", 8, 32.1});
+    inventory.insert(Fruit{"apple", 7, 0.37});
+    inventory.insert(Fruit{"grape", 2345, 0.15});
+    inventory.insert(Fruit{"orange", 99, 7.3});
+
+    for (auto p{inventory.begin()}; p != inventory.end(); ++p)
+        cout << *p << '\n';
+
+    auto p{inventory.find(Fruit{"kiwi"})};
+    if (p != inventory.end())
+        cout << *p << '\n';
+}
+
+//------------------------------------------------------------------------------
+
+template<typename In, typename Out>
+// Требует Input_iterator<In>() и Output_iterator<Out>()
+Out copy(In first, In last, Out res)
+{
+    while (first != last) {
+        *res = *first;      // Копирует элемент
+        ++res;
+        ++first;
+    }
+    return res;
+}
+
+//------------------------------------------------------------------------------
+
+void example21_7_1(vector<double>& vd, list<int>& li)
+// Копирует элементы списка типа int
+// в вектор чисел типа double
+{
+    if (vd.size() != li.size())
+        error("Выходной контейнер слишком мал");
+
+    std::copy(li.begin(), li.end(), vd.begin());
+    // ...
+}
+
+//------------------------------------------------------------------------------
+
+void example21_7_2()
+{
+    string from, to;
+    cin >> from >> to;  // Вводим имена исходного и целевого файлов
+
+    ifstream is{from};  // Открываем поток ввода
+    ofstream os{to};    // Открываем поток вывода
+
+    istream_iterator<string> ii{is};    // Создаем итератор ввода
+    istream_iterator<string> eos;       // Ограничитель ввода
+    ostream_iterator<string> oo{os, "\n"}; // Создаем итератор вывода
+
+    vector<string> b{ii, eos};          // Вектор инициализируется
+                                        // потоком ввода
+    sort(b.begin(), b.end());           // Сортировка буфера
+    std::copy(b.begin(), b.end(), oo);  // Копирование буфера в
+                                        // выходной поток
+}
+
+//------------------------------------------------------------------------------
+
 int main()
 try
 {
@@ -391,6 +546,9 @@ try
     example21_5_2();
     example21_5_3();
     example21_6_3();
+    example21_6_4();
+    example21_6_5();
+    example21_7_2();
     return 0;
 }
 catch (const exception& e) {
