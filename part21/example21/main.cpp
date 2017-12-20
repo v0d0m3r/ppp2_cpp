@@ -526,15 +526,83 @@ void example21_7_2()
     ifstream is{from};  // Открываем поток ввода
     ofstream os{to};    // Открываем поток вывода
 
-    istream_iterator<string> ii{is};    // Создаем итератор ввода
-    istream_iterator<string> eos;       // Ограничитель ввода
+    istream_iterator<string> ii{is};       // Создаем итератор ввода
+    istream_iterator<string> eos;          // Ограничитель ввода
     ostream_iterator<string> oo{os, "\n"}; // Создаем итератор вывода
 
-    vector<string> b{ii, eos};          // Вектор инициализируется
-                                        // потоком ввода
-    sort(b.begin(), b.end());           // Сортировка буфера
-    std::copy(b.begin(), b.end(), oo);  // Копирование буфера в
-                                        // выходной поток
+    list<string> b{ii, eos};               // Список инициализируется
+                                           // потоком ввода
+    b.sort();                              // Сортировка буфера
+    unique_copy(b.begin(), b.end(), oo);   // Копирование буфера в
+                                           // выходной поток
+}
+
+//------------------------------------------------------------------------------
+
+void example21_7_3()
+{
+    string from{"./from.txt"}, to{"./to.txt"};
+
+    ifstream is{from};
+    ofstream os{to};
+
+    set<string> b{istream_iterator<string>{is},
+                  istream_iterator<string>{}};
+
+    std::copy(b.begin(), b.end(),
+              ostream_iterator<string>{os, "\n"});
+}
+
+//------------------------------------------------------------------------------
+
+template<typename In, typename Out, typename Pred>
+// Требует Input_iterator<In>(), Ouput_iterator<Out>()
+// и Predicate<Pred, Value_type<In>>
+Out copy_if(In first, In last, Out res, Pred p)
+// Копирует элементы, удовлетворяющие предикату
+{
+    while (first != last) {
+        if (p(*first)) *res++ = *first;
+        ++first;
+    }
+    return res;
+}
+
+//------------------------------------------------------------------------------
+
+void example21_7_4(const vector<int>& v)
+{
+    vector<int> v2(v.size());
+    std::copy_if(v.begin(), v.end(), v2.begin(),
+                [](int a) { return a > 6; });
+    // ...
+}
+
+//------------------------------------------------------------------------------
+
+struct No_case { // Выполняется ли lower_case(x) < lower_case(y) ?
+    bool operator() (const string& x, const string& y) const
+    {
+        for (string::size_type i{0}; i < x.length(); ++i) {
+            if (i == y.length()) return false;      // y < x
+            char xx{tolower(x[i])};
+            char yy{tolower(y[i])};
+            if (xx < yy) return true;               // x < y
+            if (yy < xx) return false;              // y < x
+        }
+        if (x.length() == y.length()) return false; // x == y
+        return true;    // x < y (В x меньше символов)
+    }
+};
+
+//------------------------------------------------------------------------------
+
+void sort_and_print(vector<string>& vc)
+{
+    sort(vc.begin(), vc.end(), No_case{});
+
+    for (const auto& s : vc)
+        cout << s << '\n';
 }
 
 //------------------------------------------------------------------------------
