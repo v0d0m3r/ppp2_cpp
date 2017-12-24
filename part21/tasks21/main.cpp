@@ -87,6 +87,40 @@ ostream& operator<<(ostream& os, const Item& i)
 
 //------------------------------------------------------------------------------
 
+template<typename T1, typename T2>
+ostream& operator<<(ostream& os, const pair<T1, T2>& p)
+{
+    return os << '(' << p.first
+              << ',' << p.second << ')';
+}
+
+//------------------------------------------------------------------------------
+
+istream& operator>>(istream& is, pair<string, int>& p)
+{
+    string first;
+    int second;
+
+    char ch1, ch2, ch3;
+    is >> ch1;
+
+    get_name(first, is);
+    if (!is) return is;
+
+    is >> ch2 >> second >> ch3;
+    if (!is) return is;
+
+    if (ch1!='(' || ch2!=',' || ch3!=')') {
+        // Ошибка формата
+        is.clear();
+        return is;
+    }
+    p = make_pair(first, second);
+    return is;
+}
+
+//------------------------------------------------------------------------------
+
 template<typename T>
 using is_iter = istream_iterator<T>;
 
@@ -101,6 +135,15 @@ template<typename C>
 void print_contaner(C& c, ostream& os, const string& term)
 {
     copy(c.begin(), c.end(), os_iter<Item>{os, term.c_str()});
+    cout << "=====================\n";
+}
+
+//------------------------------------------------------------------------------
+
+template<typename T1, typename T2>
+void print_map(const map<T1, T2>& m, ostream& os, const string& term)
+{
+    for (const auto& e : m) os << e << term;
     cout << "=====================\n";
 }
 
@@ -195,10 +238,110 @@ void task_part1()
 
 //------------------------------------------------------------------------------
 
+int sum(int v, const pair<string, int>& p)
+{
+    return v + p.second;  // Накапливает итог
+}
+
+//------------------------------------------------------------------------------
+
+void task_part2()
+{
+    map<string, int> msi;
+    msi["lecture"] = 21;
+    msi["micromax"] = 1;
+    msi["leopard"] = 21;
+    msi["data tab"] = 3;
+    msi["admin card"] = 777;
+    msi["dart weider"] = 123;
+    msi["stars wars"] = 8;
+    msi["cycle"] = 4;
+    msi["gepard"] = 333;
+    msi["fast"] = 1;
+
+    string term{"\n"};
+    print_map(msi, cout, term);
+
+    msi.clear();
+
+    string first;
+    int second;
+    for (int i{0}; i < 10; ++i) {
+        cin >> first >> second;
+        if (!cin) break;
+        msi[first] = second;
+    }
+    print_map(msi, cout, term);
+
+    int total{std::accumulate(msi.begin(), msi.end(), 0, sum)};
+    cout << "total == " << total << '\n';
+
+    map<int, string> mis;
+    for (const auto& p : msi) mis[p.second] = p.first;
+
+    print_map(mis, cout, term);
+}
+
+//------------------------------------------------------------------------------
+
+void task_part3()
+{
+    string from{"./from3.txt"};
+
+    ifstream is{from};
+
+    vector<double> vd{istream_iterator<double>{is},
+                      istream_iterator<double>{},
+                      std::allocator<double>{}};
+
+    std::copy(vd.begin(), vd.end(),
+              ostream_iterator<double>{cout, "\n"});
+
+    vector<int> vi{vd.begin(), vd.end(), std::allocator<int>{}};
+
+    for (Size_type<vector<int>> i{0}; i < vi.size(); ++i)
+        cout << vd[i] << '\t' << vi[i] << '\n';
+
+    double total{std::accumulate(vd.begin(), vd.end(), 0.00)};
+    cout << "total vd == " << total << '\n';
+
+    double minus_plus {
+        std::inner_product(
+        vd.begin(), vd.end(),
+        vi.begin(),
+        0.0,
+        minus<double>(),        // Обычное вычитание
+        plus<double>())         // Обычное сложение
+    };
+    cout << "minus_plus == " << minus_plus << '\n';
+
+    reverse(vd.begin(), vd.end());
+    std::copy(vd.begin(), vd.end(),
+              ostream_iterator<double>{cout, "\n"});
+    double mid{total/vd.size()};
+    cout << "middle vd == " <<  mid << '\n';
+
+    int count{count_if(vd.begin(), vd.end(),
+                       [&](double a) { return a < mid; })};
+    vector<double> vd2(count);
+    copy_if(vd.begin(), vd.end(), vd2.begin(),
+            [&](double a) { return a < mid; });
+    std::copy(vd2.begin(), vd2.end(),
+              ostream_iterator<double>{cout, "\n"});
+
+    sort(vd.begin(), vd.end());
+    std::copy(vd.begin(), vd.end(),
+              ostream_iterator<double>{cout, "\n"});
+}
+
+//------------------------------------------------------------------------------
+
 int main()
 try
 {
-    task_part1();
+    //task_part1();
+    //task_part2();
+    task_part3();
     return 0;
 }
 catch (const exception& e) {
