@@ -105,7 +105,7 @@ void check_find()
 
 template<typename In, typename Pred>
 // Требует Input_iterator<In>()
-// и Equality_comparable<Value_type<T>>()
+// и Predicate<Pred, Value_type<In>>
 In find_if(In first, In last, Pred pred)
 {
     while (first!=last && !pred(*first)) ++first;

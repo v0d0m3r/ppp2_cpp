@@ -235,6 +235,9 @@ using Iterator = typename C::iterator;
 template<typename C>
 using Size_type = typename C::size_type;
 
+template<typename It>
+using Iterator_difference_type = typename iterator_traits<It>::difference_type;
+
 template<typename C>
     // requires Container<C>()
 void sort(C& c)
