@@ -66,6 +66,7 @@ struct Range_error : out_of_range {	// enhanced vector range error reporting
     Range_error(int i) :out_of_range("Range error: "+to_string(i)), index(i) { }
 };
 
+namespace std {
 
 // trivially range-checked vector (no iterator checking):
 template< class T> struct Rvector : public std::vector<T> {
@@ -97,6 +98,8 @@ template< class T> struct Rvector : public std::vector<T> {
 
 // disgusting macro hack to get a range checked vector:
 #define vector Rvector
+
+}
 
 // trivially range-checked string (no iterator checking):
 struct String : std::string {
