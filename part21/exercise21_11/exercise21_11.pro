@@ -3,10 +3,7 @@ CONFIG += console
 CONFIG -= app_bundle
 CONFIG -= qt
 
-LIBS	+= -lXfixes -lpthread -ldl -lfltk_images -lfltk_jpeg -lfltk -lX11 -lXext
-#LIBS	+= -lXfixes -lpthread -ldl -lfltk -lfltk_images -lXinerama
-#LIBS    += -lpng -ljpeg -lX11 -lXext -lz -lm -lXcursor -lXrender -lfontconfig -lXft
-INCLUDEPATH += /usr/local/include/
+LIBS	+= -lfltk_images -lfltk
 
 QMAKE_CXXFLAGS += -std=c++1z --pedantic
 

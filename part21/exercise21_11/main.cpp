@@ -11,7 +11,7 @@ using namespace Graph_lib;
 int main()
 try
 {
-    Input_orders_window iow{Point{100, 100}, 1024, 800, "Order"};
+    Simple_orders_window sow{Point{100, 100}, 1024, 800, "Order"};
     return gui_main();
 }
 catch (const exception& e) {
