@@ -62,18 +62,28 @@ private:
     Clear_in_box purchase_nm_in;
     Clear_in_box purchase_price_in;
     Clear_in_box purchase_count_in;
+    Graph_lib::Out_box err_out;
 
+    Graph_lib::Button prepare_order_button;
     Graph_lib::Button add_order_button;
+    Graph_lib::Button set_order_button;
     Graph_lib::Button add_purchase_button;
 
     void clear_all_in();
+    void clear_purchase_feat();
+    void hide_purchase_feat();
+    void show_purchase_feat();
 
     // Действия
+    void prepare_order_pressed();
     void add_order_pressed();
+    void set_order_pressed();
     void add_purchase_pressed();
 
     // Callback-функции
+    static void cb_prepare_order(Graph_lib::Address, Graph_lib::Address);
     static void cb_add_order(Graph_lib::Address, Graph_lib::Address);
+    static void cb_set_order(Graph_lib::Address, Graph_lib::Address);
     static void cb_add_purchase(Graph_lib::Address, Graph_lib::Address);
 };
 

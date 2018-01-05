@@ -10,6 +10,14 @@
 //------------------------------------------------------------------------------
 
 struct Purchase {
+    Purchase() {}
+    Purchase(const string& nm, double up, int cnt)
+        : name{nm}, unit_price{up}, count{cnt}
+    {
+        if (nm.empty() || up<=0 || cnt<=0)
+             error("Bad Purchase");
+    }
+
     string name;
     double unit_price;
     int count;
@@ -41,14 +49,13 @@ public:
           const vector<Purchase>& purchases);
 
     const string& name() const { return nm; }
-    void set_name(const string& name) { nm = name; }
+    void set_name(const string& name);
 
     const string& address() const { return addr; }
-    void set_address(const string& address) { addr = address; }
+    void set_address(const string& address);
 
     const string& date_birth() const { return dbirth; }
-    void set_date_birth(const string& date_birth)
-        { dbirth = date_birth; }
+    void set_date_birth(const string& date_birth);
 
     const Purchase& purchase(int i) const { return vp[i]; }
     int number_of_purchases() const
@@ -62,6 +69,33 @@ public:
     iterator end() { return vp.end(); }
     const_iterator end() const { return vp.end(); }
 };
+
+//------------------------------------------------------------------------------
+
+inline void Order::set_name(const string& name)
+{
+    if (name.empty())
+        error("Bad address client");
+    nm = name;
+}
+
+//------------------------------------------------------------------------------
+
+inline void Order::set_address(const string& address)
+{
+    if (address.empty())
+        error("Bad address client");
+    addr = address;
+}
+
+//------------------------------------------------------------------------------
+
+inline void Order::set_date_birth(const string& date_birth)
+{
+    if (date_birth.empty())
+        error("Bad address client");
+    dbirth = date_birth;
+}
 
 //------------------------------------------------------------------------------
 
