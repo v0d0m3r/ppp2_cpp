@@ -8,20 +8,29 @@ using namespace Graph_lib;
 
 //-----------------------------------------------------------------------------
 
+Quit_window::Quit_window(Graph_lib::Point xy, int w, int h,
+                         const string& title)
+    : Window{xy, w, h, title},
+      quit_button{Point{x_max()-70, 0}, 70, 20, "Quit",
+                  [] (Address, Address pw) {
+                     reference_to<Quit_window>(pw).quit_pressed();
+                  }}
+{
+    attach(quit_button);
+}
+
+//-----------------------------------------------------------------------------
+
 Save_quit_window::Save_quit_window(Graph_lib::Point xy, int w, int h,
                                    const string& title)
-    : Window{xy, w, h, title},
+    : Quit_window{xy, w, h, title},
       save_button{Point{x_max()-150, 0}, 70, 20, "Save",
                   [] (Address, Address pw) {
                      reference_to<Save_quit_window>(pw).save_pressed();
-                  }},
-      quit_button{Point{x_max()-70, 0}, 70, 20, "Quit",
-                  [] (Address, Address pw) {
-                     reference_to<Save_quit_window>(pw).quit_pressed();
                   }}
+
 {
     attach(save_button);
-    attach(quit_button);
 }
 
 //------------------------------------------------------------------------------

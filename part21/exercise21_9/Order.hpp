@@ -125,6 +125,78 @@ struct Cmp_by_addr {
 
 //------------------------------------------------------------------------------
 
+template<typename C, typename Pred>
+// Требует Container<C>
+// и Predicate<Pred, Value_type<C>>
+void sort_impl(C& c, Pred pred, std::random_access_iterator_tag)
+{
+    std::sort(c.begin(), c.end(), pred);
+}
+
+//------------------------------------------------------------------------------
+
+template<typename C, typename Pred>
+// Требует Container<C>
+// и Predicate<Pred, Value_type<C>>
+void sort_impl(C& c, Pred pred, std::bidirectional_iterator_tag)
+{
+    c.sort(pred);
+}
+
+//------------------------------------------------------------------------------
+
+template<typename C, typename Pred>
+// Требует Container<C>
+// и Predicate<Pred, Value_type<C>>
+void msort(C& c, Pred pred)
+{
+    typedef typename std::iterator_traits<Iterator<C>>::iterator_category category;
+    sort_impl(c, pred, category());
+}
+
+//------------------------------------------------------------------------------
+
+template<class Pred, class E,
+         template<class, class...> class C, class... Args>
+// Требует Predicate<Pred, E>, Element<E>,
+// и Container<C>
+void fill_from_file(C<E, Args...>& c, Pred pred, const string& fname)
+{
+    ifstream ifs{fname};
+    ifs.exceptions(ifs.exceptions() | ios_base::badbit);
+    if (!ifs)
+        error("exercise_21_9: ", "Невозможно открыть входной файл");
+
+    C<E, Args...> tmp{istream_iterator<E>{ifs},
+                      istream_iterator<E>{},
+                      std::allocator<E>{}};
+    msort(tmp, pred);
+    c = move(tmp);
+}
+
+
+//------------------------------------------------------------------------------
+
+inline double sum_order(double v, const Order& o)
+{
+    // Вычисляет сумму всего заказа
+    for (int i{0}; i < o.number_of_purchases(); ++i)
+        v += o.purchase(i).unit_price * o.purchase(i).count;
+    return v;  // Накапливает итог
+}
+
+//------------------------------------------------------------------------------
+
+inline double sum_order_alternative(double v, const Order& ord)
+{
+    // Вычисляет сумму всего заказа
+    for (const auto& p : ord)
+        v += p.unit_price * p.count;
+    return v;  // Накапливает итог
+}
+
+//------------------------------------------------------------------------------
+
 #endif // ORDER_HPP
 
 //------------------------------------------------------------------------------

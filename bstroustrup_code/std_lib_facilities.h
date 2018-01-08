@@ -269,4 +269,27 @@ Iterator<C> find_if(C& c, Pred p)
     return std::find_if(c.begin(), c.end(), p);
 }
 
+template<typename C, typename Out>
+// Требует Input_iterator<Iterator<C>>()
+// и Output_iterator<Out>()
+Out copy(C& c, Out res)
+{
+    return std::copy(c.begin(), c.end(), res);
+}
+
+template<typename C, typename C2, typename Pred>
+// requires Container<C>(), Container<C>()
+// Predicate<Value_type<C>>()
+void copy_if(C& c, C2& c2, Pred pred)
+{
+    std::copy_if(c.begin(), c.end(), c2.begin(), pred);
+}
+
+template<typename C, typename Pred>
+// requires Container<C>() && Predicate<Pred,Value_type<C>>()
+auto count_if(C& c, Pred p)
+{
+    return std::count_if(c.begin(), c.end(), p);
+}
+
 #endif //H112

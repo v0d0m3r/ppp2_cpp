@@ -4,26 +4,6 @@
 
 //------------------------------------------------------------------------------
 
-double sum_order(double v, const Order& o)
-{    
-    // Вычисляет сумму всего заказа
-    for (int i{0}; i < o.number_of_purchases(); ++i)
-        v += o.purchase(i).unit_price * o.purchase(i).count;
-    return v;  // Накапливает итог
-}
-
-//------------------------------------------------------------------------------
-
-double sum_order_alternative(double v, const Order& ord)
-{
-    // Вычисляет сумму всего заказа
-    for (const auto& p : ord)
-        v += p.unit_price * p.count;
-    return v;  // Накапливает итог
-}
-
-//------------------------------------------------------------------------------
-
 double get_sum_from_file(const string& fname)
 {
     ifstream ifs{fname};

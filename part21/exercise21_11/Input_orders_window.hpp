@@ -21,7 +21,21 @@ struct Clear_in_box : public Graph_lib::In_box {
 
 //------------------------------------------------------------------------------
 
-class Save_quit_window : public Graph_lib::Window
+class Quit_window : public Graph_lib::Window
+{
+public:
+    Quit_window(Graph_lib::Point xy, int w, int h,
+                const string& title);
+
+private:
+    Graph_lib::Button quit_button;  // Завершает работу программы
+
+    void quit_pressed() { hide(); }
+};
+
+//------------------------------------------------------------------------------
+
+class Save_quit_window : public Quit_window
 {
 public:
     Save_quit_window(Graph_lib::Point xy, int w, int h,
@@ -31,11 +45,7 @@ protected:
 
 private:
     // Виджеты
-    Graph_lib::Button save_button;  // Сохраняет
-    Graph_lib::Button quit_button;  // Завершает работу программы
-
-    // Действия    
-    void quit_pressed() { hide(); }
+    Graph_lib::Button save_button;  // Сохраняет  
 };
 
 //------------------------------------------------------------------------------
