@@ -165,7 +165,7 @@ void fill_from_file(C<E, Args...>& c, Pred pred, const string& fname)
     ifstream ifs{fname};
     ifs.exceptions(ifs.exceptions() | ios_base::badbit);
     if (!ifs)
-        error("exercise_21_9: ", "Невозможно открыть входной файл");
+        error("fill_from_file: ", "Невозможно открыть входной файл");
 
     C<E, Args...> tmp{istream_iterator<E>{ifs},
                       istream_iterator<E>{},

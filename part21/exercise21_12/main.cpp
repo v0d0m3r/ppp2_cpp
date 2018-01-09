@@ -8,16 +8,6 @@ using namespace Graph_lib;
 
 //-----------------------------------------------------------------------------
 
-class Order_equal_name {
-    string n;
-public:
-    Order_equal_name(const string& name) : n{name} {}
-    bool operator()(const Order& o) const
-    { return o.name() == n; }
-};
-
-//-----------------------------------------------------------------------------
-
 void find_orders(const vector<Order>& vo)
 {
     string name_client;
@@ -60,7 +50,8 @@ void exercise21_12()
 int main()
 try
 {
-    exercise21_12();
+    Query_orders_window qow{Point{100, 100}, 1024, 800, "Order"};
+    return gui_main();
     return 0;
 }
 catch (const exception& e) {
