@@ -26,12 +26,40 @@ protected:
                    && isalpha(prev)
                    && !isalpha(next))
             ch = ' ';
-        cout << "bla\n";
     }
 
 private:
     bool plural;
 };
+
+//------------------------------------------------------------------------------
+
+void end_of_loop(istream& ist, char term, const string& message);
+void init_word_replace(const string& path, vector<Word_replace>& wr_tb);
+
+//------------------------------------------------------------------------------
+
+struct Sum_pair {
+    int operator()(int v, const pair<string, int>& p)
+        { return v + p.second; }
+};
+
+//------------------------------------------------------------------------------
+
+template<typename A, typename B>
+std::ostream& operator<<(std::ostream& os, const std::pair<A, B>& p)
+{
+    return os << '(' << p.first << ',' << p.second << ')';
+}
+
+//------------------------------------------------------------------------------
+
+template<typename A, typename B>
+std::ostream& operator<<(std::ostream& os, const map<A, B>& m)
+{
+    for (const auto& p : m) os << p << '\n';
+    return os;
+}
 
 //------------------------------------------------------------------------------
 
