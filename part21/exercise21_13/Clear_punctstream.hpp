@@ -19,14 +19,14 @@ public:
     void set_plural(bool p) { plural = p; }
 
 protected:
-    virtual void analyzer_ch(char& ch, const char& prev,
-                             const char& next)
+    void analyzer_ch(char& ch, char prev, char next) override
     {
         Punct_stream::analyzer_ch(ch, prev, next);
         if (plural && ch == 's'
                    && isalpha(prev)
                    && !isalpha(next))
             ch = ' ';
+        cout << "bla\n";
     }
 
 private:

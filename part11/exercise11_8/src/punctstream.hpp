@@ -1,3 +1,5 @@
+//------------------------------------------------------------------------------
+
 #ifndef PUNCTSTREAM_H
 #define PUNCTSTREAM_H
 
@@ -10,14 +12,24 @@
 struct Word_replace {   // Хранит слова для замены
     string short_form;  // Сокращенная форма слова (найти)
     string full_form;   // Полная форма слова (заменить)
-
 };
+
+//------------------------------------------------------------------------------
 
 inline istream& operator >>(istream& ist, Word_replace& wr)
 {
-    ist >> wr.short_form;
+    string s1, s2;
+    ist >> s1;
     if (!ist) return ist;
-    while(ist >> wr.full_form) {}
+    while (ist >> s2) {
+        wr.full_form += wr.full_form.size() ? " " + s2 : s2;
+        if (s2.back() == ';') {
+            wr.full_form.pop_back();
+            break;
+        }
+    }
+    if (wr.full_form.size())    // Если успешно считали полную
+        wr.short_form = s1;     // форму, то записываем короткую
     return ist;
 }
 
@@ -52,8 +64,7 @@ public:
     operator bool();
 
 protected:
-    virtual void analyzer_ch(char& ch, const char& prev,
-                             const char& next);
+    virtual void analyzer_ch(char& ch, char prev, char next);
 private:
     istream& source;            // Источник символов
     istringstream buffer;       // Буфер для форматирования
@@ -67,3 +78,5 @@ private:
 //------------------------------------------------------------------------------
 
 #endif // PUNCTSTREAM_H
+
+//------------------------------------------------------------------------------

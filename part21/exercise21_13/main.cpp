@@ -38,6 +38,23 @@ void init_word_replace(const string& path, vector<Word_replace>& wr_tb)
 
 //------------------------------------------------------------------------------
 
+template<typename A, typename B>
+std::ostream& operator<<(std::ostream& os, const std::pair<A, B>& p)
+{
+    return os << '(' << p.first << ',' << p.second << ')';
+}
+
+//------------------------------------------------------------------------------
+
+template<typename A, typename B>
+std::ostream& operator<<(std::ostream& os, const map<A, B>& m)
+{
+    for (const auto& p : m) os << p << '\n';
+    return os;
+}
+
+//------------------------------------------------------------------------------
+
 void work_with_ps()
 {
     const string path = "./";
@@ -59,6 +76,8 @@ void work_with_ps()
     map<string, int> words; // Поддержка пар (слово, частота)
     for (string s; ps >> s; )
         ++words[s];
+
+    cout << words;
 }
 
 //------------------------------------------------------------------------------

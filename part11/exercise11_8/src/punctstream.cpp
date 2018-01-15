@@ -33,8 +33,7 @@ Punct_stream& Punct_stream::operator>>(string& s)
 
 //------------------------------------------------------------------------------
 
-void Punct_stream::analyzer_ch(char& ch, const char& prev,
-                               const char& next)
+void Punct_stream::analyzer_ch(char& ch, char prev, char next)
 {    
     if (!isalpha(ch)) {
         if (ch=='-' && isalpha(prev) && isalpha(next))
