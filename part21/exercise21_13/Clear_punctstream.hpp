@@ -36,6 +36,7 @@ private:
 
 void end_of_loop(istream& ist, char term, const string& message);
 void init_word_replace(const string& path, vector<Word_replace>& wr_tb);
+map<string, int> get_data_from_file();
 
 //------------------------------------------------------------------------------
 

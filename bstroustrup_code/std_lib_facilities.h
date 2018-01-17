@@ -292,4 +292,20 @@ auto count_if(C& c, Pred p)
     return std::count_if(c.begin(), c.end(), p);
 }
 
+template<typename C, typename Pred>
+// requires Container<C>() && Predicate<Pred,Value_type<C>>()
+auto max_element(C& c, Pred p)
+{
+    return std::max_element(c.begin(), c.end(), p);
+}
+
+template<typename C, typename Pred>
+// requires Container<C>() &&
+// UnaryFunction<Pred,Value_type<C>>()
+auto for_each(C& c, Pred p)
+{
+    return std::for_each(c.begin(), c.end(), p);
+}
+
+
 #endif //H112
