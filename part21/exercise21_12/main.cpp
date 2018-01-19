@@ -52,7 +52,6 @@ try
 {
     Query_orders_window qow{Point{100, 100}, 1024, 800, "Order"};
     return gui_main();
-    return 0;
 }
 catch (const exception& e) {
     cout << "\nerror: " << e.what() << '\n';

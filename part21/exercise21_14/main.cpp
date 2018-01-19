@@ -73,6 +73,16 @@ public:
 
 //------------------------------------------------------------------------------
 
+class Count_ch {
+    size_t sz;
+public:
+    Count_ch(size_t ss) : sz{ss} {}
+    bool operator() (const pair<string, int>& ss) const
+        { return ss.first.size() == sz; }
+};
+
+//------------------------------------------------------------------------------
+
 void word_counts(const map<string, int>& words)
 {
     cout << "Введите слово, чтобы узнать "
@@ -157,7 +167,29 @@ void print_begin_with(const map<string, int>& words)
     if (!cin) error("bad input");
 
     map<string, int> m;
-    copy_if(words, m, Start_with{w});
+    copy_if(words.begin(), words.end(),
+            std::inserter(m, std::next(m.begin())), Start_with{w});
+
+    for (const auto& p : m)
+        cout << '(' << p.first << ',' << p.second << ")\n";
+}
+
+//------------------------------------------------------------------------------
+
+void print_str_with_count_ch(const map<string, int>& words)
+{
+    cout << "Введите количество букв, "
+            "сколько слов содержат их\n";
+    size_t cnt;
+    cin >> cnt;
+    if (!cin) error("bad input");
+
+    map<string, int> m;
+    copy_if(words.begin(), words.end(),
+            std::inserter(m, std::next(m.begin())), Count_ch{cnt});
+
+    for (const auto& p : m)
+        cout << '(' << p.first << ',' << p.second << ")\n";
 }
 
 //------------------------------------------------------------------------------
@@ -166,7 +198,11 @@ void exercise21_14()
 {
     map<string, int> words{get_data_from_file()};
     word_counts(words);
-
+    words_max_times(words);
+    long_strs(words);
+    short_strs(words);
+    print_begin_with(words);
+    print_str_with_count_ch(words);
 }
 
 //------------------------------------------------------------------------------
