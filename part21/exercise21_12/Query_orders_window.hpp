@@ -48,16 +48,6 @@ private:
 
 //-----------------------------------------------------------------------------
 
-class Order_equal_name {
-    string n;
-public:
-    Order_equal_name(const string& name) : n{name} {}
-    bool operator()(const Order& o) const
-    { return o.name() == n; }
-};
-
-//-----------------------------------------------------------------------------
-
 #endif // QUERY_ORDERS_WINDOW_HPP
 
 //-----------------------------------------------------------------------------

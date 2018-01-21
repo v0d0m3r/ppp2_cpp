@@ -14,6 +14,10 @@ struct Word_replace {   // Хранит слова для замены
 
 //------------------------------------------------------------------------------
 
+istream& operator>>(istream& ist, Word_replace& wr);
+
+//------------------------------------------------------------------------------
+
 class Punct_stream { // Аналогичен istream, но пользователь
                      // может задавать пробельные символы
 public:
@@ -34,8 +38,6 @@ public:
         {   wr_tb.push_back(w);   }
     void find_replace(string& line);    // Находит и заменяет слова
                                         // из списка
-    void analyzer_ch(char& ch, const char& prev,
-                     const char& next);
 
     void case_sensitive(bool b) { sensetive = b; }
     bool is_case_sensitive()    { return sensetive; }
@@ -43,6 +45,9 @@ public:
 
     Punct_stream& operator>>(string& s);
     operator bool();
+
+protected:
+    virtual void analyzer_ch(char& ch, char prev, char next);
 private:
     istream& source;            // Источник символов
     istringstream buffer;       // Буфер для форматирования

@@ -15,7 +15,8 @@ SOURCES += main.cpp \
     ../../bstroustrup_code/Simple_window.cpp \
     ../../bstroustrup_code/Graph.cpp \
     ../../bstroustrup_code/Time.cpp \
-    ../Query_window.cpp
+    ../Query_window.cpp \
+    ../exercise21_9/Order.cpp
 
 HEADERS += \
     ../../bstroustrup_code/Point.h \
@@ -27,4 +28,5 @@ HEADERS += \
     ../../bstroustrup_code/std_lib_facilities.h \
     ../../bstroustrup_code/Graph.h \
     ../../bstroustrup_code/Time.hpp \
-    ../Query_window.hpp
+    ../Query_window.hpp \
+    ../exercise21_9/Order.hpp

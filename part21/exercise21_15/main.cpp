@@ -11,7 +11,7 @@ using namespace Graph_lib;
 int main()
 try
 {
-    Quit_window qow{Point{100, 100}, 1024, 800, "Order"};
+    Query_order_window qow{Point{100, 100}, 1024, 800, "Order"};
     return gui_main();
 }
 catch (const exception& e) {

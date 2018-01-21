@@ -15,26 +15,24 @@ Punct_stream& Punct_stream::operator>>(string& s)
         getline(source, line);  // Считываем строку line
                                 // из потока source
         // При необходимости заменяем символы
-        const int& count = line.size()-1;
-        for (size_t i=0; i < line.size(); ++i) {
-            const char& prev = (i != 0) ? line[i-1] : 0;
-            const char& next = (i == static_cast<size_t>(count))
-                               ? 0 : line[i+1];
-            char& ch = line[i];
+        size_t count{line.size()};
+        char tmp{'\0'};
+        for (size_t i{0}; i < count; ++i) {
+            char prev{i != 0 ? line[i-1] : tmp};
+            char next{i == count-1 ? tmp : line[i+1]};
+            char& ch{line[i]};
             analyzer_ch(ch, prev, next);
         }
         find_replace(line);
         if (buffer.bad()) return *this;
         buffer.str(line);               // Записываем строку в поток
     }
-
     return *this;
 }
 
 //------------------------------------------------------------------------------
 
-void Punct_stream::analyzer_ch(char& ch, const char& prev,
-                               const char& next)
+void Punct_stream::analyzer_ch(char& ch, char prev, char next)
 {
     if (!is_quotes(ch)) return;
     if (is_whitespace(ch)) {
@@ -92,6 +90,25 @@ Punct_stream::operator bool()
         return true;                    // а строковый поток имеет данные
 
     return !(source.fail() || source.bad()) && source.good();
+}
+
+//------------------------------------------------------------------------------
+
+istream& operator>>(istream& ist, Word_replace& wr)
+{
+    string s1, s2;
+    ist >> s1;
+    if (!ist) return ist;
+    while (ist >> s2) {
+        wr.full_form += wr.full_form.size() ? " " + s2 : s2;
+        if (s2.back() == ';') {
+            wr.full_form.pop_back();
+            break;
+        }
+    }
+    if (wr.full_form.size())    // Если успешно считали полную
+        wr.short_form = s1;     // форму, то записываем короткую
+    return ist;
 }
 
 //------------------------------------------------------------------------------

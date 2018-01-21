@@ -43,7 +43,7 @@ map<string, int> get_data_from_file()
     if (!ifs) error("Невозможно открыть входной файл!");
 
     Clear_punctstream ps(ifs);
-    ps.whitespace(".;,?-'");
+    ps.whitespace(".;,?-'()");
     ps.wordreplace(move(wr_tb));
     ps.case_sensitive(false);
     ps.set_plural(true);

@@ -197,6 +197,16 @@ inline double sum_order_alternative(double v, const Order& ord)
 
 //------------------------------------------------------------------------------
 
+class Order_equal_name {
+    string n;
+public:
+    Order_equal_name(const string& name) : n{name} {}
+    bool operator()(const Order& o) const
+    { return o.name() == n; }
+};
+
+//------------------------------------------------------------------------------
+
 #endif // ORDER_HPP
 
 //------------------------------------------------------------------------------

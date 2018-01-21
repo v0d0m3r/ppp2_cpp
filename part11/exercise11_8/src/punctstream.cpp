@@ -15,11 +15,10 @@ Punct_stream& Punct_stream::operator>>(string& s)
         getline(source, line);  // Считываем строку line
                                 // из потока source
         // При необходимости заменяем символы
-        const int& count = line.size()-1;
-        for (size_t i=0; i < line.size(); ++i) {
-            const char& prev = (i != 0) ? line[i-1] : 0;
-            const char& next = (i == static_cast<size_t>(count))
-                                ? 0 : line[i+1];
+        size_t count{line.size()};
+        for (size_t i{0}; i < count; ++i) {
+            char prev{i != 0 ? line[i-1] : 0};
+            char next{i == count-1 ? 0 : line[i+1]};
             char& ch = line[i];
             analyzer_ch(ch, prev, next);
         }
@@ -61,7 +60,6 @@ void Punct_stream::find_replace(string& line)
     }
     if (!buffer.bad())
         buffer.clear();
-
 }
 
 //------------------------------------------------------------------------------
