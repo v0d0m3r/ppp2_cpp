@@ -14,18 +14,6 @@ Order::Order(const string& name, const string& address,
 
 //------------------------------------------------------------------------------
 
-void end_of_loop(istream& is, char term, const string& message)
-{
-    if (is.fail()) {
-        is.clear();
-        char ch;
-        if (is >> ch && ch==term) return;
-        error("end_of_loop: ", message);
-    }
-}
-
-//------------------------------------------------------------------------------
-
 istream& operator>>(istream& is, Purchase& p)
 // Считываем данные покупки из потока is в p
 // Формат: ( coca-cola 23.20 5 )

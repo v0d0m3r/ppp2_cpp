@@ -33,14 +33,13 @@ void init_word_replace(const string& path, vector<Word_replace>& wr_tb)
 
 //------------------------------------------------------------------------------
 
-map<string, int> get_data_from_file()
+map<string, int> get_data_from_file(const string& fname)
 {
-    const string path{"./"};
     vector<Word_replace> wr_tb;
-    init_word_replace(path, wr_tb);
+    init_word_replace("./", wr_tb);
     // Открытие потока istream для бинарного чтения файла
-    ifstream ifs {path + "file"};
-    if (!ifs) error("Невозможно открыть входной файл!");
+    ifstream ifs {fname};
+    if (!ifs) error("Невозможно открыть входной файл: ", fname);
 
     Clear_punctstream ps(ifs);
     ps.whitespace(".;,?-'()");
@@ -49,8 +48,7 @@ map<string, int> get_data_from_file()
     ps.set_plural(true);
 
     map<string, int> words; // Поддержка пар (слово, частота)
-    for (string s; ps >> s; )
-        ++words[s];
+    for (string s; ps >> s; ) ++words[s];
     return words;
 }
 

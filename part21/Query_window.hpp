@@ -8,6 +8,7 @@
 #include "../bstroustrup_code/std_lib_facilities.h"
 #include "../../bstroustrup_code/GUI.h"
 #include "../exercise21_9/Order.hpp"
+#include "../part21/exercise21_14/Finder.hpp"
 
 //------------------------------------------------------------------------------
 
@@ -140,8 +141,44 @@ private:
 class Finder_window : public Plain_window {
 public:
     Finder_window(Point xy, int w, int h, const string& title);
+
 protected:
     virtual void plain_pressed() override;
+
+private:
+    map<string, int> words; // Простой словарь
+
+    Button word_counts_button;
+    Button words_max_times_button;
+    Button long_strs_button;
+    Button short_strs_button;
+    Button begin_with_button;
+    Button str_with_cnt_ch_button;
+
+    In_box word_counts_in;
+    In_box begin_with_in;
+    In_box str_with_cnt_ch_in;
+
+    Out_box file_out;    // Имя текущего файла
+
+    // Методы
+    void init();
+
+    // Действия
+    void word_counts_pressed();
+    void words_max_times_pressed();
+    void long_strs_pressed();
+    void short_strs_pressed();
+    void begin_with_pressed();
+    void str_with_cnt_ch_pressed();
+
+    // Callback-функции
+    static void cb_word_counts(Graph_lib::Address, Graph_lib::Address);
+    static void cb_words_max_times(Graph_lib::Address, Graph_lib::Address);
+    static void cb_long_strs(Graph_lib::Address, Graph_lib::Address);
+    static void cb_short_strs(Graph_lib::Address, Graph_lib::Address);
+    static void cb_begin_with(Graph_lib::Address, Graph_lib::Address);
+    static void cb_str_with_cnt_ch(Graph_lib::Address, Graph_lib::Address);
 };
 
 //------------------------------------------------------------------------------

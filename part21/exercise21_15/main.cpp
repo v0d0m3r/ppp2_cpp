@@ -9,9 +9,8 @@ using namespace Graph_lib;
 //------------------------------------------------------------------------------
 
 int main()
-try
-{
-    Query_order_window qow{Point{100, 100}, 1024, 800, "Order"};
+try {
+    Finder_window fow{Point{100, 100}, 1024, 800, "Order"};
     return gui_main();
 }
 catch (const exception& e) {

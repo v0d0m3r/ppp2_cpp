@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 
-#include "Query_orders_window.hpp"
+#include "../Query_window.hpp"
 
 //------------------------------------------------------------------------------
 
@@ -48,9 +48,8 @@ void exercise21_12()
 //-----------------------------------------------------------------------------
 
 int main()
-try
-{
-    Query_orders_window qow{Point{100, 100}, 1024, 800, "Order"};
+try {
+    Query_order_window qow{Point{100, 100}, 1024, 800, "Order"};
     return gui_main();
 }
 catch (const exception& e) {

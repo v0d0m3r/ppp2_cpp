@@ -314,7 +314,7 @@ try
     if (fname.empty()) error("file name is empty");
     fill_from_file(orders, Cmp_by_name{}, "./" + fname);
 
-    // Обновление текущей точки
+    // Обновление имени текущего файла
     ostringstream ss;
     ss << fname;
     file_out.put(ss.str());
@@ -392,6 +392,139 @@ void Query_order_window::cb_out_all_orders(Address, Address pw)
 }
 
 //-----------------------------------------------------------------------------
+
+Finder_window::Finder_window(Point xy, int w, int h,
+                             const string& title)
+    : Plain_window{xy, w, h, title},
+      word_counts_button{},
+      words_max_times_button{},
+      long_strs_button{},
+      short_strs_button{},
+      begin_with_button{},
+      str_with_cnt_ch_button{},
+      word_counts_in{},
+      begin_with_in{},
+      str_with_cnt_ch_in{},
+      file_out{Point{140, 0}, 100, 20, "Current file:"}
+{
+    init();
+}
+
+//-----------------------------------------------------------------------------
+
+void Finder_window::init()
+{
+    plain_in.label = "Next file:";
+    plain_out.label = "Result:";
+    plain_button.label = "Next";
+
+    attach(plain_in);
+    attach(plain_out);
+    attach(plain_button);
+    attach(file_out);
+}
+
+//------------------------------------------------------------------------------
+
+void Finder_window::plain_pressed()
+try {
+    plain_out.put("");
+    words.clear();
+
+    string fname{plain_in.get_string()};
+    if (fname.empty()) error("file name is empty");
+    words = get_data_from_file("./" + fname);
+
+    // Обновление текущего имени файла
+    ostringstream ss;
+    ss << fname;
+    file_out.put(ss.str());
+
+    redraw();
+}
+catch (const exception& e) {
+    plain_out.put("error: " + to_string(e.what()));
+    redraw();
+}
+
+//------------------------------------------------------------------------------
+
+void Finder_window::word_counts_pressed()
+{
+
+}
+
+//------------------------------------------------------------------------------
+
+void Finder_window::words_max_times_pressed()
+{
+
+}
+
+//------------------------------------------------------------------------------
+
+void Finder_window::long_strs_pressed()
+{
+
+}
+
+//------------------------------------------------------------------------------
+
+void Finder_window::short_strs_pressed()
+{
+
+}
+
+//------------------------------------------------------------------------------
+
+void Finder_window::str_with_cnt_ch_pressed()
+{
+
+}
+
+//------------------------------------------------------------------------------
+
+void Finder_window::cb_word_counts(Address, Address pw)
+{
+    reference_to<Finder_window>(pw).word_counts_pressed();
+}
+
+//------------------------------------------------------------------------------
+
+void Finder_window::cb_words_max_times(Address, Address pw)
+{
+    reference_to<Finder_window>(pw).words_max_times_pressed();
+}
+
+//------------------------------------------------------------------------------
+
+void Finder_window::cb_long_strs(Address, Address pw)
+{
+    reference_to<Finder_window>(pw).long_strs_pressed();
+}
+
+//------------------------------------------------------------------------------
+
+void Finder_window::cb_short_strs(Address, Address pw)
+{
+    reference_to<Finder_window>(pw).short_strs_pressed();
+}
+
+//------------------------------------------------------------------------------
+
+void Finder_window::cb_begin_with(Address, Address pw)
+{
+    reference_to<Finder_window>(pw).begin_with_pressed();
+}
+
+//------------------------------------------------------------------------------
+
+void Finder_window::cb_str_with_cnt_ch(Address, Address pw)
+{
+    reference_to<Finder_window>(pw).str_with_cnt_ch_pressed();
+}
+
+//------------------------------------------------------------------------------
 
 }
 

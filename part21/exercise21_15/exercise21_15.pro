@@ -16,7 +16,9 @@ SOURCES += main.cpp \
     ../../bstroustrup_code/Graph.cpp \
     ../../bstroustrup_code/Time.cpp \
     ../Query_window.cpp \
-    ../exercise21_9/Order.cpp
+    ../exercise21_9/Order.cpp \
+    ../exercise21_13/Clear_punctstream.cpp \
+    ../../part11/exercise11_8/src/punctstream.cpp
 
 HEADERS += \
     ../../bstroustrup_code/Point.h \
@@ -29,4 +31,7 @@ HEADERS += \
     ../../bstroustrup_code/Graph.h \
     ../../bstroustrup_code/Time.hpp \
     ../Query_window.hpp \
-    ../exercise21_9/Order.hpp
+    ../exercise21_9/Order.hpp \
+    ../exercise21_14/Finder.hpp \
+    ../exercise21_13/Clear_punctstream.hpp \
+    ../../part11/exercise11_8/src/punctstream.hpp

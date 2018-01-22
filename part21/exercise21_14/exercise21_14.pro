@@ -13,4 +13,5 @@ SOURCES += main.cpp \
 
 HEADERS += \
     ../../part11/exercise11_8/src/punctstream.hpp \
-    ../exercise21_13/Clear_punctstream.hpp
+    ../exercise21_13/Clear_punctstream.hpp \
+    Finder.hpp
