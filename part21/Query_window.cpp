@@ -279,8 +279,7 @@ Query_order_window::Query_order_window(Point xy, int w, int h,
                             "All orders", cb_out_all_orders},
       file_out{Point{140, 0}, 100, 20, "current file:"}
 {
-    init();
-    order_nm_in.move(0, 30);
+    init();    
 }
 
 //------------------------------------------------------------------------------
@@ -300,6 +299,8 @@ void Query_order_window::init()
     attach(order_nm_in);
     attach(file_out);
     attach(plain_out);
+
+    order_nm_in.move(0, 30);
 }
 
 //------------------------------------------------------------------------------
@@ -396,15 +397,21 @@ void Query_order_window::cb_out_all_orders(Address, Address pw)
 Finder_window::Finder_window(Point xy, int w, int h,
                              const string& title)
     : Plain_window{xy, w, h, title},
-      word_counts_button{},
-      words_max_times_button{},
-      long_strs_button{},
-      short_strs_button{},
-      begin_with_button{},
-      str_with_cnt_ch_button{},
-      word_counts_in{},
-      begin_with_in{},
-      str_with_cnt_ch_in{},
+      word_counts_button{Point{400, 30}, 80, 20,
+                         "Find", cb_word_counts},
+      begin_with_button{Point{400, 60}, 80, 20,
+                        "Find", cb_begin_with},
+      str_with_cnt_ch_button{Point{400, 90}, 80, 20,
+                             "Find", cb_str_with_cnt_ch},
+      words_max_times_button{Point{400, 120}, 80, 20,
+                             "Max times", cb_words_max_times},
+      long_strs_button{Point{400, 150}, 80, 20,
+                       "Long strs", cb_long_strs},
+      short_strs_button{Point{400, 180}, 80, 20,
+                        "Short strs", cb_short_strs},
+      word_counts_in{Point{140, 30}, 250, 20, "Word's frequency :"},
+      begin_with_in{Point{140, 60}, 250, 20, "Begin with:"},
+      str_with_cnt_ch_in{Point{140, 90}, 250, 20, "Start with count ch:"},
       file_out{Point{140, 0}, 100, 20, "Current file:"}
 {
     init();
@@ -418,10 +425,24 @@ void Finder_window::init()
     plain_out.label = "Result:";
     plain_button.label = "Next";
 
+
+
     attach(plain_in);
     attach(plain_out);
     attach(plain_button);
+
+    attach(word_counts_button);
+    attach(begin_with_button);
+    attach(str_with_cnt_ch_button);
+    attach(words_max_times_button);
+    attach(long_strs_button);
+    attach(short_strs_button);
+    attach(word_counts_in);
+    attach(begin_with_in);
+    attach(str_with_cnt_ch_in);
     attach(file_out);
+
+    plain_out.move(0, 90);
 }
 
 //------------------------------------------------------------------------------
@@ -433,7 +454,7 @@ try {
 
     string fname{plain_in.get_string()};
     if (fname.empty()) error("file name is empty");
-    words = get_data_from_file("./" + fname);
+    words = get_data_from_file(fname);
 
     // Обновление текущего имени файла
     ostringstream ss;
@@ -450,36 +471,132 @@ catch (const exception& e) {
 //------------------------------------------------------------------------------
 
 void Finder_window::word_counts_pressed()
-{
+try {
+    plain_out.put("");
 
+    string w{word_counts_in.get_string()};
+    if (w.empty()) error("word is empty");
+
+    ostringstream ss;
+    ss << w << ": " << get_word_counts(words, w);
+    plain_out.put(ss.str());
+
+    redraw();
+}
+catch (const exception& e) {
+    plain_out.put("error: " + to_string(e.what()));
+    redraw();
 }
 
 //------------------------------------------------------------------------------
 
-void Finder_window::words_max_times_pressed()
-{
+void Finder_window::begin_with_pressed()
+try {
+    plain_out.put("");
 
+    string w{begin_with_in.get_string()};
+    if (w.empty()) error("word is empty");
+
+    ostringstream ss;
+    auto m{get_str_begin_with(words, w)};
+    out_countaner_pair(ss, m);
+    plain_out.put(ss.str());
+
+    redraw();
 }
-
-//------------------------------------------------------------------------------
-
-void Finder_window::long_strs_pressed()
-{
-
-}
-
-//------------------------------------------------------------------------------
-
-void Finder_window::short_strs_pressed()
-{
-
+catch (const exception& e) {
+    plain_out.put("error: " + to_string(e.what()));
+    redraw();
 }
 
 //------------------------------------------------------------------------------
 
 void Finder_window::str_with_cnt_ch_pressed()
-{
+try {
+    plain_out.put("");
 
+    int cnt{str_with_cnt_ch_in.get_int()};
+    ostringstream ss;
+    auto m{get_str_with_count_ch(words, cnt)};
+    out_countaner_pair(ss, m);
+    plain_out.put(ss.str());
+
+    redraw();
+}
+catch (const exception& e) {
+    plain_out.put("error: " + to_string(e.what()));
+    redraw();
+}
+
+//------------------------------------------------------------------------------
+
+void Finder_window::words_max_times_pressed()
+try {
+    plain_out.put("");
+
+    auto max_times{get_words_max_times(words)};
+
+    ostringstream ss;
+    ss << "max times: ";
+
+    out_countaner_pair(ss, max_times);
+    plain_out.put(ss.str());
+
+    redraw();
+}
+catch (const exception& e) {
+    plain_out.put("error: " + to_string(e.what()));
+    redraw();
+}
+
+//------------------------------------------------------------------------------
+
+void Finder_window::long_strs_pressed()
+try {
+    plain_out.put("");
+
+    if (words.begin() == words.end()) return;
+
+    auto long_str_tb{
+        get_long_str(words, Longer_than{words.begin()->first})
+    };
+
+    ostringstream ss;
+    ss << "long str: ";
+
+    out_countaner_pair(ss, long_str_tb);
+    plain_out.put(ss.str());
+
+    redraw();
+}
+catch (const exception& e) {
+    plain_out.put("error: " + to_string(e.what()));
+    redraw();
+}
+
+//------------------------------------------------------------------------------
+
+void Finder_window::short_strs_pressed()
+try {
+    plain_out.put("");
+
+    if (words.begin() == words.end()) return;
+
+    auto short_str_tb{
+        get_long_str(words, Shorter_than{words.begin()->first})
+    };
+
+    ostringstream ss;
+    ss << "short str: ";
+
+    out_countaner_pair(ss, short_str_tb);
+    plain_out.put(ss.str());
+
+    redraw();
+}
+catch (const exception& e) {
+    plain_out.put("error: " + to_string(e.what()));
+    redraw();
 }
 
 //------------------------------------------------------------------------------
@@ -487,6 +604,20 @@ void Finder_window::str_with_cnt_ch_pressed()
 void Finder_window::cb_word_counts(Address, Address pw)
 {
     reference_to<Finder_window>(pw).word_counts_pressed();
+}
+
+//------------------------------------------------------------------------------
+
+void Finder_window::cb_begin_with(Address, Address pw)
+{
+    reference_to<Finder_window>(pw).begin_with_pressed();
+}
+
+//------------------------------------------------------------------------------
+
+void Finder_window::cb_str_with_cnt_ch(Address, Address pw)
+{
+    reference_to<Finder_window>(pw).str_with_cnt_ch_pressed();
 }
 
 //------------------------------------------------------------------------------
@@ -508,20 +639,6 @@ void Finder_window::cb_long_strs(Address, Address pw)
 void Finder_window::cb_short_strs(Address, Address pw)
 {
     reference_to<Finder_window>(pw).short_strs_pressed();
-}
-
-//------------------------------------------------------------------------------
-
-void Finder_window::cb_begin_with(Address, Address pw)
-{
-    reference_to<Finder_window>(pw).begin_with_pressed();
-}
-
-//------------------------------------------------------------------------------
-
-void Finder_window::cb_str_with_cnt_ch(Address, Address pw)
-{
-    reference_to<Finder_window>(pw).str_with_cnt_ch_pressed();
 }
 
 //------------------------------------------------------------------------------

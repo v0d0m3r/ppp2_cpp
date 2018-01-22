@@ -10,7 +10,7 @@ using namespace Graph_lib;
 
 int main()
 try {
-    Finder_window fow{Point{100, 100}, 1024, 800, "Order"};
+    Finder_window fow{Point{100, 100}, 1024, 800, "Queries"};
     return gui_main();
 }
 catch (const exception& e) {
