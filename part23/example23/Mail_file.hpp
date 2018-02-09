@@ -7,6 +7,7 @@
 
 #include "../../bstroustrup_code/std_lib_facilities.h"
 #include <map>
+#include <regex>
 
 //------------------------------------------------------------------------------
 

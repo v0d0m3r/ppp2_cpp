@@ -104,10 +104,96 @@ catch(const Bad_mail_file& e) {
 
 //------------------------------------------------------------------------------
 
+void example23_7()
+{
+    ifstream in{"./file"};                // Входной файл
+    if (!in) cerr << "Нет файла\n";
+    regex pat{R"(\w{2}\s*\d{5}(-\d{4})?)"};   // Шаблон индекса
+    // cout << "шаблон: " << pat << '\n';
+
+    int lineno{0};
+    for (string line; getline(in, line); ) { // Чтение строки
+        ++lineno;
+        smatch matches;
+        if (regex_search(line, matches, pat)) {
+            // Полное соответствие
+            cout << lineno << ": " << matches[0] << '\n';
+            if (1<matches.size() && matches[1].matched)
+                // Подшаблон
+                cout << "\t: " << matches[1] << '\n';
+        }
+    }
+}
+
+//------------------------------------------------------------------------------
+
+// Получает из входного потока шаблон и набор строк;
+// проверяет шаблон и ищет строки, содержащие его
+void example23_8_7()
+{
+    regex pattern;
+
+    string pat;
+    cout << "введите шаблон: ";
+    getline(cin, pat);          // Считываем шаблон
+
+    try {
+        pattern = pat;          // Проверка шаблона
+        cout << "шаблон: " << pat << '\n';
+    }
+    catch (bad_exception) {
+        cout << "Не корректное выражение: " << pat << '\n';
+        exit(1);
+    }
+
+    cout << "введите строки:\n";
+    int lineno{0};
+
+    for (string line; getline(cin, line); ) {
+        ++lineno;
+        smatch matches;
+        if (regex_search(line, matches, pattern)) {
+            cout << "строка " << lineno << ": " << line << '\n';
+            for (size_t i{0}; i < matches.size(); ++i)
+                cout << "\tmatches[" << i << "]: "
+                     << matches[i] << '\n';
+        }
+        else
+            cout << "не соответсвует\n";
+    }
+}
+
+//------------------------------------------------------------------------------
+
+void example23_9()
+{
+    ifstream in{"table.txt"};   // Входной файл
+    if (!in) error("Нет входного файла\n");
+    string line;                // Входной буфер
+    int lineno{0};
+
+    regex header{R"(^[\w ]+(    [\w ]+)*$)"};
+    regex row{R"(^[\w ]+(   \d+)(   \d+)(   \d+)$)"};
+
+    if (getline(in, line)) {    // Проверка заголовка
+        smatch matches;
+        if (!regex_match(line, matches, header))
+            error("нет заголовка");
+    }
+    while (getline(in, line)) { // Проверка данных
+        ++lineno;
+        smatch matches;
+        if (!regex_match(line, matches, row))
+            error("неверная строка", to_string(lineno));
+    }
+}
+
+//------------------------------------------------------------------------------
+
 int main()
 try
 {
-    example23_4();
+    example23_9();
     return 0;
 }
 catch (const exception& e) {
