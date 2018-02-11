@@ -15,13 +15,13 @@ Mail_file::Mail_file(const string& n)
     if (!in) throw Bad_mail_file{"Не удалось открыть файл: " + n};
 
     string marker{"----"};
-    for (string s; getline(in, s); ) {    // Создаем вектор строк
-        if (s == marker) {
-            if (lines.begin() == lines.end())
-                throw Bad_mail_file{"Пустое письмо в начале!"};
-            if (lines.back() == marker)
-                throw Bad_mail_file{"Два marker подряд!"};
-        }
+    string s;
+    if (!getline(in, s) || s==marker)
+        throw Bad_mail_file{"Некоректное начало файла!"};
+
+    while (getline(in, s)) {            // Создаем вектор строк
+        if (s==marker && lines.back()==marker)
+            throw Bad_mail_file{"Два marker подряд!"};
         lines.push_back(s);
     }
 

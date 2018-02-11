@@ -106,9 +106,10 @@ catch(const Bad_mail_file& e) {
 
 void example23_7()
 {
-    ifstream in{"./file"};                // Входной файл
+    ifstream in{"./file"};                   // Входной файл
     if (!in) cerr << "Нет файла\n";
-    regex pat{R"(\w{2}\s*\d{5}(-\d{4})?)"};   // Шаблон индекса
+
+    regex pat{R"(\w{2}\s*\d{5}(-\d{4})?)"};  // Шаблон индекса
     // cout << "шаблон: " << pat << '\n';
 
     int lineno{0};
@@ -169,6 +170,7 @@ void example23_9()
 {
     ifstream in{"table.txt"};   // Входной файл
     if (!in) error("Нет входного файла\n");
+
     string line;                // Входной буфер
     int lineno{0};
 
@@ -180,12 +182,41 @@ void example23_9()
         if (!regex_match(line, matches, header))
             error("нет заголовка");
     }
+
+    // Итог по столбцам
+    int boys{0};
+    int girls{0};
+
     while (getline(in, line)) { // Проверка данных
         ++lineno;
         smatch matches;
         if (!regex_match(line, matches, row))
             error("неверная строка", to_string(lineno));
+
+        if (in.eof()) cout << "Конец файла";
+
+        // Проверка строки
+        int curr_boy   = m_to<int>(matches[2]);
+        int curr_girl  = m_to<int>(matches[3]);
+        int curr_total = m_to<int>(matches[4]);
+
+        if (curr_boy+curr_girl != curr_total)
+            error("Неверная сумма в строке\n");
+
+        if (matches[1] == "Alle klasser") { // Последняя строка
+            if (curr_boy != boys)
+                error("Количество мальчиков не сходится\n");
+            if (curr_girl != girls)
+                error("Количество девочек не сходится\n");
+            if (!(in >> ws).eof())
+                error("Символы после последней строки");
+            return;
+        }
+        // Обновление итоговых значений
+        boys  += curr_boy;
+        girls += curr_girl;
     }
+    error("Нет итоговой строки");
 }
 
 //------------------------------------------------------------------------------

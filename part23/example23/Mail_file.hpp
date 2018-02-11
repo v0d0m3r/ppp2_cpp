@@ -61,7 +61,7 @@ string find_subject(const Message* m);
 inline int is_prefix(const string& s, const string& p)
     // Является ли строка p первой части строки s?
 {
-    int n = p.size();
+    int n{p.size()};
     if (string(s, 0, n) == p) return n;
     return 0;
 }
