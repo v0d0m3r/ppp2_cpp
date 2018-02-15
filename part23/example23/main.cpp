@@ -78,8 +78,12 @@ void example23_2()
 
 void example23_4()
 try {
-    Mail_file mfile{"my-mail-file.txt"}; // Инициализируем mfile
-                                         // данными из файла
+    string fname;
+    cout << "Please, input file name: ";
+    cin >> fname;
+
+    Mail_file mfile{fname}; // Инициализируем mfile
+                            // данными из файла
 
     // Сначала собираем сообщения, поступившие от каждого
     // отправителя, в объекте класса multimap:
@@ -95,8 +99,13 @@ try {
     // сообщений, поступивших от John Doe:
     auto pp{sender.equal_range(
                     "John Doe <jdoe@machine.example>")};
-    for (auto p{pp.first}; p != pp.second; ++p)
-        cout << find_subject(p->second) << '\n';
+    for (auto p{pp.first}; p != pp.second; ++p) {
+        string s;
+        if (find_subject(p->second, s))
+            cout << s << '\n';
+        else
+            cout << "Пропущена строка с темой!";
+    }
 }
 catch(const Bad_mail_file& e) {
     cout << e.what() << '\n';
@@ -224,7 +233,7 @@ void example23_9()
 int main()
 try
 {
-    example23_9();
+    example23_4();
     return 0;
 }
 catch (const exception& e) {

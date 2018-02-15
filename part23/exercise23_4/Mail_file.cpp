@@ -21,6 +21,8 @@ Mail_file::Mail_file(const string& n)
     lines.push_back(s);
 
     while (getline(in, s)) {            // Создаем вектор строк
+        if (s.size() && s.back() == '\r')
+            s.pop_back();
         if (s==marker && lines.back()==marker)
             throw Bad_mail_file{"Два marker подряд!"};
         lines.push_back(s);
@@ -41,16 +43,24 @@ Mail_file::Mail_file(const string& n)
 
 //------------------------------------------------------------------------------
 
+enum {
+    addr=1, subj = 2
+};
+
 bool find_from_addr(const Message* m, string& s)
 {
     if (m == nullptr)
         throw runtime_error{"Bad message"};
 
-    for (const auto& x : *m)
-        if (int n = is_prefix(x, "From: ")) {
-            s = string(x, n);
+    regex address{R"(From: (.*))"};
+
+    for (const auto& x : *m) {
+        smatch matches;
+        if (regex_match(x, matches, address)) {
+            s = matches[addr];
             return true;
         }
+    }
     return false;
 }
 
@@ -61,16 +71,15 @@ bool find_subject(const Message* m, string& s)
     if (m == nullptr)
         throw runtime_error{"Bad message"};
 
-    for (const auto& x : *m)
-        if (int n = is_prefix(x, "Subject: Re: ")){
-            s = string(x, n);
-            return true;
-        }
-        else if (int n = is_prefix(x, "Subject: ")) {
-            s = string(x, n);
-            return true;
-        }
+    regex subject{R"(Subject:\s{2}(FW: |Re: )?(.*))"};
 
+    for (const auto& x : *m) {
+        smatch matches;
+        if (regex_match(x, matches, subject)) {
+            s = matches[subj];
+            return true;
+        }
+    }
     return false;
 }
 
