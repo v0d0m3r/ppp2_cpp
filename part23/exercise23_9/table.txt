@@ -27,4 +27,4 @@ KLASSE		ANTAL DRENGE	    ANTAL PIGER	        ELEVER IALT
 8CE			4					4					8
 9CE			4					9					13
 REST		5					6					11
-Alle klass 	234					202					386
+Alle klass 	184					202					386

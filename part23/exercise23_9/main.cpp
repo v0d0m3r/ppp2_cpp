@@ -12,7 +12,7 @@ Target m_to(const Source& arg)
     if (       !(interpreter << arg)    // Запись arg в поток
             || !(interpreter >> result) // Чтение result из потока
             || !(interpreter >> std::ws).eof())
-        throw runtime_error{"сбой в to<>()"};
+        throw runtime_error{"сбой в m_to<>()"};
     return result;
 }
 
@@ -26,8 +26,8 @@ void exercise23_9()
     string line;                // Входной буфер
     int lineno{0};
 
-    regex header{R"(^[\w ]+(\t[\w ]+)*$)"};
-    regex row{R"(^[\w ]+(   \d+)(   \d+)(   \d+)$)"};
+    regex header{R"(^[\w ]+(\s+[\w ]+)*$)"};
+    regex row{R"(^[\w ]+(\s+\d+)(\s+\d+)(\s+\d+)$)"};
 
     if (getline(in, line)) {    // Проверка заголовка
         smatch matches;
@@ -39,36 +39,35 @@ void exercise23_9()
     int boys{0};
     int girls{0};
 
+    int curr_boy{0};
+    int curr_girl{0};
+
     while (getline(in, line)) { // Проверка данных
         ++lineno;
         smatch matches;
         if (!regex_match(line, matches, row))
-            error("неверная строка", to_string(lineno));
-
-        if (in.eof()) cout << "Конец файла";
+            error("неверная строка ", to_string(lineno));
 
         // Проверка строки
-        int curr_boy   = m_to<int>(matches[2]);
-        int curr_girl  = m_to<int>(matches[3]);
-        int curr_total = m_to<int>(matches[4]);
+        curr_boy   = m_to<int>(matches[1]);
+        curr_girl  = m_to<int>(matches[2]);
+        int curr_total = m_to<int>(matches[3]);
 
         if (curr_boy+curr_girl != curr_total)
             error("Неверная сумма в строке\n");
 
-        if (matches[1] == "Alle klasser") { // Последняя строка
-            if (curr_boy != boys)
-                error("Количество мальчиков не сходится\n");
-            if (curr_girl != girls)
-                error("Количество девочек не сходится\n");
-            if (!(in >> ws).eof())
-                error("Символы после последней строки");
-            return;
-        }
+        if ((in >> ws).eof())   // Внимание! Съедает пробельные
+            break;              // символы, определяет последнюю строку
+
         // Обновление итоговых значений
         boys  += curr_boy;
         girls += curr_girl;
     }
-    error("Нет итоговой строки");
+
+    if (curr_boy != boys)
+        error("Количество мальчиков не сходится\n");
+    if (curr_girl != girls)
+        error("Количество девочек не сходится\n");
 }
 
 //------------------------------------------------------------------------------

@@ -184,7 +184,7 @@ void example23_9()
     int lineno{0};
 
     regex header{R"(^[\w ]+(    [\w ]+)*$)"};
-    regex row{R"(^[\w ]+(   \d+)(   \d+)(   \d+)$)"};
+    regex row{R"(^([\w ])+(   \d+)(   \d+)(   \d+)$)"};
 
     if (getline(in, line)) {    // Проверка заголовка
         smatch matches;
