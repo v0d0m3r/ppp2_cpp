@@ -23,14 +23,79 @@ Target m_to(const Source& arg)
 
 //------------------------------------------------------------------------------
 
-/*struct Table_file {
+struct Row {    // Данные из строк таблицы
+                // в числовом формате
+    Row() {}
+    Row(int b, int g, int t)
+        : boy{b}, girl{g}, total{t} {}
+    int boy{0};
+    int girl{0};
+    int total{0};
+
+    Row& operator+=(const Row& rhs)
+    {
+        boy   += rhs.boy;
+        girl  += rhs.girl;
+        total += rhs.total;
+        return *this;
+    }
+};
+
+//------------------------------------------------------------------------------
+
+inline ostream& operator<<(ostream& os, const Row& r)
+{
+    return os << r.boy << "\t\t" << r.girl << "\t\t" << r.total;
+}
+
+//------------------------------------------------------------------------------
+
+using Line_iter = vector<string>::const_iterator;
+
+//------------------------------------------------------------------------------
+
+struct Bad_table_file : std::runtime_error
+{
+    Bad_table_file(const string& msg)
+        : runtime_error{"Bad Table_file: " + msg} {}
+};
+
+//------------------------------------------------------------------------------
+
+class Body {  // Объект класса Body указывает
+              // на первую и последнюю строки тела таблицы
+    Line_iter first;
+    Line_iter last;
+public:
+    Body() {}
+    Body(Line_iter p1, Line_iter p2) : first{p1}, last{p2} {}
+    Line_iter begin() const { return first; }
+    Line_iter end()   const { return last;  }
+};
+
+//------------------------------------------------------------------------------
+
+struct Table_file {
+    vector<string> lines;        // Строки по порядку
     string name;                 // Имя файла
-    string head;                 // Заголовок
-    vector<string> rows;         // Строки по порядку
+    Body body;
+
     Table_file(const string& n); // Чтение файла n в строки
-    Table_file begin() const { return rows.begin(); }
-    Table_file end()   const { return rows.end(); }
-};*/
+    const string& head() const   // Заголовок
+    {
+        if (lines.empty())
+            throw Bad_table_file{"head(): lines is empty"};
+        return lines.front();
+    }
+    const string& tail() const   // Итоговая строка
+    {
+        if (lines.empty())
+            throw Bad_table_file{"tail(): lines is empty"};
+        return lines.back();
+    }
+    Line_iter begin() const { return body.begin(); }
+    Line_iter end()   const { return body.end();   }
+};
 
 //------------------------------------------------------------------------------
 

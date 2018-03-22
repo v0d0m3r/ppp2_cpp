@@ -4,104 +4,76 @@
 
 //------------------------------------------------------------------------------
 
-struct Row {
-    Row() {}
-    Row(int b, int g, int t)
-        : boy{b}, girl{g}, total{t} {}
-    int boy{0};
-    int girl{0};
-    int total{0};
-
-    Row& operator+=(const Row& rhs)
-    {
-        boy   += rhs.boy;
-        girl  += rhs.girl;
-        total += rhs.total;
-        return *this; // return the result by reference
-    }
-};
-
-//------------------------------------------------------------------------------
-
-ostream& operator<<(ostream& os, const Row& r)
+map<string, Row> exercise23_10()
 {
-    return os << r.boy << "\t\t" << r.girl << "\t\t" << r.total;
+    string fname;
+    cout << "Please, input file name: ";
+    cin >> fname;
+
+    Table_file tfile{fname}; // Инициализируем table file
+                             // данными из файла
+    regex grade{R"(^\d+)"};
+    regex row{R"(^([\w ]+)(\s+\d+)(\s+\d+)(\s+\d+)$)"};
+
+    map<string, Row> data_tb;
+    pair<string, Row> tail;
+    for (auto p{tfile.begin()}; p != tfile.end(); ++p) {
+        smatch matches;
+        if (!regex_match(*p, matches, row))
+            error("неверная строка ");
+
+        Row curr_row{m_to<int>(matches[2]),
+                     m_to<int>(matches[3]),
+                     m_to<int>(matches[4])};
+
+        string grade_str = matches[1];
+        if (regex_search(grade_str, matches, grade))
+            grade_str = matches[0];
+
+        if (*p == tfile.tail()) {
+            tail = make_pair(grade_str, curr_row);
+            break;
+        }
+        data_tb[grade_str] += curr_row;
+    }
+    cout << tfile.head() << '\n';
+    for (const auto& t : data_tb)
+        cout << t.first << "\t\t\t" << t.second << '\n';
+    cout << tail.first << "\t\t" << tail.second << '\n';
+    return data_tb;
 }
 
 //------------------------------------------------------------------------------
 
-void exercise23_10()
+void exercise23_11_10()
 {
-    ifstream in{"table.txt"};   // Входной файл
-    if (!in) error("Нет входного файла\n");
+    map<string, Row> data_tb{exercise23_10()};    
+    bool up  {false};
+    bool down{false};
 
-    string line;                // Входной буфер
-    int lineno{0};
+    auto p{data_tb.begin()};
+    ++p;
+    auto prev{data_tb.begin()};
 
-    regex header{R"(^[\w ]+(\s+[\w ]+)*$)"};
-    regex row{R"(^([\w ]+)(\s+\d+)(\s+\d+)(\s+\d+)$)"};
-
-    string head;
-    if (getline(in, line)) {    // Проверка заголовка
-        smatch matches;
-        if (!regex_match(line, matches, header))
-            error("нет заголовка");
-        head = line;
+    if      (p->second.total > prev->second.total) up   = true;
+    else if (p->second.total < prev->second.total) down = true;
+    else {
+        cout << "sequence do not increase and decrease\n";
+        return;
     }
-
-    // Итог по столбцам
-    int boys{0};
-    int girls{0};
-
-    int curr_boy{0};
-    int curr_girl{0};
-    int curr_total{0};
-
-    map<string, Row> mr;
-    string last;
-
-    while (getline(in, line)) { // Проверка данных
-        ++lineno;
-        smatch matches;
-        if (!regex_match(line, matches, row))
-            error("неверная строка ", to_string(lineno));
-
-        curr_boy   = m_to<int>(matches[2]);
-        curr_girl  = m_to<int>(matches[3]);
-        curr_total = m_to<int>(matches[4]);
-
-        regex cls{R"(^\d+)"};
-        smatch matches1;
-        string cls_str = matches[1];
-        if (regex_search(cls_str, matches1, cls))
-            cls_str = matches1[0];
-
-        if (curr_boy+curr_girl != curr_total)
-            error("Неверная сумма в строке\n");
-
-        if ((in >> ws).eof()) { // Внимание! Съедает пробельные
-            last = matches[1];
-            break;              // символы, определяет последнюю строку
+    while (p != data_tb.end()) {
+        ++prev;
+        ++p;
+        if      (up   && p->second.total > prev->second.total) continue;
+        else if (down && p->second.total < prev->second.total) continue;
+        else {
+            cout << "sequence is not increasing and decreasing\n";
+            return;
         }
-
-        Row curr_row{curr_boy, curr_girl, curr_total};
-        mr[cls_str] += curr_row;
-
-        // Обновление итоговых значений
-        boys  += curr_boy;
-        girls += curr_girl;
     }
-
-    if (curr_boy != boys)
-        error("Количество мальчиков не сходится\n");
-    if (curr_girl != girls)
-        error("Количество девочек не сходится\n");
-
-    cout << head << '\n';
-    for (const auto& t : mr)
-        cout << t.first << "\t\t\t" << t.second << '\n';
-    cout << last << "\t\t" << curr_boy << "\t\t" << curr_girl
-         << "\t\t" << curr_total << '\n';
+    if      (up  ) cout << "sequence is increasing\n";
+    else if (down) cout << "sequence is decreasing\n";
+    else           cout << "impossible\n";
 }
 
 //------------------------------------------------------------------------------
@@ -109,7 +81,7 @@ void exercise23_10()
 int main()
 try
 {
-    exercise23_10();
+    exercise23_11_10();
     return 0;
 }
 catch (const exception& e) {
