@@ -1,9 +1,11 @@
 //------------------------------------------------------------------------------
 
-#include "../../bstroustrup_code/std_lib_facilities.h"
+#include "../example23/Mail_file.hpp"
 
 //------------------------------------------------------------------------------
 
+// Регулярные выражения описывают дату
+// Для простоты в понятие год заложены 4 цифры
 const vector<regex>& regex_tb()
 {
     static vector<regex> vr {
@@ -21,6 +23,13 @@ enum class Month {
     jan=1, feb, mar, apr, may, jun,
     jul, aug, sep, oct, nov, dec
 };
+
+//------------------------------------------------------------------------------
+
+ostream& operator<<(ostream& os, Month m)
+{
+    return os << int(m);
+}
 
 //------------------------------------------------------------------------------
 
@@ -45,11 +54,56 @@ const map<string, Month>& month_tb()
 
 //------------------------------------------------------------------------------
 
-bool is_year(const string& str)
-{
-    if (str.size() == 4)
-        return true;
+inline bool is_year(const string& str)
+{   // Годом являются любые 4 цифры
+    if (str.size() == 4) return true;
     return false;
+}
+
+//------------------------------------------------------------------------------
+
+// Проверка является m месяцем
+inline bool is_valid_month(const string& m)
+{
+    if (m.size() < 3) return true;
+    const auto& months{month_tb()};
+    auto mon{months.find(m)};
+    if (mon == months.end()) return false;
+    return true;
+}
+
+//------------------------------------------------------------------------------
+
+string get_month_iso(const string& m)
+{
+    ostringstream os;
+    if (m.size() < 3) {
+        if (m.size() == 1) os << 0 << m;
+        else               os << m;
+        return os.str();
+    }
+
+    const auto& months{month_tb()};
+    auto mon{months.find(m)};
+    if (mon == months.end()) error("bad month");
+    if (int(mon->second) < 10) os << 0 << mon->second;
+    else                       os << mon->second;
+    return os.str();
+}
+
+//------------------------------------------------------------------------------
+
+string get_day_iso(const string& d)
+{    
+    int day{m_to<int>(d)};
+    if (day > 31 && day < 1) error("Bad day");
+
+    ostringstream os;
+    if (day < 10)  // Добавляем leading zero
+        os << 0 << day;
+    else
+        return d;
+    return os.str();
 }
 
 //------------------------------------------------------------------------------
@@ -60,25 +114,30 @@ void exercise23_12()
     if (!in) error("Нет файла");
 
     ofstream out{"./file.out"};
-
-    const auto& regextb{regex_tb()};
-    int lineno{0};
-    for (string line; getline(in, line); ) {
-        ++lineno;
+    const auto& regextb{regex_tb()};   
+    for (string line; getline(in, line); ) {        
         smatch matches;
         for (const auto& r : regextb) {      // Рассматриваем все шаблоны
             // Ищем первое совпадение
-            if (regex_search(line, matches, r))
-                cout << lineno << ": " << matches[0] << '\n';
-            else
-                continue;
-
+            if (!regex_search(line, matches, r)) continue;
             // Ищем остальные совпадения
-            for (string suffix{matches.suffix().str()};
-                 regex_search(suffix, matches, r);
-                 suffix = matches.suffix().str())
-                cout << lineno << ": " << matches[0] << '\n';
+            while (regex_search(line, matches, r)) {
+                if (!is_valid_month(matches[2])) continue;
+                if (is_year(matches[1]))
+                    line = matches.prefix().str()
+                            + to_string(matches[1])
+                            + '-' + get_month_iso(to_string(matches[2]))
+                            + '-' + get_day_iso(to_string(matches[3]))
+                            + matches.suffix().str();
+                else
+                    line = matches.prefix().str()
+                            + to_string(matches[3])
+                            + '-' + get_month_iso(to_string(matches[2]))
+                            + '-' + get_day_iso(to_string(matches[1]))
+                            + matches.suffix().str();
+            }
         }
+        out << line << '\n';
     }
 }
 
@@ -87,6 +146,7 @@ void exercise23_12()
 int main()
 try
 {
+    exercise23_12();
     return 0;
 }
 catch (const exception& e) {

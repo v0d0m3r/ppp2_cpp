@@ -7,4 +7,8 @@ QMAKE_CXXFLAGS += -std=c++1z --pedantic
 
 DESTDIR = ../bin
 
-SOURCES += main.cpp
+SOURCES += main.cpp \
+    ../example23/Mail_file.cpp
+
+HEADERS += \
+    ../example23/Mail_file.hpp

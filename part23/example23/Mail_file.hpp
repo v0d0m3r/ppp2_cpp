@@ -11,6 +11,20 @@
 
 //------------------------------------------------------------------------------
 
+template<typename Target, typename Source>
+Target m_to(const Source& arg)
+{
+    stringstream interpreter;
+    Target result;
+    if (       !(interpreter << arg)    // Запись arg в поток
+            || !(interpreter >> result) // Чтение result из потока
+            || !(interpreter >> std::ws).eof())
+        throw runtime_error{"сбой в to<>()"};
+    return result;
+}
+
+//------------------------------------------------------------------------------
+
 using Line_iter = vector<string>::const_iterator;
 
 class Message {     // Объект класса Message указывает
