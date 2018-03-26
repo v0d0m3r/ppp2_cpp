@@ -9,10 +9,10 @@
 const vector<regex>& regex_tb()
 {
     static vector<regex> vr {
-        regex{R"(([12]\d|0?[1-9]|3[01])[\.\\\s/\-]+(0?[1-9]|1[0-2])[\.\\\s/\-]+(\d{4}))"},
-        regex{R"((\d{4})[\.\\\s/]+(0?[1-9]|1[0-2])[\.\\\s/]+([12]\d|0?[1-9]|3[01]))"},
-        regex{R"((\d{4})[\.\\\s/\-]+([a-zA-Z]{3})[\.\\\s/\-]+([12]\d|0?[1-9]|3[0-1]))"},
-        regex{R"(([12]\d|0?[1-9]|3[0-1])[\.\\\s/\-]+([a-zA-Z]{3})[\.\\\s/\-]+(\d{4}))"}
+        regex{R"(([12]\d|3[01]|0?[1-9])[\.\\\s/\-]+(0?[1-9]|1[0-2])[\.\\\s/\-]+(\d{4}))"},
+        regex{R"((\d{4})[\.\\\s/]+(0?[1-9]|1[0-2])[\.\\\s/]+([12]\d|3[01]|0?[1-9]))"},
+        regex{R"((\d{4})[\.\\\s/\-]+([a-zA-Z]{3})[\.\\\s/\-]+([12]\d|3[01]|0?[1-9]))"},
+        regex{R"(([12]\d|3[0-1]|0?[1-9])[\.\\\s/\-]+([a-zA-Z]{3})[\.\\\s/\-]+(\d{4}))"}
     };
     return vr;
 }
@@ -108,6 +108,8 @@ string get_day_iso(const string& d)
 
 //------------------------------------------------------------------------------
 
+// Переводит все даты, соответствующие regex_tb
+// в iso yyyy-mm-dd формат
 void exercise23_12()
 {
     ifstream in{"./file"};
@@ -120,22 +122,26 @@ void exercise23_12()
         for (const auto& r : regextb) {      // Рассматриваем все шаблоны
             // Ищем первое совпадение
             if (!regex_search(line, matches, r)) continue;
-            // Ищем остальные совпадения
-            while (regex_search(line, matches, r)) {
-                if (!is_valid_month(matches[2])) continue;
-                if (is_year(matches[1]))
-                    line = matches.prefix().str()
-                            + to_string(matches[1])
+
+            // Обрабатываем совпадения
+            string suffix{line};
+            line.clear();
+            while (regex_search(suffix, matches, r)) {
+                line += matches.prefix().str();
+
+                if (     !is_valid_month(matches[2]))
+                    line += to_string(matches[0]);
+                else if (is_year(matches[1]))
+                    line += to_string(matches[1])
                             + '-' + get_month_iso(to_string(matches[2]))
-                            + '-' + get_day_iso(to_string(matches[3]))
-                            + matches.suffix().str();
+                            + '-' + get_day_iso(to_string(matches[3]));
                 else
-                    line = matches.prefix().str()
-                            + to_string(matches[3])
+                    line += to_string(matches[3])
                             + '-' + get_month_iso(to_string(matches[2]))
-                            + '-' + get_day_iso(to_string(matches[1]))
-                            + matches.suffix().str();
+                            + '-' + get_day_iso(to_string(matches[1]));
+                suffix = matches.suffix().str();
             }
+            line += suffix;
         }
         out << line << '\n';
     }
