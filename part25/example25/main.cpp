@@ -21,7 +21,8 @@ struct Node {
 
 //------------------------------------------------------------------------------
 
-Message* get_input()
+// Создаем объект Message в динамической памяти
+inline Message* get_input()
 {
     return new Message;
 }
@@ -30,17 +31,22 @@ Message* get_input()
 
 void test_fragmentation()
 {
-    cout << "Message size: " << sizeof(Message) << '\n'
-         << "Node size: " << sizeof(Node) << '\n';
-    int count = 2;
-    while (count) {
+    constexpr int msg_sz = sizeof(Message);
+    constexpr int node_sz = sizeof(Node);
+    cout << "Message sz: " << msg_sz
+         << "\nNode sz: " << node_sz << '\n';
+
+    constexpr int count = 2;
+    for (auto i = 0; i < count; ++i) {
         Message* p = get_input();
+        cout << "Iteration: " << i << "\tp: " << p;
+        // ...
         Node* n1 = new Node;
-        cout << "p == " << p << "\tn1 == " << n1;
+        cout << "\tn1: " << n1;
+        //..
         delete p;
         Node* n2 = new Node;
-        cout << "\tn2 == " << n2 << '\n';
-        --count;
+        cout << "\tn2: " << n2 << '\n';
     }
 }
 
@@ -107,14 +113,15 @@ void example25_3_3()
 
 //------------------------------------------------------------------------------
 
-void poor(Shape* p, int sz)         // Плохой интерфейс
+void poor(Shape* p, int sz) // Плохой интерфейс
 {
     for (int i=0; i < sz; ++i) p[i].draw();
 }
 
 //------------------------------------------------------------------------------
 
-void f25_4_2(Shape* q, vector<Circle> s0) // Очень плохой код
+// Очень плохой код
+void f25_4_2(Shape* q, vector<Circle> s0)
 {
     constexpr int max = 5;
     Polygon s1[10];
@@ -239,9 +246,9 @@ void f25_4_3(Shape* q, vector<Circle*>& s0) // Очень плохой код
     // Инициализация
     Shape* p1 = new Rectangle{Point{0, 0}, Point{10, 20}};
     better25_4_4(make_ref(s0));     // ОК: преобразование
-                                    // в Array_ref<Shape*const>
+                                    // В Array_ref<Shape*const>
     better25_4_4(make_ref(s1));     // ОК: преобразование
-                                    // в Array_ref<Shape*const>
+                                    // В Array_ref<Shape*const>
     better25_4_4(make_ref(s2));     // ОК (преобразование не требуется)
     //better25_4_4(make_ref(p1, 1));  // ОК: один элемент
     delete p1;
@@ -318,9 +325,251 @@ void example25_5_3()
 
 //------------------------------------------------------------------------------
 
-void enciper()
-{
+struct PPN {                    // Номер физической страницы R6000
+    unsigned int PFN    : 22;   // Номер страничного кадра
+    int : 3;                    // Не используется
+    unsigned int CCA    : 3;    // Алгоритм когерентности кэша
+    bool nonreachable   : 1;
+    bool dirty          : 1;
+    bool valid          : 1;
+    bool global         : 1;
+};
 
+//------------------------------------------------------------------------------
+
+void encipher(const unsigned long* const v,
+              unsigned long* const w,
+              const unsigned long* const k)
+{
+    static_assert(sizeof(long) == 4,
+                  "Неправильный размер long для TEA");
+
+    unsigned long y = v[0];
+    unsigned long z = v[1];
+    unsigned long sum = 0;
+    const unsigned long delta = 0x9E3779B9;
+
+    for (unsigned long n = 32; n-- > 0;) {
+        y += (z<<4 ^ z>>5) + z ^ sum + k[sum&3];
+        sum += delta;
+        z += (y<<4 ^ y>>5) + y ^ sum + k[sum>>11 & 3];
+    }
+    w[0] = y;
+    w[1] = z;
+}
+
+//------------------------------------------------------------------------------
+
+void decipher(const unsigned long* const v,
+              unsigned long* const w,
+              const unsigned long* const k)
+{
+    static_assert(sizeof(long) == 4,
+                  "Неправильный размер long для TEA");
+    unsigned long y = v[0];
+    unsigned long z = v[1];
+    unsigned long sum = 0xC6EF3720;
+    const unsigned long delta = 0x9E3779B9;
+    // sum = delta<<5, в целом sum = delta * n
+    for (unsigned long n = 32; n-- > 0;) {
+        z -= (y<<4 ^ y>>5) + y ^ sum + k[sum>>11 & 3];
+        sum -= delta;
+        y -= (z<<4 ^ z>>5) + z ^ sum + k[sum&3];
+    }
+    w[0] = y;
+    w[1] = z;
+}
+
+//------------------------------------------------------------------------------
+
+void sender()
+{
+    const int nchar = 2*sizeof(long);   // 64 бита
+    const int kchar = 2*nchar;          // 128 бит
+
+    string key;
+    string infile;
+    string outfile;
+    cout << "Введите имена входного "
+            "и выходного файлов и ключ:\n";
+    cin >> infile >> outfile >> key;
+    while (key.size() < kchar) key += '0'; // Дополнение ключа
+    ifstream inf(infile.c_str());
+    ofstream outf(outfile.c_str());
+    if (!inf || !outf) error("Неправильное имя файла");
+
+    const unsigned long* k =
+            reinterpret_cast<const unsigned long*>(key.data());
+
+    unsigned long outptr[2];
+    char inbuf[nchar];
+    unsigned long* inptr =
+            reinterpret_cast<unsigned long*>(inbuf);
+
+    int count = 0;
+    while (inf.get(inbuf[count])) {
+        outf << hex;    // Используется шестнадцатеричный вывод
+        if (++count == nchar) {
+            encipher(inptr, outptr, k);
+                        // Заполнение ведущими нулями:
+            outf << setw(8) << setfill('0') << outptr[0] << ' '
+                 << setw(8) << setfill('0') << outptr[1] << ' ';
+            count = 0;
+        }
+    }
+    if (count) {        // Заполнение
+        while (count != nchar) inbuf[count++] = '0';
+        encipher(inptr, outptr, k);
+        outf << outptr[0] << ' ' << outptr[1] << ' ';
+    }
+}
+
+//------------------------------------------------------------------------------
+
+void reciver()
+{
+    const int nchar = 2*sizeof(long);   // 64 бита
+    const int kchar = 2*nchar;          // 128 бит
+
+    string key;
+    string infile;
+    string outfile;
+    cout << "Введите имена входного "
+            "и выходного файлов и ключ:\n";
+    cin >> infile >> outfile >> key;
+    while (key.size() < kchar) key += '0'; // Дополнение ключа
+    ifstream inf(infile.c_str());
+    ofstream outf(outfile.c_str());
+    if (!inf || !outf) error("Неправильное имя файла");
+
+    const unsigned long* k =
+            reinterpret_cast<const unsigned long*>(key.data());
+
+    unsigned long inptr[2];
+    char outbuf[nchar+1];
+    outbuf[nchar] = 0;              // Завершающий нуль
+    unsigned long* outptr =
+            reinterpret_cast<unsigned long*>(outbuf);
+    inf.setf(ios_base::hex,
+             ios_base::basefield);  // Шестнадцатеричный ввод
+
+    while (inf >> inptr[0] >> inptr[1]) {
+        decipher(inptr, outptr, k);
+        outf << outbuf;
+    }
+}
+
+//------------------------------------------------------------------------------
+
+enum class Operation { sender_b = 0, reciver_b = 1 };
+
+//------------------------------------------------------------------------------
+
+istream& operator >>(istream& is, Operation& op)
+{
+    int i;
+    if (!(is >> i)) return is;
+    op = static_cast<Operation>(i);
+    return is;
+}
+
+//------------------------------------------------------------------------------
+
+void sender_reciver()
+{
+    while (true) {
+        cout << "\nInput 0 - sender or 1 - reciver\n";
+        Operation op;
+        cin >> op;
+        if (!cin) throw runtime_error("input error!");
+        switch (op) {
+        case Operation::sender_b:
+            sender();
+            break;
+        case Operation::reciver_b:
+            reciver();
+            break;
+        default:
+            cout << "Выходим\n";
+            return;
+        }
+    }
+}
+
+//------------------------------------------------------------------------------
+
+void task_1_2()
+{
+    int v = 1;
+    for (int i = 0; i < sizeof(v)*8; ++i) {
+        cout << v << ' ';
+        v <<= 1;
+    }
+}
+
+//------------------------------------------------------------------------------
+
+void print(short unsigned int sui)
+{
+    cout << "sui: hex\t" << hex << sui
+         <<    ";\tdec\t" << dec << sui << '\n';
+}
+
+//------------------------------------------------------------------------------
+
+void task_3_4()
+{
+    static_assert(sizeof(short unsigned int) == 2,
+                  "Неправильный размер int для tasks");
+    short unsigned int sui = 0xffff;
+    print(sui);
+    sui = 0x1;
+    print(sui);
+    sui = 0x8000;
+    print(sui);
+    sui = 0xff;
+    print(sui);
+    sui = 0xff00;
+    print(sui);
+    sui = 0x5555; // 0101 0101 0101 0101
+    print(sui);
+    sui = 0xaaaa; // 1010 1010 1010 1010
+    print(sui);
+}
+
+//------------------------------------------------------------------------------
+
+void task_5()
+{
+    static_assert(sizeof(short unsigned int) == 2,
+                  "Неправильный размер int для tasks");
+    short unsigned int sui = 0;
+    sui = ~sui;
+    print(sui);
+    sui &= 1;
+    print(sui);
+    sui = ~(sui>>1);
+    sui = sui >> 1 ^ sui;
+    print(sui);
+    sui = 1;
+    sui = sui << 1 | 1;
+    sui = sui << 2 | sui;
+    sui |= sui << 4;
+    print(sui);
+    sui = ~sui;
+    print(sui);
+    sui = 1;
+    sui = sui << 2 | 1;
+    sui |= sui << 4;
+    sui |= sui << 4;
+    sui |= sui << 4;
+    print(sui);
+    sui = 1;
+    sui = (sui << 2 | 1) << 1;
+    sui |= sui << 4;
+    sui |= sui << 4;
+    sui |= sui << 4;
+    print(sui);
 }
 
 //------------------------------------------------------------------------------
@@ -333,6 +582,11 @@ try
     //example25_5_2();
     //infinity();
     //example25_5_3();
+    //task_1_2();
+    //lambda_test();
+    //task_3_4();
+    //task_5_ugly;
+    task_5();
     return 0;
 }
 catch (const exception& e) {
